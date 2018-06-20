@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Threading;
-using System.Windows.Controls;
+using System.Windows.Forms;
+using Button = System.Windows.Controls.Button;
+using ListBox = System.Windows.Controls.ListBox;
+using TabControl = System.Windows.Controls.TabControl;
+using TextBox = System.Windows.Controls.TextBox;
+using TreeView = System.Windows.Controls.TreeView;
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard
@@ -10,7 +15,47 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class MainWindow
   {
-    
+    public UserSettings UserSettings => this.foUserSettings;
+
+    public TreeView TreeViewForFile => this.treeViewForFile1;
+
+    public DataGridViewBase GridViewForFile => this.gridViewForFile1;
+
+    public ImageList ImageList => this.imageList1;
+
+    public ListBox ListBox => this.listBox1;
+
+    public MenuStrip MenuStrip => this.menuStrip1;
+
+    // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
+    public ToolStripButton ButtonCancel => this.btnCancel1;
+
+    public ToolStripButton ButtonSave => this.btnSave1;
+
+    public ToolStripButton ButtonRun => this.btnRun1;
+
+    public ToolStripButton ButtonRemove => this.btnRemove1;
+
+    public Button ButtonEllipse => this.btnOpenFolder1;
+
+    public TabControl TabControl => this.tabControl1;
+
+    public TextBox TextBoxDirectory => this.txtDirectory1;
+
+    public ToolStripMenuItem MenuItemCancel => this.menuItemCancel1;
+
+    public ToolStripMenuItem MenuItemSave => this.menuItemSave1;
+
+    public ToolStripMenuItem MenuItemRun => this.menuItemRun1;
+
+    public ToolStripMenuItem MenuItemRemove => this.menuItemRemove1;
+
+    public ToolStripMenuItem MenuItemOptions => this.menuItemOptions1;
+
+    public ToolStripMenuItem MenuItemFilesInGrid => this.menuItemFilesInGrid1;
+
+    public ToolStripMenuItem MenuItemFilesInTreeview => this.menuItemFilesInTreeview1;
+
     private enum ThreadTypes
     {
       ThreadTemporaryLocate,
@@ -43,7 +88,13 @@ namespace TrashWizard
 
       AssociatedIcon.InitializeImageList(this.imageList1);
     }
-    
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public bool IsTreeViewForFiles()
+    {
+      return this.menuItemFilesInTreeview1.IsChecked;
+    }
+
     // ---------------------------------------------------------------------------------------------------------------------
     private void ReadSettings()
     {
@@ -53,8 +104,8 @@ namespace TrashWizard
       this.txtDirectory1.Text = loSettings.GetRootPathForFile();
 
       bool llTreeView = loSettings.GetViewTypeForFile() == Util.FILEVIEW_TREEVIEW;
-      this.menuItemFilesInTreeview1.Checked = llTreeView;
-      this.menuItemFilesInGrid1.Checked = !llTreeView;
+      this.menuItemFilesInTreeview1.IsChecked = llTreeView;
+      this.menuItemFilesInGrid1.IsChecked = !llTreeView;
 
       this.chkIncludeTempFiles.Checked = loSettings.GetMainFormIncludeTempFiles();
       this.chkIncludeRecycle.Checked = loSettings.GetMainFormUseRecycleBin();
@@ -66,12 +117,12 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void WriteSettings()
     {
-      UserSettings loSettings = this.foUserSettings;
+      var loSettings = this.foUserSettings;
 
       loSettings.SetMainFormTabSelected(this.tabControl1.SelectedIndex);
       loSettings.SetRootPathForFile(this.txtDirectory1.Text);
 
-      int lnViewType = this.IsTreeViewForFiles() ? Util.FILEVIEW_TREEVIEW : Util.FILEVIEW_GRID;
+      var lnViewType = this.IsTreeViewForFiles() ? Util.FILEVIEW_TREEVIEW : Util.FILEVIEW_GRID;
 
       loSettings.SetViewTypeForFile(lnViewType);
 
@@ -83,10 +134,11 @@ namespace TrashWizard
 
       loSettings.SaveSettings();
     }
-    
+
 
     // ---------------------------------------------------------------------------------------------------------------------
   }
+
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------

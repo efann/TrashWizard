@@ -8,60 +8,60 @@
                   Title="Trash Wizard">
   <StackPanel VerticalAlignment="Top">
     <Menu Width="Auto" Height="20">
-      <MenuItem Header="_File">
-        <MenuItem x:Name="AppSave" Header="Save..." HorizontalAlignment="Left">
+      <MenuItem x:Name="menuItemFile1" Header="_File">
+        <MenuItem x:Name="menuItemSave1" Header="Save..." HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/save.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="AppExit" Header="E_xit" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemExit1" Header="E_xit" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/exit.png" />
           </MenuItem.Icon>
         </MenuItem>
       </MenuItem>
 
-      <MenuItem Header="_Action">
-        <MenuItem x:Name="AppRun" Header="Run" HorizontalAlignment="Left">
+      <MenuItem x:Name="menuItemAction1" Header="_Action">
+        <MenuItem x:Name="menuItemRun1" Header="Run" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/run.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="AppRemove" Header="Remove" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemRemove1" Header="Remove" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/remove.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="AppCancel" Header="Cancel" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemCancel1" Header="Cancel" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/cancel.png" />
           </MenuItem.Icon>
         </MenuItem>
       </MenuItem>
 
-      <MenuItem Header="_View">
-        <MenuItem x:Name="AppFilesInGrid" Header="Files in Grid" HorizontalAlignment="Left" IsCheckable="True" />
+      <MenuItem x:Name="menuItemView1" Header="_View">
+        <MenuItem x:Name="menuItemFilesInGrid1" Header="Files in Grid" HorizontalAlignment="Left" IsCheckable="True" />
         <Separator />
-        <MenuItem x:Name="AppFilesInTreeview" Header="Files in Treeview" HorizontalAlignment="Left"
+        <MenuItem x:Name="menuItemFilesInTreeview1" Header="Files in Treeview" HorizontalAlignment="Left"
                   IsCheckable="True" />
       </MenuItem>
 
-      <MenuItem Header="_Tools">
-        <MenuItem x:Name="AppOptions" Header="Options..." HorizontalAlignment="Left">
+      <MenuItem x:Name="menuItemTools1" Header="_Tools">
+        <MenuItem x:Name="menuItemOptions1" Header="Options..." HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/options.png" />
           </MenuItem.Icon>
         </MenuItem>
-        <MenuItem x:Name="AppDriveInfo" Header="Drive Info" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemDriveInfo1" Header="Drive Info" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/driveinfo.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="AppMicrosoftDiskCleanup" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemDiskCleanup1" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/player_play.png" />
           </MenuItem.Icon>
@@ -69,34 +69,34 @@
 
       </MenuItem>
 
-      <MenuItem Header="_Help">
-        <MenuItem x:Name="AppHomePage" Header="Home Page" HorizontalAlignment="Left">
+      <MenuItem x:Name="menuItemHelp1" Header="_Help">
+        <MenuItem x:Name="menuItemHomePage1" Header="Home Page" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/home.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="AppHelpDocumentation" Header="Help Documentation" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemHelpDocumentation1" Header="Help Documentation" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/bookcase.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="AppCheckForUpdates" Header="Check for Updates..." HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemCheckForUpdates1" Header="Check for Updates..." HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/updates.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="AppCredits" Header="Credits" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemCredits1" Header="Credits" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/credits.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="AppAbout" Header="About" HorizontalAlignment="Left">
+        <MenuItem x:Name="menuItemAbout1" Header="About" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/about.png" />
           </MenuItem.Icon>

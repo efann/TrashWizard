@@ -16,9 +16,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using TrashWizard.Win32;
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // This class fixes the following type warning:
 // CA1060	Move P/Invokes to NativeMethods class	Because it is a P/Invoke method, 'Util.LockWindowUpdate(IntPtr)' 
 //        should be defined in a class named NativeMethods, SafeNativeMethods, or UnsafeNativeMethods.
@@ -57,7 +57,7 @@ namespace TrashWizard
 
 
     // http://stackoverflow.com/questions/3428631/net-framework-fxcop-rule-ca1401-pinvokesshouldnotbevisible-rule-why-does-this
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     // By the way, LockWindowUpdate makes the entire desktop flicker 
     // (at least in Windows XP SP3).
     public static bool LockWindowUpdateVisible(IntPtr hWndLock)
@@ -65,53 +65,53 @@ namespace TrashWizard
       return NativeMethods.LockWindowUpdate(hWndLock);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static uint GetWindowsDirectoryVisible(StringBuilder lpBuffer, uint uSize)
     {
       return NativeMethods.GetWindowsDirectory(lpBuffer, uSize);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static bool PostMessageVisible(IntPtr hWnd, int nMsg, IntPtr wParam, IntPtr lParam)
     {
       return NativeMethods.PostMessage(hWnd, nMsg, wParam, lParam);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static int RegisterWindowMessageVisible(string lpString)
     {
       return NativeMethods.RegisterWindowMessage(lpString);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static int ShQueryRecycleBin32BitVisible(string pszRootPath, ref ShQueryrbInfo32Bit pShQueryRbInfo)
     {
       return NativeMethods.SHQueryRecycleBin32Bit(pszRootPath, ref pShQueryRbInfo);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static int ShQueryRecycleBin64BitVisible(string pszRootPath, ref ShQueryrbInfo64Bit pShQueryRbInfo)
     {
       return NativeMethods.SHQueryRecycleBin64Bit(pszRootPath, ref pShQueryRbInfo);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static int ShEmptyRecycleBinVisible(IntPtr hwnd, string pszRootPath, uint uFlags)
     {
       return NativeMethods.SHEmptyRecycleBin(hwnd, pszRootPath, uFlags);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public static IntPtr ShGetFileInfoVisible(string pszPath, uint dwFileAttributes, ref ShFileInfo psfi,
       uint cbSizeFileInfo, uint uFlags)
     {
       return NativeMethods.SHGetFileInfo(pszPath, dwFileAttributes, ref psfi, cbSizeFileInfo, uFlags);
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
   }
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

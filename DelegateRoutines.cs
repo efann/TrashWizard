@@ -17,23 +17,23 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using TrashWizard.Forms;
+using System.Windows.Threading;
 using TrashWizard.Win32;
 
 // I designed this class to just de-clutter FormMain.
-//-----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 namespace TrashWizard
 {
-  //-----------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
   internal class DelegateRoutines : IDisposable
   {
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public delegate void ResetFileVariablesDelegate();
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public delegate void ResetViewControlsForFileDelegate();
 
     private static readonly string INDENT = "  ";
@@ -43,7 +43,7 @@ namespace TrashWizard
     private readonly FileInformation foFileInformationForFile;
     private readonly FileInformation foFileInformationForTemporary;
 
-    private readonly FormMain foFormMain;
+    private readonly MainWindow foMainWindow;
 
     // These need to be in reverse order to remove sub-directories correctly.
     // Otherwise, you'll be trying to remove top directories before removing
@@ -51,12 +51,12 @@ namespace TrashWizard
     private readonly SortedList<string, string> foTemporaryFileList =
       new SortedList<string, string>(new ReverseStringComparer());
 
-    //-----------------------------------------------------------------------------
-    public DelegateRoutines(FormMain toFormMain)
+    // ---------------------------------------------------------------------------------------------------------------------
+    public DelegateRoutines(MainWindow toMainWindow)
     {
-      this.foFormMain = toFormMain;
+      this.foMainWindow = toMainWindow;
 
-      UserSettings loUserSettings = this.foFormMain.UserSettings;
+      UserSettings loUserSettings = this.foMainWindow.UserSettings;
 
       this.foFileInformationForFile = new FileInformation(Util.XML_FILE_LISTING,
         loUserSettings.GetOptionsFormShowAlertForFile(), loUserSettings.GetOptionsFormShowFileSizeForFile(),
@@ -86,8 +86,8 @@ namespace TrashWizard
       get { return this.foFileInformationForTemporary.XmlFileInformation.IndexTrack; }
     }
 
-    //-----------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     // Interface IDisposable
     public void Dispose()
     {
@@ -107,64 +107,66 @@ namespace TrashWizard
       }
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void ResetViewControlsForFile()
     {
-      FormMain loFormMain = this.foFormMain;
+      var loMainWindow = this.foMainWindow;
+      var loDispatcher = loMainWindow.Dispatcher;
 
-      if (loFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        loFormMain.Invoke(new ResetViewControlsForFileDelegate(this.ResetViewControlsForFile));
+        loDispatcher.Invoke(new ResetViewControlsForFileDelegate(this.ResetViewControlsForFile));
         return;
       }
 
-      int lnWidth = (loFormMain.ButtonEllipse.Location.X + loFormMain.ButtonEllipse.Size.Width) -
-                    loFormMain.TreeViewForFile.Location.X - 1;
+      int lnWidth = (loMainWindow.ButtonEllipse.Location.X + loMainWindow.ButtonEllipse.Size.Width) -
+                    loMainWindow.TreeViewForFile.Location.X - 1;
 
-      if (loFormMain.IsTreeViewForFiles())
+      if (loMainWindow.IsTreeViewForFiles())
       {
-        loFormMain.TreeViewForFile.Visible = true;
-        loFormMain.TreeViewForFile.Width = lnWidth;
+        loMainWindow.TreeViewForFile.Visible = true;
+        loMainWindow.TreeViewForFile.Width = lnWidth;
 
-        loFormMain.GridViewForFile.Visible = false;
+        loMainWindow.GridViewForFile.Visible = false;
       }
       else
       {
-        loFormMain.GridViewForFile.Visible = true;
-        loFormMain.GridViewForFile.Location = loFormMain.TreeViewForFile.Location;
-        loFormMain.GridViewForFile.Width = lnWidth;
+        loMainWindow.GridViewForFile.Visible = true;
+        loMainWindow.GridViewForFile.Location = loMainWindow.TreeViewForFile.Location;
+        loMainWindow.GridViewForFile.Width = lnWidth;
 
-        loFormMain.TreeViewForFile.Visible = false;
+        loMainWindow.TreeViewForFile.Visible = false;
       }
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void ResetFileVariablesForFile()
     {
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
       // using updateUIDelegate which will post on the thread that owns these 
       // controls' underlying window handle.
+      var loDispatcher = this.foMainWindow.Dispatcher;
 
-      if (this.foFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        this.foFormMain.Invoke(new ResetFileVariablesDelegate(this.ResetFileVariablesForFile));
+        loDispatcher.Invoke(new ResetFileVariablesDelegate(this.ResetFileVariablesForFile));
 
         return;
       }
 
       this.foFileInformationForFile.XmlFileInformation.ResetVariables();
 
-      this.foFormMain.TreeViewForFile.Nodes.Clear();
-      this.foFormMain.GridViewForFile.Columns.Clear();
+      this.foMainWindow.TreeViewForFile.Nodes.Clear();
+      this.foMainWindow.GridViewForFile.Columns.Clear();
 
-      UserSettings loUserSettings = this.foFormMain.UserSettings;
+      UserSettings loUserSettings = this.foMainWindow.UserSettings;
       this.foFileInformationForFile.ResetVariables(loUserSettings.GetOptionsFormShowAlertForFile(),
         loUserSettings.GetOptionsFormShowFileSizeForFile(), loUserSettings.GetOptionsFormFileSizeTypeForFile(),
         loUserSettings.GetOptionsFormShowFileDateForFile(), loUserSettings.GetOptionsFormFileDateTypeForFile(),
@@ -174,26 +176,27 @@ namespace TrashWizard
       GC.WaitForPendingFinalizers();
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void ResetFileVariablesForTemporary()
     {
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
       // using updateUIDelegate which will post on the thread that owns these 
       // controls' underlying window handle.
+      var loDispatcher = this.foMainWindow.Dispatcher;
 
-      if (this.foFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        this.foFormMain.Invoke(new ResetFileVariablesDelegate(this.ResetFileVariablesForTemporary));
+        loDispatcher.Invoke(new ResetFileVariablesDelegate(this.ResetFileVariablesForTemporary));
 
         return;
       }
 
       this.foFileInformationForTemporary.XmlFileInformation.ResetVariables();
-      UserSettings loUserSettings = this.foFormMain.UserSettings;
+      UserSettings loUserSettings = this.foMainWindow.UserSettings;
       this.foFileInformationForTemporary.ResetVariables(loUserSettings.GetOptionsFormShowAlertForTemporary());
 
       this.foTemporaryFileList.Clear();
@@ -202,10 +205,10 @@ namespace TrashWizard
       GC.WaitForPendingFinalizers();
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateControlForTemporary()
     {
-      FormMain loFormMain = this.foFormMain;
+      MainWindow loMainWindow = this.foMainWindow;
 
       this.UpdateListBox("");
       this.UpdateListBox("The following files were located:");
@@ -213,7 +216,7 @@ namespace TrashWizard
 
       long lnTotalSize = 0;
 
-      while (loFormMain.IsThreadRunning())
+      while (loMainWindow.IsThreadRunning())
       {
         FileData loFileData = this.FileInformationForTemporary.XmlFileInformation.ReadFileData();
         if (loFileData == null)
@@ -249,7 +252,7 @@ namespace TrashWizard
                          Util.formatBytes_Actual(lnTotalSize) + ")");
       this.UpdateListBox("");
 
-      bool llRecycleBin = this.foFormMain.UserSettings.GetMainFormUseRecycleBin();
+      bool llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
       if (llRecycleBin)
       {
         RecycleBinInfo loInfo = RecycleBin.GetRecycleBinInfo();
@@ -285,7 +288,7 @@ namespace TrashWizard
       this.UpdateListBox("Press the Remove button to delete the above listed files.");
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void RemoveFilesFromTemporaryList()
     {
       DriveInfo[] laDrives = null;
@@ -366,7 +369,7 @@ namespace TrashWizard
         }
       }
 
-      bool llRecycleBin = this.foFormMain.UserSettings.GetMainFormUseRecycleBin();
+      bool llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
       if (llRecycleBin)
       {
         RecycleBin.EmptyRecycleBin();
@@ -413,23 +416,23 @@ namespace TrashWizard
       this.UpdateListBox("The operation has successfully completed.");
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateControlForFile()
     {
-      if (this.foFormMain.IsTreeViewForFiles())
+      if (this.foMainWindow.IsTreeViewForFiles())
       {
-        this.foFormMain.Invoke(new UpdateTreeViewFromListDelegate(this.UpdateTreeViewFromList), new object[] {null});
+        this.foMainWindow.Invoke(new UpdateTreeViewFromListDelegate(this.UpdateTreeViewFromList), new object[] {null});
       }
       else
       {
-        this.foFormMain.Invoke(new UpdateGridFromListDelegate(this.UpdateGridFromList));
+        this.foMainWindow.Invoke(new UpdateGridFromListDelegate(this.UpdateGridFromList));
       }
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateGridFromList()
     {
-      FormMain loFormMain = this.foFormMain;
+      FormMain loFormMain = this.foMainWindow;
       XmlFileInformation loXmlFileInformation = this.foFileInformationForFile.XmlFileInformation;
 
       // I don't want to call UpdateGridFromListDelegate from within this routine: just
@@ -571,10 +574,10 @@ namespace TrashWizard
       GC.WaitForPendingFinalizers();
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateTreeViewFromList(TreeNode toParentNode)
     {
-      FormMain loFormMain = this.foFormMain;
+      FormMain loFormMain = this.foMainWindow;
       TreeNode[] laFolderNodes = new TreeNode[100];
       XmlFileInformation loXmlFileInformation = this.foFileInformationForFile.XmlFileInformation;
 
@@ -602,7 +605,7 @@ namespace TrashWizard
         if (llFolder && (lnFolderLevel == 0))
         {
           laFolderNodes[0] = loFormMain.TreeViewForFile.Nodes.Add(loFileData.FullName + lcInfoText);
-          AssociatedIcon.UpdateNodeImage(this.foFormMain.ImageList, laFolderNodes[0], true, "");
+          AssociatedIcon.UpdateNodeImage(this.foMainWindow.ImageList, laFolderNodes[0], true, "");
 
           continue;
         }
@@ -614,7 +617,7 @@ namespace TrashWizard
           lcInfoText = " " + this.foFileInformationForFile.BuildString(loFileData);
 
           laFolderNodes[lnFolderLevel] = laFolderNodes[lnFolderLevel - 1].Nodes.Add(loFileData.Name + lcInfoText);
-          AssociatedIcon.UpdateNodeImage(this.foFormMain.ImageList, laFolderNodes[lnFolderLevel], true, "");
+          AssociatedIcon.UpdateNodeImage(this.foMainWindow.ImageList, laFolderNodes[lnFolderLevel], true, "");
 
           // This way, the application doesn't appear locked.
           Application.DoEvents();
@@ -630,7 +633,7 @@ namespace TrashWizard
 
         if (loNode.IsVisible)
         {
-          AssociatedIcon.UpdateNodeImage(this.foFormMain.ImageList, loNode, false, loFileData.FullName);
+          AssociatedIcon.UpdateNodeImage(this.foMainWindow.ImageList, loNode, false, loFileData.FullName);
         }
       }
 
@@ -642,7 +645,7 @@ namespace TrashWizard
 
     public void UpdateListBox(string tcMessage)
     {
-      FormMain loFormMain = this.foFormMain;
+      FormMain loFormMain = this.foMainWindow;
 
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
@@ -665,7 +668,7 @@ namespace TrashWizard
 
     public void UpdateFormCursors(Cursor toCursor)
     {
-      FormMain loFormMain = this.foFormMain;
+      FormMain loFormMain = this.foMainWindow;
 
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
@@ -700,7 +703,7 @@ namespace TrashWizard
 
     public void UpdateMenusAndControls(bool tlEnable)
     {
-      FormMain loFormMain = this.foFormMain;
+      FormMain loFormMain = this.foMainWindow;
 
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
@@ -742,27 +745,27 @@ namespace TrashWizard
       loFormMain.MenuItemOptions.Enabled = tlEnable;
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private delegate void UpdateTreeViewFromListDelegate(TreeNode toParentNode);
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private delegate void UpdateGridFromListDelegate();
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private delegate void UpdateListBoxDelegate(string tcMessage);
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private delegate void UpdateFormCursorDelegate(Cursor toCursor);
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     private delegate void UpdateMenusAndButtonsDelegate(bool tlEnable);
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
   }
 
-  //-----------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
 }
 
 //-----------------------------------------------------------------------------
