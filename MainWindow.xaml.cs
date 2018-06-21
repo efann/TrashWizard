@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Button = System.Windows.Controls.Button;
 using ListBox = System.Windows.Controls.ListBox;
+using MenuItem = System.Windows.Controls.MenuItem;
 using TabControl = System.Windows.Controls.TabControl;
 using TextBox = System.Windows.Controls.TextBox;
 using TreeView = System.Windows.Controls.TreeView;
@@ -19,22 +21,21 @@ namespace TrashWizard
 
     public TreeView TreeViewForFile => this.treeViewForFile1;
 
-    public DataGridViewBase GridViewForFile => this.gridViewForFile1;
+    public DataGrid GridViewForFile => this.gridViewForFile1;
 
-    public ImageList ImageList => this.imageList1;
 
     public ListBox ListBox => this.listBox1;
 
-    public MenuStrip MenuStrip => this.menuStrip1;
+    public Menu MenuMain => this.menuMain1;
 
     // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
-    public ToolStripButton ButtonCancel => this.btnCancel1;
+    public Button ButtonCancel => this.btnCancel1;
 
-    public ToolStripButton ButtonSave => this.btnSave1;
+    public Button ButtonSave => this.btnSave1;
 
-    public ToolStripButton ButtonRun => this.btnRun1;
+    public Button ButtonRun => this.btnRun1;
 
-    public ToolStripButton ButtonRemove => this.btnRemove1;
+    public Button ButtonRemove => this.btnRemove1;
 
     public Button ButtonEllipse => this.btnOpenFolder1;
 
@@ -42,19 +43,19 @@ namespace TrashWizard
 
     public TextBox TextBoxDirectory => this.txtDirectory1;
 
-    public ToolStripMenuItem MenuItemCancel => this.menuItemCancel1;
+    public MenuItem MenuItemCancel => this.menuItemCancel1;
 
-    public ToolStripMenuItem MenuItemSave => this.menuItemSave1;
+    public MenuItem MenuItemSave => this.menuItemSave1;
 
-    public ToolStripMenuItem MenuItemRun => this.menuItemRun1;
+    public MenuItem MenuItemRun => this.menuItemRun1;
 
-    public ToolStripMenuItem MenuItemRemove => this.menuItemRemove1;
+    public MenuItem MenuItemRemove => this.menuItemRemove1;
 
-    public ToolStripMenuItem MenuItemOptions => this.menuItemOptions1;
+    public MenuItem MenuItemOptions => this.menuItemOptions1;
 
-    public ToolStripMenuItem MenuItemFilesInGrid => this.menuItemFilesInGrid1;
+    public MenuItem MenuItemFilesInGrid => this.menuItemFilesInGrid1;
 
-    public ToolStripMenuItem MenuItemFilesInTreeview => this.menuItemFilesInTreeview1;
+    public MenuItem MenuItemFilesInTreeview => this.menuItemFilesInTreeview1;
 
     private enum ThreadTypes
     {
@@ -86,9 +87,14 @@ namespace TrashWizard
       this.ReadSettings();
       this.foDelegateRoutines.UpdateMenusAndControls(true);
 
-      AssociatedIcon.InitializeImageList(this.imageList1);
+      //AssociatedIcon.InitializeImageList(this.imageList1);
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void CommonCommandBinding_CanExecute(object toSender, CanExecuteRoutedEventArgs teCanExecuteRoutedEventArgs)
+    {
+      teCanExecuteRoutedEventArgs.CanExecute = true;
+    }    
     // ---------------------------------------------------------------------------------------------------------------------
     public bool IsTreeViewForFiles()
     {
@@ -107,11 +113,11 @@ namespace TrashWizard
       this.menuItemFilesInTreeview1.IsChecked = llTreeView;
       this.menuItemFilesInGrid1.IsChecked = !llTreeView;
 
-      this.chkIncludeTempFiles.Checked = loSettings.GetMainFormIncludeTempFiles();
-      this.chkIncludeRecycle.Checked = loSettings.GetMainFormUseRecycleBin();
-      this.chkIncludeBrowserCaches.Checked = loSettings.GetMainFormIncludeBrowserCaches();
-      this.chkIncludeAdobeCaches.Checked = loSettings.GetMainFormIncludeAdobeCaches();
-      this.chkIncludeOfficeSuitesCaches.Checked = loSettings.GetMainFormIncludeOfficeSuiteCaches();
+      this.chkIncludeTempFiles.IsChecked = loSettings.GetMainFormIncludeTempFiles();
+      this.chkIncludeRecycle.IsChecked = loSettings.GetMainFormUseRecycleBin();
+      this.chkIncludeBrowserCaches.IsChecked = loSettings.GetMainFormIncludeBrowserCaches();
+      this.chkIncludeAdobeCaches.IsChecked = loSettings.GetMainFormIncludeAdobeCaches();
+      this.chkIncludeOfficeSuitesCaches.IsChecked = loSettings.GetMainFormIncludeOfficeSuiteCaches();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -126,11 +132,11 @@ namespace TrashWizard
 
       loSettings.SetViewTypeForFile(lnViewType);
 
-      loSettings.SetMainFormIncludeTempFiles(this.chkIncludeTempFiles.Checked);
-      loSettings.SetMainFormUseRecycleBin(this.chkIncludeRecycle.Checked);
-      loSettings.SetMainFormIncludeBrowserCaches(this.chkIncludeBrowserCaches.Checked);
-      loSettings.SetMainFormIncludeAdobeCaches(this.chkIncludeAdobeCaches.Checked);
-      loSettings.SetMainFormIncludeOfficeSuiteCaches(this.chkIncludeOfficeSuitesCaches.Checked);
+      loSettings.SetMainFormIncludeTempFiles(this.chkIncludeTempFiles.IsChecked == true);
+      loSettings.SetMainFormUseRecycleBin(this.chkIncludeRecycle.IsChecked == true);
+      loSettings.SetMainFormIncludeBrowserCaches(this.chkIncludeBrowserCaches.IsChecked == true);
+      loSettings.SetMainFormIncludeAdobeCaches(this.chkIncludeAdobeCaches.IsChecked == true);
+      loSettings.SetMainFormIncludeOfficeSuiteCaches(this.chkIncludeOfficeSuitesCaches.IsChecked == true);
 
       loSettings.SaveSettings();
     }

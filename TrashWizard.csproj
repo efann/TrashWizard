@@ -55,8 +55,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AssociatedIcon.cs" />
-    <Compile Include="DataGridViewBase.cs" />
-    <Compile Include="DataGridViewCells.cs" />
     <Compile Include="DelegateRoutines.cs" />
     <Compile Include="FileCaches.cs" />
     <Compile Include="FileData.cs" />

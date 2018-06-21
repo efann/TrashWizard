@@ -1,13 +1,14 @@
 ﻿<Window x:Class="TrashWizard.MainWindow"
-                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  mc:Ignorable="d"
-                  Icon="images/icon/TrashWizard.ico"
-                  Title="Trash Wizard">
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:trashWizard="clr-namespace:TrashWizard"
+        mc:Ignorable="d"
+        Icon="images/icon/TrashWizard.ico"
+        Title="Trash Wizard">
   <StackPanel VerticalAlignment="Top">
-    <Menu Width="Auto" Height="20">
+    <Menu x:Name="menuMain1" Width="Auto" Height="20">
       <MenuItem x:Name="menuItemFile1" Header="_File">
         <MenuItem x:Name="menuItemSave1" Header="Save..." HorizontalAlignment="Left">
           <MenuItem.Icon>
@@ -104,5 +105,45 @@
 
       </MenuItem>
     </Menu>
+    <ToolBarTray DockPanel.Dock="Top">
+      <ToolBar>
+        <Button x:Name="btnRun1" ToolTip="Run the search for files." ToolBar.OverflowMode="AsNeeded">
+          <Image Source="images/run.png" />
+        </Button>
+        <Button x:Name="btnSave1" ToolTip="Save the log files." ToolBar.OverflowMode="AsNeeded">
+          <Image Source="images/save.png" />
+        </Button>
+        <Button x:Name="btnRemove1" ToolTip="Remove the display files." ToolBar.OverflowMode="AsNeeded">
+          <Image Source="images/remove.png" />
+        </Button>
+        <Separator />
+        <Button x:Name="btnCancel1" ToolTip="Cancel the current operations."
+                ToolBar.OverflowMode="AsNeeded">
+          <Image Source="images/cancel.png" />
+        </Button>
+      </ToolBar>
+    </ToolBarTray>
+    <TabControl x:Name="tabControl1" />
+    <TabItem Header="Temporary Files">
+      <StackPanel>
+        <CheckBox x:Name="chkIncludeTempFiles" />
+        <CheckBox x:Name="chkIncludeRecycle" />
+        <CheckBox x:Name="chkIncludeBrowserCaches" />
+        <CheckBox x:Name="chkIncludeAdobeCaches" />
+        <CheckBox x:Name="chkIncludeOfficeSuitesCaches" />
+
+        <ListBox x:Name="listBox1" />
+      </StackPanel>
+    </TabItem>
+    <TabItem Header="Files">
+      <StackPanel>
+        <TextBox x:Name="txtDirectory1" />
+        <Button x:Name="btnOpenFolder1">
+          <Image Source="images/folder_open.png" />
+        </Button>
+        <TreeView x:Name="treeViewForFile1"></TreeView>
+        <DataGrid x:Name="gridViewForFile1" />
+      </StackPanel>
+    </TabItem>
   </StackPanel>
 </Window>

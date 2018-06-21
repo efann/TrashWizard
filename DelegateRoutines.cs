@@ -16,9 +16,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using TrashWizard.Win32;
+using Application = System.Windows.Forms.Application;
 
 // I designed this class to just de-clutter FormMain.
 // ---------------------------------------------------------------------------------------------------------------------
@@ -127,18 +129,18 @@ namespace TrashWizard
 
       if (loMainWindow.IsTreeViewForFiles())
       {
-        loMainWindow.TreeViewForFile.Visible = true;
+        loMainWindow.TreeViewForFile.Visibility = Visibility.Visible;
         loMainWindow.TreeViewForFile.Width = lnWidth;
 
-        loMainWindow.GridViewForFile.Visible = false;
+        loMainWindow.GridViewForFile.Visibility = Visibility.Hidden;
       }
       else
       {
-        loMainWindow.GridViewForFile.Visible = true;
+        loMainWindow.GridViewForFile.Visibility = Visibility.Visible;
         loMainWindow.GridViewForFile.Location = loMainWindow.TreeViewForFile.Location;
         loMainWindow.GridViewForFile.Width = lnWidth;
 
-        loMainWindow.TreeViewForFile.Visible = false;
+        loMainWindow.TreeViewForFile.Visibility = Visibility.Hidden;
       }
     }
 
@@ -241,7 +243,8 @@ namespace TrashWizard
           this.foTemporaryFileList.Add(lcFile, lcFile);
         }
         catch (ArgumentException)
-        {}
+        {
+        }
 
         bool llReadOnly = (loFileData.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
         this.UpdateListBox(lcFile + (llReadOnly ? " (Read Only)" : ""));
@@ -262,13 +265,16 @@ namespace TrashWizard
 
         this.UpdateListBox(DelegateRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
         this.UpdateListBox(DelegateRoutines.INDENT + "Byte(s) in root folder: " +
-                           Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) + ")");
+                           Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) +
+                           ")");
 
         if (lcError.Length != 0)
         {
-          this.UpdateListBox("There was an error reading the Recycle Bin: (Result# " + RecycleBin.GetLastResult() + ") " +
+          this.UpdateListBox("There was an error reading the Recycle Bin: (Result# " + RecycleBin.GetLastResult() +
+                             ") " +
                              lcError);
         }
+
         this.UpdateListBox("");
       }
 
@@ -381,11 +387,13 @@ namespace TrashWizard
 
         this.UpdateListBox(DelegateRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
         this.UpdateListBox(DelegateRoutines.INDENT + "Byte(s) in root folder: " +
-                           Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) + ")");
+                           Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) +
+                           ")");
 
         if (lcError.Length != 0)
         {
-          this.UpdateListBox("There was an error reading the Recycle Bin: (Result# " + RecycleBin.GetLastResult() + ") " +
+          this.UpdateListBox("There was an error reading the Recycle Bin: (Result# " + RecycleBin.GetLastResult() +
+                             ") " +
                              lcError);
         }
       }
@@ -410,7 +418,8 @@ namespace TrashWizard
 
       this.UpdateListBox("");
       this.UpdateListBox("Total Removed (Temporary Files" + (llRecycleBin ? " & Recycle Bin" : " only") + "):");
-      this.UpdateListBox(DelegateRoutines.INDENT + Util.formatBytes_GB_MB_KB(lnNewFreeSpace - lnCurrentFreeSpace) + " (" +
+      this.UpdateListBox(DelegateRoutines.INDENT + Util.formatBytes_GB_MB_KB(lnNewFreeSpace - lnCurrentFreeSpace) +
+                         " (" +
                          Util.formatBytes_Actual(lnNewFreeSpace - lnCurrentFreeSpace) + ")");
       this.UpdateListBox("");
       this.UpdateListBox("The operation has successfully completed.");
@@ -553,10 +562,12 @@ namespace TrashWizard
         {
           loCells[lnSizeColumn].Value = loFileData.Size;
         }
+
         if (lnModifiedColumn != -1)
         {
           loCells[lnModifiedColumn].Value = loFileData.DateModified;
         }
+
         if (lnAttributesColumn != -1)
         {
           loCells[lnAttributesColumn].Value = Util.FormatAttributes(loFileData);
