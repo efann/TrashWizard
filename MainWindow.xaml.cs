@@ -101,6 +101,12 @@ namespace TrashWizard
       return this.menuItemFilesInTreeview1.IsChecked;
     }
 
+    //-----------------------------------------------------------------------------
+    public bool IsThreadRunning()
+    {
+      return (this.foThread != null) && this.foThread.IsAlive;
+    }
+    
     // ---------------------------------------------------------------------------------------------------------------------
     private void ReadSettings()
     {

@@ -16,11 +16,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Threading;
+using System.Windows.Controls;
+using System.Windows.Input;
 using TrashWizard.Win32;
-using Application = System.Windows.Forms.Application;
 
 // I designed this class to just de-clutter FormMain.
 // ---------------------------------------------------------------------------------------------------------------------
@@ -93,26 +91,17 @@ namespace TrashWizard
     // Interface IDisposable
     public void Dispose()
     {
-      if (this.foDataTable != null)
-      {
-        this.foDataTable.Dispose();
-      }
+      this.foDataTable?.Dispose();
 
-      if (this.foFileInformationForFile != null)
-      {
-        this.foFileInformationForFile.Dispose();
-      }
+      this.foFileInformationForFile?.Dispose();
 
-      if (this.foFileInformationForTemporary != null)
-      {
-        this.foFileInformationForTemporary.Dispose();
-      }
+      this.foFileInformationForTemporary?.Dispose();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public void ResetViewControlsForFile()
     {
-      var loMainWindow = this.foMainWindow;
+      MainWindow loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
 
       if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
@@ -129,18 +118,18 @@ namespace TrashWizard
 
       if (loMainWindow.IsTreeViewForFiles())
       {
-        loMainWindow.TreeViewForFile.Visibility = Visibility.Visible;
+        loMainWindow.TreeViewForFile.Visible = true;
         loMainWindow.TreeViewForFile.Width = lnWidth;
 
-        loMainWindow.GridViewForFile.Visibility = Visibility.Hidden;
+        loMainWindow.GridViewForFile.Visible = false;
       }
       else
       {
-        loMainWindow.GridViewForFile.Visibility = Visibility.Visible;
+        loMainWindow.GridViewForFile.Visible = true;
         loMainWindow.GridViewForFile.Location = loMainWindow.TreeViewForFile.Location;
         loMainWindow.GridViewForFile.Width = lnWidth;
 
-        loMainWindow.TreeViewForFile.Visibility = Visibility.Hidden;
+        loMainWindow.TreeViewForFile.Visible = false;
       }
     }
 
@@ -185,6 +174,7 @@ namespace TrashWizard
       // thread that originally created the GUI, then updateUI will be called again
       // using updateUIDelegate which will post on the thread that owns these 
       // controls' underlying window handle.
+
       var loDispatcher = this.foMainWindow.Dispatcher;
 
       if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
@@ -428,30 +418,34 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateControlForFile()
     {
+      var loDispatcher = this.foMainWindow.Dispatcher;
+
       if (this.foMainWindow.IsTreeViewForFiles())
       {
-        this.foMainWindow.Invoke(new UpdateTreeViewFromListDelegate(this.UpdateTreeViewFromList), new object[] {null});
+        loDispatcher.Invoke(new UpdateTreeViewFromListDelegate(this.UpdateTreeViewFromList), new object[] {null});
       }
       else
       {
-        this.foMainWindow.Invoke(new UpdateGridFromListDelegate(this.UpdateGridFromList));
+        loDispatcher.Invoke(new UpdateGridFromListDelegate(this.UpdateGridFromList));
       }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateGridFromList()
     {
-      FormMain loFormMain = this.foMainWindow;
+      var loMainWindow = this.foMainWindow;
+      var loDispatcher = loMainWindow.Dispatcher;
+
       XmlFileInformation loXmlFileInformation = this.foFileInformationForFile.XmlFileInformation;
 
       // I don't want to call UpdateGridFromListDelegate from within this routine: just
       // want to save the overhead.
-      if (loFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         throw new Exception("UpdateGridFromList must be called from the GUI thread.");
       }
 
-      DataGridViewBase loGrid = loFormMain.GridViewForFile;
+      DataGridViewBase loGrid = loMainWindow.GridViewForFile;
 
       DataGridViewLinkColumn loPathNameColumn = new DataGridViewLinkColumn
       {
@@ -475,19 +469,19 @@ namespace TrashWizard
       int lnIsFolderColumn = loGrid.Columns.Add(loIsFolderColumn);
 
       int lnSizeColumn = -1;
-      if (loFormMain.UserSettings.GetOptionsFormShowFileSizeForFile())
+      if (loMainWindow.UserSettings.GetOptionsFormShowFileSizeForFile())
       {
         DataGridViewTextBoxCell loSizeCell = null;
 
-        if (loFormMain.UserSettings.GetOptionsFormFileSizeTypeForFile() == Util.FILESIZE_GBMBKB)
+        if (loMainWindow.UserSettings.GetOptionsFormFileSizeTypeForFile() == Util.FILESIZE_GBMBKB)
         {
           loSizeCell = new DataGridViewSizeGbMbKbCell();
         }
-        else if (loFormMain.UserSettings.GetOptionsFormFileSizeTypeForFile() == Util.FILESIZE_KBONLY)
+        else if (loMainWindow.UserSettings.GetOptionsFormFileSizeTypeForFile() == Util.FILESIZE_KBONLY)
         {
           loSizeCell = new DataGridViewSizeKbOnlyCell();
         }
-        else if (loFormMain.UserSettings.GetOptionsFormFileSizeTypeForFile() == Util.FILESIZE_ACTUAL)
+        else if (loMainWindow.UserSettings.GetOptionsFormFileSizeTypeForFile() == Util.FILESIZE_ACTUAL)
         {
           loSizeCell = new DataGridViewSizeActualCell();
         }
@@ -504,15 +498,15 @@ namespace TrashWizard
       }
 
       int lnModifiedColumn = -1;
-      if (loFormMain.UserSettings.GetOptionsFormShowFileDateForFile())
+      if (loMainWindow.UserSettings.GetOptionsFormShowFileDateForFile())
       {
         DataGridViewTextBoxCell loModifiedCell = null;
 
-        if (loFormMain.UserSettings.GetOptionsFormFileDateTypeForFile() == Util.FILEDATE_SHORT)
+        if (loMainWindow.UserSettings.GetOptionsFormFileDateTypeForFile() == Util.FILEDATE_SHORT)
         {
           loModifiedCell = new DataGridViewModifiedShortCell();
         }
-        else if (loFormMain.UserSettings.GetOptionsFormFileDateTypeForFile() == Util.FILEDATE_LONG)
+        else if (loMainWindow.UserSettings.GetOptionsFormFileDateTypeForFile() == Util.FILEDATE_LONG)
         {
           loModifiedCell = new DataGridViewModifiedLongCell();
         }
@@ -528,7 +522,7 @@ namespace TrashWizard
       }
 
       int lnAttributesColumn = -1;
-      if (loFormMain.UserSettings.GetOptionsFormShowFileAttributesForFile())
+      if (loMainWindow.UserSettings.GetOptionsFormShowFileAttributesForFile())
       {
         DataGridViewTextBoxCell loAttributesCell = new DataGridViewTextBoxCell();
 
@@ -542,7 +536,7 @@ namespace TrashWizard
         lnAttributesColumn = loGrid.Columns.Add(loAttributesColumn);
       }
 
-      while (loFormMain.IsThreadRunning())
+      while (loMainWindow.IsThreadRunning())
       {
         FileData loFileData = loXmlFileInformation.ReadFileData();
         if (loFileData == null)
@@ -588,18 +582,20 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateTreeViewFromList(TreeNode toParentNode)
     {
-      FormMain loFormMain = this.foMainWindow;
+      MainWindow loMainWindow = this.foMainWindow;
+      var loDispatcher = loMainWindow.Dispatcher;
+
       TreeNode[] laFolderNodes = new TreeNode[100];
       XmlFileInformation loXmlFileInformation = this.foFileInformationForFile.XmlFileInformation;
 
       // I don't want to call UpdateTreeViewFromListDelegate from within this routine: just
       // want to save the overhead.
-      if (loFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         throw new Exception("UpdateTreeViewFromList must be called from the GUI thread.");
       }
 
-      while (loFormMain.IsThreadRunning())
+      while (loMainWindow.IsThreadRunning())
       {
         FileData loFileData = loXmlFileInformation.ReadFileData();
         if (loFileData == null)
@@ -615,7 +611,7 @@ namespace TrashWizard
         // they will be handled.
         if (llFolder && (lnFolderLevel == 0))
         {
-          laFolderNodes[0] = loFormMain.TreeViewForFile.Nodes.Add(loFileData.FullName + lcInfoText);
+          laFolderNodes[0] = loMainWindow.TreeViewForFile.Nodes.Add(loFileData.FullName + lcInfoText);
           AssociatedIcon.UpdateNodeImage(this.foMainWindow.ImageList, laFolderNodes[0], true, "");
 
           continue;
@@ -656,104 +652,107 @@ namespace TrashWizard
 
     public void UpdateListBox(string tcMessage)
     {
-      FormMain loFormMain = this.foMainWindow;
+      var loMainWindow = this.foMainWindow;
+      var loDispatcher = loMainWindow.Dispatcher;
 
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
       // using updateUIDelegate which will post on the thread that owns these 
       // controls' underlying window handle.
 
-      if (loFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        loFormMain.Invoke(new UpdateListBoxDelegate(this.UpdateListBox), tcMessage);
+        loDispatcher.Invoke(new UpdateListBoxDelegate(this.UpdateListBox), tcMessage);
 
         return;
       }
 
-      loFormMain.ListBox.Items.Add(tcMessage);
-      loFormMain.ListBox.SelectedIndex = loFormMain.ListBox.Items.Count - 1;
+      loMainWindow.ListBox.Items.Add(tcMessage);
+      loMainWindow.ListBox.SelectedIndex = loMainWindow.ListBox.Items.Count - 1;
     }
 
     public void UpdateFormCursors(Cursor toCursor)
     {
-      FormMain loFormMain = this.foMainWindow;
+      MainWindow loMainWindow = this.foMainWindow;
+      var loDispatcher = loMainWindow.Dispatcher;
 
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
       // using updateUIDelegate which will post on the thread that owns these 
       // controls' underlying window handle.
-      if (loFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        loFormMain.Invoke(new UpdateFormCursorDelegate(this.UpdateFormCursors), toCursor);
+        loDispatcher.Invoke(new UpdateFormCursorDelegate(this.UpdateFormCursors), toCursor);
 
         return;
       }
 
-      loFormMain.Cursor = toCursor;
+      loMainWindow.Cursor = toCursor;
       // Set all of the top level components in the form. By the way, this does
       // not cascade down through each container.
-      foreach (Control loControl in loFormMain.Controls)
+      foreach (Control loControl in loMainWindow.Controls)
       {
         loControl.Cursor = toCursor;
       }
 
       // Since these containers have active components, I want an AppStarting cursor
       // to appear instead of the hour glass cursor.
-      loFormMain.TreeViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
-      loFormMain.GridViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
+      loMainWindow.TreeViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
+      loMainWindow.GridViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
 
-      loFormMain.ListBox.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
-      loFormMain.MenuStrip.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
+      loMainWindow.ListBox.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
+      loMainWindow.MenuStrip.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
     }
 
     public void UpdateMenusAndControls(bool tlEnable)
     {
-      FormMain loFormMain = this.foMainWindow;
+      MainWindow loMainWindow = this.foMainWindow;
+      var loDispatcher = loMainWindow.Dispatcher;
 
       // This results in a recursive call. If updateUI is not being called from the
       // thread that originally created the GUI, then updateUI will be called again
       // using updateUIDelegate which will post on the thread that owns these 
       // controls' underlying window handle.
-      if (loFormMain.InvokeRequired)
+      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
       {
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        loFormMain.Invoke(new UpdateMenusAndButtonsDelegate(this.UpdateMenusAndControls), tlEnable);
+        loDispatcher.Invoke(new UpdateMenusAndButtonsDelegate(this.UpdateMenusAndControls), tlEnable);
 
         return;
       }
 
       this.ResetViewControlsForFile();
 
-      loFormMain.ButtonCancel.Enabled = !tlEnable;
+      loMainWindow.ButtonCancel.IsEnabled = !tlEnable;
 
-      loFormMain.ButtonSave.Enabled = tlEnable;
-      loFormMain.ButtonRun.Enabled = tlEnable;
-      loFormMain.ButtonRemove.Enabled = tlEnable && (loFormMain.TabControl.SelectedIndex == 0);
+      loMainWindow.ButtonSave.IsEnabled = tlEnable;
+      loMainWindow.ButtonRun.IsEnabled = tlEnable;
+      loMainWindow.ButtonRemove.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
 
       // Let them interact with the tab controls: they can't run anything as
       // the run button is disabled when the cancel button is enabled.
       // So just toggle the text box for the directory and the ellipse button.
-      loFormMain.TextBoxDirectory.Enabled = !loFormMain.ButtonCancel.Enabled;
-      loFormMain.ButtonEllipse.Enabled = !loFormMain.ButtonCancel.Enabled;
+      loMainWindow.TextBoxDirectory.IsEnabled = !loMainWindow.ButtonCancel.IsEnabled;
+      loMainWindow.ButtonEllipse.IsEnabled = !loMainWindow.ButtonCancel.IsEnabled;
 
-      loFormMain.MenuItemCancel.Enabled = loFormMain.ButtonCancel.Enabled;
+      loMainWindow.MenuItemCancel.IsEnabled = loMainWindow.ButtonCancel.IsEnabled;
 
-      loFormMain.MenuItemFilesInGrid.Enabled = (loFormMain.TabControl.SelectedIndex == 1) && tlEnable;
-      loFormMain.MenuItemFilesInTreeview.Enabled = (loFormMain.TabControl.SelectedIndex == 1) && tlEnable;
+      loMainWindow.MenuItemFilesInGrid.IsEnabled = (loMainWindow.TabControl.SelectedIndex == 1) && tlEnable;
+      loMainWindow.MenuItemFilesInTreeview.IsEnabled = (loMainWindow.TabControl.SelectedIndex == 1) && tlEnable;
 
-      loFormMain.MenuItemSave.Enabled = loFormMain.ButtonSave.Enabled;
-      loFormMain.MenuItemRun.Enabled = loFormMain.ButtonRun.Enabled;
-      loFormMain.MenuItemRemove.Enabled = loFormMain.ButtonRemove.Enabled;
+      loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
+      loMainWindow.MenuItemRun.IsEnabled = loMainWindow.ButtonRun.IsEnabled;
+      loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
 
-      loFormMain.MenuItemOptions.Enabled = tlEnable;
+      loMainWindow.MenuItemOptions.IsEnabled = tlEnable;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
