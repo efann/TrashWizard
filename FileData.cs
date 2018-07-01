@@ -35,7 +35,8 @@ namespace TrashWizard
     public long Size;
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public FileData(string tcFullName, string tcName, bool tlFolder, int tnFolderLevel, DateTime tdModified, long tnSize,
+    public FileData(string tcFullName, string tcName, bool tlFolder, int tnFolderLevel, DateTime tdModified,
+      long tnSize,
       FileAttributes tnAttributes)
     {
       this.FullName = tcFullName;

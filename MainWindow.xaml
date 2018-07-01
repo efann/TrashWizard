@@ -7,62 +7,73 @@
         mc:Ignorable="d"
         Icon="images/icon/TrashWizard.ico"
         Title="Trash Wizard">
+
+  <Window.Resources>
+
+    <!--Styles for controls in a toolbar.-->
+    <Style x:Key="{x:Static ToolBar.SeparatorStyleKey}" TargetType="Separator">
+      <Setter Property="Background" Value="DarkBlue" />
+      <Setter Property="Width" Value="1" />
+    </Style>
+
+  </Window.Resources>
+
   <StackPanel VerticalAlignment="Top">
-    <Menu x:Name="menuMain1" Width="Auto" Height="20">
-      <MenuItem x:Name="menuItemFile1" Header="_File">
-        <MenuItem x:Name="menuItemSave1" Header="Save..." HorizontalAlignment="Left">
+    <Menu x:Name="MenuMain1" Width="Auto" Height="20">
+      <MenuItem x:Name="MenuItemFile1" Header="_File">
+        <MenuItem x:Name="MenuItemSave1" Header="Save..." HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/save.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="menuItemExit1" Header="E_xit" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemExit1" Header="E_xit" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/exit.png" />
           </MenuItem.Icon>
         </MenuItem>
       </MenuItem>
 
-      <MenuItem x:Name="menuItemAction1" Header="_Action">
-        <MenuItem x:Name="menuItemRun1" Header="Run" HorizontalAlignment="Left">
+      <MenuItem x:Name="MenuItemAction1" Header="_Action">
+        <MenuItem x:Name="MenuItemRun1" Header="Run" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/run.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="menuItemRemove1" Header="Remove" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemRemove1" Header="Remove" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/remove.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="menuItemCancel1" Header="Cancel" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemCancel1" Header="Cancel" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/cancel.png" />
           </MenuItem.Icon>
         </MenuItem>
       </MenuItem>
 
-      <MenuItem x:Name="menuItemView1" Header="_View">
-        <MenuItem x:Name="menuItemFilesInGrid1" Header="Files in Grid" HorizontalAlignment="Left" IsCheckable="True" />
+      <MenuItem x:Name="MenuItemView1" Header="_View">
+        <MenuItem x:Name="MenuItemFilesInGrid1" Header="Files in Grid" HorizontalAlignment="Left" IsCheckable="True" />
         <Separator />
-        <MenuItem x:Name="menuItemFilesInTreeview1" Header="Files in Treeview" HorizontalAlignment="Left"
+        <MenuItem x:Name="MenuItemFilesInTreeview1" Header="Files in Treeview" HorizontalAlignment="Left"
                   IsCheckable="True" />
       </MenuItem>
 
-      <MenuItem x:Name="menuItemTools1" Header="_Tools">
-        <MenuItem x:Name="menuItemOptions1" Header="Options..." HorizontalAlignment="Left">
+      <MenuItem x:Name="MenuItemTools1" Header="_Tools">
+        <MenuItem x:Name="MenuItemOptions1" Header="Options..." HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/options.png" />
           </MenuItem.Icon>
         </MenuItem>
-        <MenuItem x:Name="menuItemDriveInfo1" Header="Drive Info" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemDriveInfo1" Header="Drive Info" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/driveinfo.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="menuItemDiskCleanup1" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemDiskCleanup1" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/player_play.png" />
           </MenuItem.Icon>
@@ -70,34 +81,34 @@
 
       </MenuItem>
 
-      <MenuItem x:Name="menuItemHelp1" Header="_Help">
-        <MenuItem x:Name="menuItemHomePage1" Header="Home Page" HorizontalAlignment="Left">
+      <MenuItem x:Name="MenuItemHelp1" Header="_Help">
+        <MenuItem x:Name="MenuItemHomePage1" Header="Home Page" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/home.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="menuItemHelpDocumentation1" Header="Help Documentation" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemHelpDocumentation1" Header="Help Documentation" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/bookcase.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="menuItemCheckForUpdates1" Header="Check for Updates..." HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemCheckForUpdates1" Header="Check for Updates..." HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/updates.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="menuItemCredits1" Header="Credits" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemCredits1" Header="Credits" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/credits.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="menuItemAbout1" Header="About" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemAbout1" Header="About" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="images/about.png" />
           </MenuItem.Icon>
@@ -107,43 +118,55 @@
     </Menu>
     <ToolBarTray DockPanel.Dock="Top">
       <ToolBar>
-        <Button x:Name="btnRun1" ToolTip="Run the search for files." ToolBar.OverflowMode="AsNeeded">
+        <Button x:Name="BtnRun1" ToolTip="Run the search for files." ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
           <Image Source="images/run.png" />
         </Button>
-        <Button x:Name="btnSave1" ToolTip="Save the log files." ToolBar.OverflowMode="AsNeeded">
+        <Button x:Name="BtnSave1" ToolTip="Save the log files." ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
           <Image Source="images/save.png" />
         </Button>
-        <Button x:Name="btnRemove1" ToolTip="Remove the display files." ToolBar.OverflowMode="AsNeeded">
+        <Button x:Name="BtnRemove1" ToolTip="Remove the display files." ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
           <Image Source="images/remove.png" />
         </Button>
         <Separator />
-        <Button x:Name="btnCancel1" ToolTip="Cancel the current operations."
-                ToolBar.OverflowMode="AsNeeded">
+        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations."
+                ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
           <Image Source="images/cancel.png" />
         </Button>
       </ToolBar>
     </ToolBarTray>
-    <TabControl x:Name="tabControl1" />
-    <TabItem Header="Temporary Files">
-      <StackPanel>
-        <CheckBox x:Name="chkIncludeTempFiles" />
-        <CheckBox x:Name="chkIncludeRecycle" />
-        <CheckBox x:Name="chkIncludeBrowserCaches" />
-        <CheckBox x:Name="chkIncludeAdobeCaches" />
-        <CheckBox x:Name="chkIncludeOfficeSuitesCaches" />
+    <TabControl x:Name="TabControl1" Cursor="Arrow">
+      <TabItem Header="Temporary Files" Cursor="Hand">
+        <StackPanel Margin="8" Orientation="Vertical">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="25" />
+              <RowDefinition Height="25" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="200" />
+              <ColumnDefinition Width="200" />
+              <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="listBox1" />
-      </StackPanel>
-    </TabItem>
-    <TabItem Header="Files">
-      <StackPanel>
-        <TextBox x:Name="txtDirectory1" />
-        <Button x:Name="btnOpenFolder1">
-          <Image Source="images/folder_open.png" />
-        </Button>
-        <TreeView x:Name="treeViewForFile1"></TreeView>
-        <DataGrid x:Name="gridViewForFile1" />
-      </StackPanel>
-    </TabItem>
+            <CheckBox x:Name="ChkIncludeTempFiles" Cursor="Hand" Grid.Row="0" Grid.Column="0">Temporary Files?</CheckBox>
+            <CheckBox x:Name="ChkIncludeBrowserCaches" Cursor="Hand" Grid.Row="1" Grid.Column="0">Browser caches?</CheckBox>
+            <CheckBox x:Name="ChkIncludeAdobeCaches" Cursor="Hand" Grid.Row="0" Grid.Column="1">Adobe caches?</CheckBox>
+            <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Cursor="Hand" Grid.Row="1" Grid.Column="1">Office Suite caches?</CheckBox>
+            <CheckBox x:Name="ChkIncludeRecycle" Cursor="Hand" Grid.Row="0" Grid.Column="2">Recycle Bin contents?</CheckBox>
+          </Grid>
+          <ListBox x:Name="ListBox1" />
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Files" Cursor="Hand">
+        <StackPanel Cursor="Arrow">
+          <TextBox x:Name="TxtDirectory1" />
+          <Button x:Name="BtnOpenFolder1">
+            <Image Source="images/folder_open.png" />
+          </Button>
+          <TreeView x:Name="TreeViewForFile1" />
+          <DataGrid x:Name="GridViewForFile1" />
+        </StackPanel>
+      </TabItem>
+    </TabControl>
   </StackPanel>
 </Window>

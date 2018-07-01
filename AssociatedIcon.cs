@@ -55,7 +55,7 @@ namespace TrashWizard
         }
       }
 
-      string lcFolder = Util.GetWindowsDirectory();
+      var lcFolder = Util.GetWindowsDirectory();
 
       if (!toImageList.Images.ContainsKey(AssociatedIcon.STANDARD_FOLDER))
       {
@@ -69,7 +69,7 @@ namespace TrashWizard
         }
       }
 
-      string lcRoot = Path.GetPathRoot(lcFolder);
+      var lcRoot = Path.GetPathRoot(lcFolder);
 
       if (!toImageList.Images.ContainsKey(AssociatedIcon.ROOT_DRIVE))
       {
@@ -88,14 +88,14 @@ namespace TrashWizard
     [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
     public static Icon GetSystemIcon(string tcFileName)
     {
-      ShFileInfo loShInfo = new ShFileInfo();
+      var loShInfo = new ShFileInfo();
 
       // Use Win32.SHGFI_USEFILEATTRIBUTES. That way, if for some reason SHGetFileInfo can't
       // find the file, like in the C:\RECYCLER folder, a default icon will still be returned.
       // Otherwise, shinfo.hIcon will be null and will throw a system error which is
       // now covered.
       // By the way, lhImgSmall is the handle to the system image list.
-      IntPtr lhImgSmall = NativeMethods.ShGetFileInfoVisible(tcFileName,
+      var lhImgSmall = NativeMethods.ShGetFileInfoVisible(tcFileName,
         Util.IsFolder(tcFileName) ? Windows32.FILE_ATTRIBUTE_DIRECTORY : 0,
         ref loShInfo,
         (uint) Marshal.SizeOf(loShInfo),
@@ -117,7 +117,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static void UpdateNodeImage(ImageList toImageList, TreeNode toNode, bool tlFolder, string tcFullPath)
     {
-      string lcOverrideKey = "";
+      var lcOverrideKey = "";
       if (tlFolder)
       {
         lcOverrideKey = Util.IsDriveRoot(Util.BuildPathFromNode(toNode))
@@ -125,7 +125,7 @@ namespace TrashWizard
           : AssociatedIcon.STANDARD_FOLDER;
       }
 
-      string lcImage = Util.GetImageKey(toImageList, tcFullPath, lcOverrideKey);
+      var lcImage = Util.GetImageKey(toImageList, tcFullPath, lcOverrideKey);
 
       toNode.ImageKey = lcImage;
       toNode.SelectedImageKey = lcImage;

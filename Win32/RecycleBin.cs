@@ -25,17 +25,17 @@ namespace TrashWizard.Win32
 
   public class RecycleBinInfo
   {
-    public long Items;
     public long Bytes;
+    public long Items;
   }
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
 
-  class RecycleBin
+  internal class RecycleBin
   {
-    private static String CURRENT_ERROR = "";
-    private static int CURRENT_RESULT = 0;
+    private static string CURRENT_ERROR = "";
+    private static int CURRENT_RESULT;
 
     // ---------------------------------------------------------------------------------------------------------------------
 
@@ -46,7 +46,8 @@ namespace TrashWizard.Win32
 
       try
       {
-        RecycleBin.CURRENT_RESULT = NativeMethods.ShEmptyRecycleBinVisible(IntPtr.Zero, null, Windows32.SHERB_NOCONFIRMATION);
+        RecycleBin.CURRENT_RESULT =
+          NativeMethods.ShEmptyRecycleBinVisible(IntPtr.Zero, null, Windows32.SHERB_NOCONFIRMATION);
       }
       catch (Exception loErr)
       {
@@ -65,7 +66,7 @@ namespace TrashWizard.Win32
       long lnBytes = 0;
       long lnItems = 0;
 
-      BaseRecycleBinShell loShell = (IntPtr.Size == 4) ? (BaseRecycleBinShell)new RecycleBinShell32() : (BaseRecycleBinShell)new RecycleBinShell64();
+      var loShell = IntPtr.Size == 4 ? new RecycleBinShell32() : (BaseRecycleBinShell) new RecycleBinShell64();
 
       try
       {
@@ -76,7 +77,7 @@ namespace TrashWizard.Win32
         }
 
         lnItems = loShell.GetItems();
-        lnBytes = loShell.GetBytes(); 
+        lnBytes = loShell.GetBytes();
 
 
         // Apparently there's a bug in Windows 2000 where null for the root path
@@ -87,11 +88,10 @@ namespace TrashWizard.Win32
           lnItems = 0;
           lnBytes = 0;
 
-          String[] laDrives = Util.GetFixedDrives();
-          int lnDrives = laDrives.Length;
-          for (int i = 0; i < lnDrives; ++i)
+          var laDrives = Util.GetFixedDrives();
+          var lnDrives = laDrives.Length;
+          for (var i = 0; i < lnDrives; ++i)
           {
-
             RecycleBin.CURRENT_RESULT = loShell.QueryRecycleBin(laDrives[i]);
             if (RecycleBin.CURRENT_RESULT != 0)
             {
@@ -100,7 +100,6 @@ namespace TrashWizard.Win32
 
             lnItems += loShell.GetItems();
             lnBytes += loShell.GetBytes();
-
           }
         }
       }
@@ -109,32 +108,32 @@ namespace TrashWizard.Win32
         RecycleBin.CURRENT_ERROR = loErr.Message;
       }
 
-      RecycleBinInfo loInfo = new RecycleBinInfo
+      var loInfo = new RecycleBinInfo
       {
         Items = lnItems,
         Bytes = lnBytes
       };
 
-      return (loInfo);
+      return loInfo;
     }
     // ---------------------------------------------------------------------------------------------------------------------
 
-    public static String GetLastError()
+    public static string GetLastError()
     {
-      return (RecycleBin.CURRENT_ERROR.Trim());
+      return RecycleBin.CURRENT_ERROR.Trim();
     }
     // ---------------------------------------------------------------------------------------------------------------------
 
     public static int GetLastResult()
     {
-      return (RecycleBin.CURRENT_RESULT);
+      return RecycleBin.CURRENT_RESULT;
     }
+
     // ---------------------------------------------------------------------------------------------------------------------
-
   }
-  // ---------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------
 
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
 }
 // ---------------------------------------------------------------------------------------------------------------------

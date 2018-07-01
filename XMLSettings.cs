@@ -26,15 +26,16 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public XmlSettings()
       : base(Util.XML_USER_SETTINGS, false)
-    {}
+    {
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, string tcValue)
     {
-      XmlElement loNode = this.GetChildElementNode(tcParent, tcChild);
+      var loNode = this.GetChildElementNode(tcParent, tcChild);
 
       loNode.RemoveAll();
-      XmlText loTextNode = this.foXMLDocument.CreateTextNode(tcValue);
+      var loTextNode = this.foXMLDocument.CreateTextNode(tcValue);
 
       loNode.AppendChild(loTextNode);
     }
@@ -42,7 +43,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public string ReadSetting(string tcParent, string tcChild, string tcDefaultValue)
     {
-      string lcValue = this.FindTextValue(tcParent, tcChild);
+      var lcValue = this.FindTextValue(tcParent, tcChild);
       if (lcValue.Length == 0)
       {
         lcValue = tcDefaultValue;
@@ -54,10 +55,10 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, bool tlValue)
     {
-      XmlElement loNode = this.GetChildElementNode(tcParent, tcChild);
+      var loNode = this.GetChildElementNode(tcParent, tcChild);
 
       loNode.RemoveAll();
-      XmlText loTextNode = this.foXMLDocument.CreateTextNode(tlValue.ToString());
+      var loTextNode = this.foXMLDocument.CreateTextNode(tlValue.ToString());
 
       loNode.AppendChild(loTextNode);
     }
@@ -65,9 +66,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public bool ReadSetting(string tcParent, string tcChild, bool tlDefaultValue)
     {
-      bool llValue = tlDefaultValue;
+      var llValue = tlDefaultValue;
 
-      string lcValue = this.FindTextValue(tcParent, tcChild);
+      var lcValue = this.FindTextValue(tcParent, tcChild);
       try
       {
         llValue = bool.Parse(lcValue);
@@ -83,10 +84,10 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, int tnValue)
     {
-      XmlElement loNode = this.GetChildElementNode(tcParent, tcChild);
+      var loNode = this.GetChildElementNode(tcParent, tcChild);
 
       loNode.RemoveAll();
-      XmlText loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString());
+      var loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString());
 
       loNode.AppendChild(loTextNode);
     }
@@ -94,9 +95,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public int ReadSetting(string tcParent, string tcChild, int tnDefaultValue)
     {
-      int lnValue = tnDefaultValue;
+      var lnValue = tnDefaultValue;
 
-      string lcValue = this.FindTextValue(tcParent, tcChild);
+      var lcValue = this.FindTextValue(tcParent, tcChild);
       try
       {
         lnValue = int.Parse(lcValue);
@@ -112,10 +113,10 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, double tnValue)
     {
-      XmlElement loNode = this.GetChildElementNode(tcParent, tcChild);
+      var loNode = this.GetChildElementNode(tcParent, tcChild);
 
       loNode.RemoveAll();
-      XmlText loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString());
+      var loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString());
 
       loNode.AppendChild(loTextNode);
     }
@@ -123,9 +124,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public double ReadSetting(string tcParent, string tcChild, double tnDefaultValue)
     {
-      double lnValue = tnDefaultValue;
+      var lnValue = tnDefaultValue;
 
-      string lcValue = this.FindTextValue(tcParent, tcChild);
+      var lcValue = this.FindTextValue(tcParent, tcChild);
       try
       {
         lnValue = double.Parse(lcValue);
@@ -144,7 +145,7 @@ namespace TrashWizard
       XmlElement loChild = null;
       XmlElement loParent = null;
 
-      string lcText = "";
+      var lcText = "";
       if ((loParent = this.FindNode(this.foRootNode, tcParent)) == null)
       {
         return lcText;
@@ -157,7 +158,7 @@ namespace TrashWizard
 
       if (loChild != null)
       {
-        XmlNode loFirstChild = loChild.FirstChild;
+        var loFirstChild = loChild.FirstChild;
         if (loFirstChild != null)
         {
           if (loFirstChild.NodeType == XmlNodeType.Text)
@@ -173,12 +174,12 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private XmlElement FindNode(XmlNode toNode, string tcFindNodeName)
     {
-      XmlNodeList loList = toNode.ChildNodes;
-      int lnCount = loList.Count;
+      var loList = toNode.ChildNodes;
+      var lnCount = loList.Count;
 
       XmlElement loFindNode = null;
 
-      for (int i = 0; i < lnCount; ++i)
+      for (var i = 0; i < lnCount; ++i)
       {
         if (loList.Item(i).Name == tcFindNodeName)
         {

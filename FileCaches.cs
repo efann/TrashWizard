@@ -91,11 +91,11 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static List<DirectoryInfo> BuildDirectoryInfo(string[] taDirectoryAliases)
     {
-      List<DirectoryInfo> loDirectoryInfo = new List<DirectoryInfo>();
+      var loDirectoryInfo = new List<DirectoryInfo>();
 
-      foreach (string lcAliasDirectory in taDirectoryAliases)
+      foreach (var lcAliasDirectory in taDirectoryAliases)
       {
-        string lcDirectory = FileCaches.ConvertDirectoryAlias(lcAliasDirectory);
+        var lcDirectory = FileCaches.ConvertDirectoryAlias(lcAliasDirectory);
         if (Directory.Exists(lcDirectory))
         {
           loDirectoryInfo.Add(new DirectoryInfo(lcDirectory));
@@ -108,10 +108,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private static string ConvertDirectoryAlias(string tcDirectory)
     {
-      string lcDirectory = tcDirectory.
-        Replace(FileCaches.LOCAL_APP_DATA, FileCaches.ENV_LOCAL_APP_DATA).
-        Replace(FileCaches.USER_PROFILE, FileCaches.ENV_USER_PROFILE).
-        Replace(FileCaches.APPLICATION_DATA, FileCaches.ENV_APPLICATION_DATA);
+      var lcDirectory = tcDirectory.Replace(FileCaches.LOCAL_APP_DATA, FileCaches.ENV_LOCAL_APP_DATA)
+        .Replace(FileCaches.USER_PROFILE, FileCaches.ENV_USER_PROFILE)
+        .Replace(FileCaches.APPLICATION_DATA, FileCaches.ENV_APPLICATION_DATA);
 
       return lcDirectory;
     }

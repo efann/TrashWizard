@@ -39,8 +39,6 @@ namespace TrashWizard
 
     private readonly string fcFileName;
 
-    private int fnIndexTrack;
-
     private XmlTextReader foXmlTextReader;
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -49,10 +47,7 @@ namespace TrashWizard
       this.fcFileName = tcFileName;
     }
 
-    public int IndexTrack
-    {
-      get { return this.fnIndexTrack; }
-    }
+    public int IndexTrack { get; private set; }
 
     // ---------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------------
@@ -66,7 +61,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void ResetVariables()
     {
-      this.fnIndexTrack = 0;
+      this.IndexTrack = 0;
       if (this.foXmlTextReader != null)
       {
         if (this.foXmlTextReader.ReadState == ReadState.Closed)
@@ -74,6 +69,7 @@ namespace TrashWizard
           this.foXmlTextReader.Close();
         }
       }
+
       this.foXmlTextReader = null;
     }
 
@@ -82,16 +78,16 @@ namespace TrashWizard
     {
       try
       {
-        XmlTextWriter loXmlTextWriter = new XmlTextWriter(this.fcFileName, Encoding.UTF8)
+        var loXmlTextWriter = new XmlTextWriter(this.fcFileName, Encoding.UTF8)
         {
           Formatting = Formatting.Indented
         };
 
-        this.fnIndexTrack = 0;
+        this.IndexTrack = 0;
         loXmlTextWriter.WriteStartDocument();
         loXmlTextWriter.WriteStartElement(this.GetType().ToString());
 
-        foreach (FileData loFileData in toFileListData)
+        foreach (var loFileData in toFileListData)
         {
           loXmlTextWriter.WriteStartElement(XmlFileInformation.XML_TAG_ELEMENT);
 
@@ -103,11 +99,12 @@ namespace TrashWizard
           loXmlTextWriter.WriteAttributeString(XmlFileInformation.XML_TAG_ATTRIBUTES,
             ((int) loFileData.Attributes).ToString());
           loXmlTextWriter.WriteAttributeString(XmlFileInformation.XML_TAG_SIZE, loFileData.Size.ToString());
-          loXmlTextWriter.WriteAttributeString(XmlFileInformation.XML_TAG_FOLDERLEVEL, loFileData.FolderLevel.ToString());
+          loXmlTextWriter.WriteAttributeString(XmlFileInformation.XML_TAG_FOLDERLEVEL,
+            loFileData.FolderLevel.ToString());
 
           loXmlTextWriter.WriteEndElement();
 
-          this.fnIndexTrack++;
+          this.IndexTrack++;
         }
 
         loXmlTextWriter.WriteEndElement();
@@ -129,11 +126,11 @@ namespace TrashWizard
     {
       if (this.foXmlTextReader == null)
       {
-        this.fnIndexTrack = 0;
+        this.IndexTrack = 0;
         this.foXmlTextReader = new XmlTextReader(this.fcFileName);
       }
 
-      XmlTextReader loReader = this.foXmlTextReader;
+      var loReader = this.foXmlTextReader;
       if (loReader.ReadState == ReadState.Closed)
       {
         return null;
@@ -146,20 +143,19 @@ namespace TrashWizard
           this.foXmlTextReader.Close();
           return null;
         }
-      }
-      while (loReader.Name.CompareTo(XmlFileInformation.XML_TAG_ELEMENT) != 0);
+      } while (loReader.Name.CompareTo(XmlFileInformation.XML_TAG_ELEMENT) != 0);
 
       try
       {
-        this.fnIndexTrack++;
+        this.IndexTrack++;
 
-        string lcFullName = loReader.GetAttribute(XmlFileInformation.XML_TAG_FULLNAME);
-        string lcName = loReader.GetAttribute(XmlFileInformation.XML_TAG_NAME);
-        bool llFolder = bool.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_FOLDER));
-        int lnFolderLevel = int.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_FOLDERLEVEL));
-        DateTime ldModified = new DateTime(long.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_MODIFIED)));
-        long lnFileSize = long.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_SIZE));
-        FileAttributes lnFileAttributes =
+        var lcFullName = loReader.GetAttribute(XmlFileInformation.XML_TAG_FULLNAME);
+        var lcName = loReader.GetAttribute(XmlFileInformation.XML_TAG_NAME);
+        var llFolder = bool.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_FOLDER));
+        var lnFolderLevel = int.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_FOLDERLEVEL));
+        var ldModified = new DateTime(long.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_MODIFIED)));
+        var lnFileSize = long.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_SIZE));
+        var lnFileAttributes =
           (FileAttributes) int.Parse(loReader.GetAttribute(XmlFileInformation.XML_TAG_ATTRIBUTES));
 
         return new FileData(lcFullName, lcName, llFolder, lnFolderLevel, ldModified, lnFileSize, lnFileAttributes);
@@ -207,6 +203,7 @@ namespace TrashWizard
 
         this.CleanUpFiles();
       }
+
       // free native resources if there are any.
     }
 

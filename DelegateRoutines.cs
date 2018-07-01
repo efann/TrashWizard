@@ -14,11 +14,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Forms;
 using TrashWizard.Win32;
+using Cursor = System.Windows.Input.Cursor;
 
 // I designed this class to just de-clutter FormMain.
 // ---------------------------------------------------------------------------------------------------------------------
@@ -40,9 +39,6 @@ namespace TrashWizard
 
     private readonly DataTable foDataTable = new DataTable();
 
-    private readonly FileInformation foFileInformationForFile;
-    private readonly FileInformation foFileInformationForTemporary;
-
     private readonly MainWindow foMainWindow;
 
     // These need to be in reverse order to remove sub-directories correctly.
@@ -56,35 +52,23 @@ namespace TrashWizard
     {
       this.foMainWindow = toMainWindow;
 
-      UserSettings loUserSettings = this.foMainWindow.UserSettings;
+      var loUserSettings = this.foMainWindow.UserSettings;
 
-      this.foFileInformationForFile = new FileInformation(Util.XML_FILE_LISTING,
+      this.FileInformationForFile = new FileInformation(Util.XML_FILE_LISTING,
         loUserSettings.GetOptionsFormShowAlertForFile(), loUserSettings.GetOptionsFormShowFileSizeForFile(),
         loUserSettings.GetOptionsFormFileSizeTypeForFile(), loUserSettings.GetOptionsFormShowFileDateForFile(),
         loUserSettings.GetOptionsFormFileDateTypeForFile(), loUserSettings.GetOptionsFormShowFileAttributesForFile());
-      this.foFileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING,
+      this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING,
         loUserSettings.GetOptionsFormShowAlertForTemporary());
     }
 
-    public FileInformation FileInformationForFile
-    {
-      get { return this.foFileInformationForFile; }
-    }
+    public FileInformation FileInformationForFile { get; }
 
-    public FileInformation FileInformationForTemporary
-    {
-      get { return this.foFileInformationForTemporary; }
-    }
+    public FileInformation FileInformationForTemporary { get; }
 
-    public int FilesDisplayedForFile
-    {
-      get { return this.foFileInformationForFile.XmlFileInformation.IndexTrack; }
-    }
+    public int FilesDisplayedForFile => this.FileInformationForFile.XmlFileInformation.IndexTrack;
 
-    public int FilesDisplayedForTemporary
-    {
-      get { return this.foFileInformationForTemporary.XmlFileInformation.IndexTrack; }
-    }
+    public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
 
     // ---------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------------
@@ -93,14 +77,15 @@ namespace TrashWizard
     {
       this.foDataTable?.Dispose();
 
-      this.foFileInformationForFile?.Dispose();
+      this.FileInformationForFile?.Dispose();
 
-      this.foFileInformationForTemporary?.Dispose();
+      this.FileInformationForTemporary?.Dispose();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public void ResetViewControlsForFile()
     {
+      /*
       MainWindow loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
 
@@ -131,6 +116,7 @@ namespace TrashWizard
 
         loMainWindow.TreeViewForFile.Visible = false;
       }
+      */
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -152,13 +138,13 @@ namespace TrashWizard
         return;
       }
 
-      this.foFileInformationForFile.XmlFileInformation.ResetVariables();
+      this.FileInformationForFile.XmlFileInformation.ResetVariables();
 
-      this.foMainWindow.TreeViewForFile.Nodes.Clear();
+      //this.foMainWindow.TreeViewForFile.Nodes.Clear();
       this.foMainWindow.GridViewForFile.Columns.Clear();
 
-      UserSettings loUserSettings = this.foMainWindow.UserSettings;
-      this.foFileInformationForFile.ResetVariables(loUserSettings.GetOptionsFormShowAlertForFile(),
+      var loUserSettings = this.foMainWindow.UserSettings;
+      this.FileInformationForFile.ResetVariables(loUserSettings.GetOptionsFormShowAlertForFile(),
         loUserSettings.GetOptionsFormShowFileSizeForFile(), loUserSettings.GetOptionsFormFileSizeTypeForFile(),
         loUserSettings.GetOptionsFormShowFileDateForFile(), loUserSettings.GetOptionsFormFileDateTypeForFile(),
         loUserSettings.GetOptionsFormShowFileAttributesForFile());
@@ -187,9 +173,9 @@ namespace TrashWizard
         return;
       }
 
-      this.foFileInformationForTemporary.XmlFileInformation.ResetVariables();
-      UserSettings loUserSettings = this.foMainWindow.UserSettings;
-      this.foFileInformationForTemporary.ResetVariables(loUserSettings.GetOptionsFormShowAlertForTemporary());
+      this.FileInformationForTemporary.XmlFileInformation.ResetVariables();
+      var loUserSettings = this.foMainWindow.UserSettings;
+      this.FileInformationForTemporary.ResetVariables(loUserSettings.GetOptionsFormShowAlertForTemporary());
 
       this.foTemporaryFileList.Clear();
 
@@ -200,7 +186,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateControlForTemporary()
     {
-      MainWindow loMainWindow = this.foMainWindow;
+      var loMainWindow = this.foMainWindow;
 
       this.UpdateListBox("");
       this.UpdateListBox("The following files were located:");
@@ -210,15 +196,15 @@ namespace TrashWizard
 
       while (loMainWindow.IsThreadRunning())
       {
-        FileData loFileData = this.FileInformationForTemporary.XmlFileInformation.ReadFileData();
+        var loFileData = this.FileInformationForTemporary.XmlFileInformation.ReadFileData();
         if (loFileData == null)
         {
           break;
         }
 
-        bool llFolder = loFileData.IsFolder;
-        int lnFolderLevel = loFileData.FolderLevel;
-        string lcFile = loFileData.FullName;
+        var llFolder = loFileData.IsFolder;
+        var lnFolderLevel = loFileData.FolderLevel;
+        var lcFile = loFileData.FullName;
 
         // Do NOT add the root directories to this list: they need to remain on the hard drive.
         if (llFolder && (lnFolderLevel == 0))
@@ -236,7 +222,7 @@ namespace TrashWizard
         {
         }
 
-        bool llReadOnly = (loFileData.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+        var llReadOnly = (loFileData.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
         this.UpdateListBox(lcFile + (llReadOnly ? " (Read Only)" : ""));
       }
 
@@ -245,11 +231,11 @@ namespace TrashWizard
                          Util.formatBytes_Actual(lnTotalSize) + ")");
       this.UpdateListBox("");
 
-      bool llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
+      var llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
       if (llRecycleBin)
       {
-        RecycleBinInfo loInfo = RecycleBin.GetRecycleBinInfo();
-        string lcError = RecycleBin.GetLastError();
+        var loInfo = RecycleBin.GetRecycleBinInfo();
+        var lcError = RecycleBin.GetLastError();
 
         this.UpdateListBox("Recycle Bin Info:");
 
@@ -268,16 +254,14 @@ namespace TrashWizard
         this.UpdateListBox("");
       }
 
-      DriveInfo[] laDrives = DriveInfo.GetDrives();
-      foreach (DriveInfo loDrive in laDrives)
-      {
+      var laDrives = DriveInfo.GetDrives();
+      foreach (var loDrive in laDrives)
         if (loDrive.DriveType == DriveType.Fixed)
         {
           this.UpdateListBox(loDrive.RootDirectory + " (free space): " +
                              Util.formatBytes_GB_MB_KB(loDrive.TotalFreeSpace) + " (" +
                              Util.formatBytes_Actual(loDrive.TotalFreeSpace) + ")");
         }
-      }
 
       this.UpdateListBox("");
 
@@ -291,13 +275,11 @@ namespace TrashWizard
 
       long lnCurrentFreeSpace = 0;
       laDrives = DriveInfo.GetDrives();
-      foreach (DriveInfo loDrive in laDrives)
-      {
+      foreach (var loDrive in laDrives)
         if (loDrive.DriveType == DriveType.Fixed)
         {
           lnCurrentFreeSpace += loDrive.TotalFreeSpace;
         }
-      }
 
       this.UpdateListBox("");
 
@@ -305,16 +287,14 @@ namespace TrashWizard
 
       // First display any files that have, for whatever reason,
       // already been removed.
-      foreach (string lcFile in this.foTemporaryFileList.Values)
-      {
+      foreach (var lcFile in this.foTemporaryFileList.Values)
         if (!File.Exists(lcFile) && !Directory.Exists(lcFile))
         {
           this.UpdateListBox("Already removed " + lcFile);
         }
-      }
 
       // Now get rid of the files if possible.
-      foreach (string lcFile in this.foTemporaryFileList.Values)
+      foreach (var lcFile in this.foTemporaryFileList.Values)
       {
         if (Directory.Exists(lcFile))
         {
@@ -325,10 +305,10 @@ namespace TrashWizard
         {
           if (File.Exists(lcFile))
           {
-            FileInfo loFileInfo = new FileInfo(lcFile);
-            long lnSizeTemp = loFileInfo.Length;
+            var loFileInfo = new FileInfo(lcFile);
+            var lnSizeTemp = loFileInfo.Length;
 
-            bool llReadOnly = (File.GetAttributes(lcFile) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+            var llReadOnly = (File.GetAttributes(lcFile) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
             if (llReadOnly)
             {
               File.SetAttributes(lcFile, FileAttributes.Normal);
@@ -349,8 +329,7 @@ namespace TrashWizard
       }
 
       // Now get rid of the sub-directories if possible.
-      foreach (string lcFile in this.foTemporaryFileList.Values)
-      {
+      foreach (var lcFile in this.foTemporaryFileList.Values)
         if (Directory.Exists(lcFile))
         {
           try
@@ -363,15 +342,14 @@ namespace TrashWizard
             this.UpdateListBox("Unable to remove directory " + lcFile);
           }
         }
-      }
 
-      bool llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
+      var llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
       if (llRecycleBin)
       {
         RecycleBin.EmptyRecycleBin();
 
-        RecycleBinInfo loInfo = RecycleBin.GetRecycleBinInfo();
-        string lcError = RecycleBin.GetLastError();
+        var loInfo = RecycleBin.GetRecycleBinInfo();
+        var lcError = RecycleBin.GetLastError();
 
         this.UpdateListBox("Recycle Bin Info:");
 
@@ -395,16 +373,14 @@ namespace TrashWizard
 
       laDrives = DriveInfo.GetDrives();
       long lnNewFreeSpace = 0;
-      foreach (DriveInfo loDrive in laDrives)
-      {
+      foreach (var loDrive in laDrives)
         if (loDrive.DriveType == DriveType.Fixed)
         {
-          long lnFree = loDrive.TotalFreeSpace;
+          var lnFree = loDrive.TotalFreeSpace;
           lnNewFreeSpace += lnFree;
           this.UpdateListBox(loDrive.RootDirectory + " (free space): " + Util.formatBytes_GB_MB_KB(lnFree) + " (" +
                              Util.formatBytes_Actual(lnFree) + ")");
         }
-      }
 
       this.UpdateListBox("");
       this.UpdateListBox("Total Removed (Temporary Files" + (llRecycleBin ? " & Recycle Bin" : " only") + "):");
@@ -433,6 +409,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateGridFromList()
     {
+      /*
       var loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
 
@@ -571,10 +548,10 @@ namespace TrashWizard
         // On every folder appears to do just fine.
         if (llFolder)
         {
-          Application.DoEvents();
+          Application.Current.DoEvents();
         }
       }
-
+*/
       GC.Collect();
       GC.WaitForPendingFinalizers();
     }
@@ -582,6 +559,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateTreeViewFromList(TreeNode toParentNode)
     {
+      /*
       MainWindow loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
 
@@ -645,7 +623,7 @@ namespace TrashWizard
       }
 
       laFolderNodes = null;
-
+*/
       GC.Collect();
       GC.WaitForPendingFinalizers();
     }
@@ -676,7 +654,7 @@ namespace TrashWizard
 
     public void UpdateFormCursors(Cursor toCursor)
     {
-      MainWindow loMainWindow = this.foMainWindow;
+      var loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
 
       // This results in a recursive call. If updateUI is not being called from the
@@ -696,23 +674,27 @@ namespace TrashWizard
       loMainWindow.Cursor = toCursor;
       // Set all of the top level components in the form. By the way, this does
       // not cascade down through each container.
+      /*
       foreach (Control loControl in loMainWindow.Controls)
       {
         loControl.Cursor = toCursor;
       }
-
+*/
       // Since these containers have active components, I want an AppStarting cursor
       // to appear instead of the hour glass cursor.
+
+      /*
       loMainWindow.TreeViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
       loMainWindow.GridViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
 
       loMainWindow.ListBox.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
       loMainWindow.MenuStrip.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
+      */
     }
 
     public void UpdateMenusAndControls(bool tlEnable)
     {
-      MainWindow loMainWindow = this.foMainWindow;
+      var loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
 
       // This results in a recursive call. If updateUI is not being called from the

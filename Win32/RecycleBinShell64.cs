@@ -14,6 +14,7 @@
  */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -26,11 +27,11 @@ namespace TrashWizard.Win32
 
   public class RecycleBinShell64 : BaseRecycleBinShell
   {
-    ShQueryrbInfo64Bit foStructure64Bit;
+    private ShQueryrbInfo64Bit foStructure64Bit;
 
     // ---------------------------------------------------------------------------------------------------------------------
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security",
+    [SuppressMessage("Microsoft.Security",
       "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
     public RecycleBinShell64()
     {
@@ -43,7 +44,7 @@ namespace TrashWizard.Win32
 
     public override int QueryRecycleBin(string tszRootPath)
     {
-      int lnResult = 0;
+      var lnResult = 0;
       this.Bytes = 0;
       this.Items = 0;
 
@@ -59,7 +60,7 @@ namespace TrashWizard.Win32
         // ignored
       }
 
-      return (lnResult);
+      return lnResult;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

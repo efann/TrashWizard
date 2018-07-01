@@ -64,7 +64,10 @@ namespace TrashWizard
 
     // By the way, you can't use the temporary folder 'cause that's where Trash Wizard removes files.
     public static readonly string XML_USER_SETTINGS = Util.DATA_FOLDER + Environment.UserName + ".Settings.xml";
-    public static readonly string XML_TEMP_FILE_LISTING = Util.DATA_FOLDER + Environment.UserName + ".TempFileListing.xml";
+
+    public static readonly string XML_TEMP_FILE_LISTING =
+      Util.DATA_FOLDER + Environment.UserName + ".TempFileListing.xml";
+
     public static readonly string XML_FILE_LISTING = Util.DATA_FOLDER + Environment.UserName + ".FileListing.xml";
 
     public static string HOME_PAGE_FOR_APPLICATION = @"http://trashwizard.sourceforge.net/";
@@ -75,10 +78,7 @@ namespace TrashWizard
     private static string[] FIXED_DRIVES;
 
 
-    public static int WindowRegisterId
-    {
-      get { return Util.WINDOW_REGISTER_ID; }
-    }
+    public static int WindowRegisterId => Util.WINDOW_REGISTER_ID;
 
     // ---------------------------------------------------------------------------------------------------------------------
     public static void InfoMessage(string tcMessage)
@@ -95,7 +95,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static bool YesNo(string tcMessage)
     {
-      DialogResult lnResult = Util.DialogMessageBox(tcMessage, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+      var lnResult = Util.DialogMessageBox(tcMessage, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
       return lnResult == DialogResult.Yes;
     }
@@ -106,7 +106,7 @@ namespace TrashWizard
       Form loForm = null;
       try
       {
-        FormCollection loFormCollection = Application.OpenForms;
+        var loFormCollection = Application.OpenForms;
         if ((loFormCollection != null) && (loFormCollection.Count > 0))
         {
           loForm = loFormCollection[loFormCollection.Count - 1];
@@ -126,7 +126,7 @@ namespace TrashWizard
         // ignored
       }
 
-      string lcCaption = loForm != null ? loForm.Text : "";
+      var lcCaption = loForm != null ? loForm.Text : "";
 
       return MessageBox.Show(loForm, tcMessage, lcCaption, toButtons, toIcon);
     }
@@ -134,7 +134,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string AddBs(string tcPath)
     {
-      string lcBackSlash = Path.DirectorySeparatorChar.ToString();
+      var lcBackSlash = Path.DirectorySeparatorChar.ToString();
 
       if (tcPath.EndsWith(lcBackSlash))
       {
@@ -169,8 +169,8 @@ namespace TrashWizard
     public static string GetWindowsDirectory()
     {
       const int MAX_PATH_LENGTH = 255;
-      StringBuilder loStringBuilder = new StringBuilder(MAX_PATH_LENGTH);
-      int lnLength = (int) NativeMethods.GetWindowsDirectoryVisible(loStringBuilder, MAX_PATH_LENGTH);
+      var loStringBuilder = new StringBuilder(MAX_PATH_LENGTH);
+      var lnLength = (int) NativeMethods.GetWindowsDirectoryVisible(loStringBuilder, MAX_PATH_LENGTH);
 
       return loStringBuilder.ToString(0, lnLength);
     }
@@ -178,7 +178,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string GetWindowsTempDirectory()
     {
-      string lcTempPath = Util.AddBs(Util.GetWindowsDirectory()) + "Temp";
+      var lcTempPath = Util.AddBs(Util.GetWindowsDirectory()) + "Temp";
       if (Directory.Exists(lcTempPath))
       {
         return lcTempPath;
@@ -196,7 +196,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static bool IsFolder(string tcPath)
     {
-      bool llFolder = false;
+      var llFolder = false;
 
       try
       {
@@ -214,7 +214,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string formatBytes_GB_MB_KB(long tnBytes)
     {
-      string lcValue = "";
+      var lcValue = "";
       double lnConvert = 0;
 
       if (tnBytes >= Util.BYTES_GIGA)
@@ -242,7 +242,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string formatBytes_KBOnly(long tnBytes)
     {
-      string lcValue = "";
+      var lcValue = "";
       double lnConvert = 0;
 
       lnConvert = tnBytes / (double) Util.BYTES_KILO;
@@ -272,7 +272,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string FormatAttributes(FileData toFileData)
     {
-      string lcAttributes = "";
+      var lcAttributes = "";
 
       // If it is a root drive, it will also be a folder, etc. 
       // So you don't have to check for an ending comma.
@@ -289,8 +289,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string BuildPathFromNode(TreeNode toNode)
     {
-      TreeNode loNode = toNode;
-      string lcPath = Util.StripInfoLabelFromName(loNode.Text);
+      var loNode = toNode;
+      var lcPath = Util.StripInfoLabelFromName(loNode.Text);
       while (loNode.Parent != null)
       {
         loNode = loNode.Parent;
@@ -308,9 +308,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string StripInfoLabelFromName(string tcName)
     {
-      int lnPos = tcName.LastIndexOf(Util.LABEL_MARK_BEGIN);
+      var lnPos = tcName.LastIndexOf(Util.LABEL_MARK_BEGIN);
 
-      string lcPath = lnPos >= 0 ? tcName.Substring(0, lnPos) : tcName;
+      var lcPath = lnPos >= 0 ? tcName.Substring(0, lnPos) : tcName;
 
       return lcPath.Trim();
     }
@@ -319,7 +319,7 @@ namespace TrashWizard
     [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
     public static void OpenFileAssociation(string tcPath, bool tlOpenFolder)
     {
-      string lcPath = tcPath;
+      var lcPath = tcPath;
 
       if (tlOpenFolder)
       {
@@ -360,11 +360,11 @@ namespace TrashWizard
     {
       string lcKey;
       // This null check code was sugggested by ReSharper.
-      string lcTempVar = Path.GetExtension(tcPath);
+      var lcTempVar = Path.GetExtension(tcPath);
 
       if ((tcOverrideKey.Length == 0) && (lcTempVar != null))
       {
-        string lcExtension = lcTempVar.ToLower();
+        var lcExtension = lcTempVar.ToLower();
 
         // By the way, DLLs all have the same icon.
         if (lcExtension.Equals(".exe") || lcExtension.Equals(".com") || lcExtension.Equals(".msi"))
@@ -406,18 +406,16 @@ namespace TrashWizard
         return;
       }
 
-      List<string> loFixed = new List<string>();
-      foreach (DriveInfo loDrive in DriveInfo.GetDrives())
-      {
+      var loFixed = new List<string>();
+      foreach (var loDrive in DriveInfo.GetDrives())
         if (loDrive.DriveType.ToString().Equals("Fixed"))
         {
           loFixed.Add(loDrive.RootDirectory.ToString());
         }
-      }
 
       Util.FIXED_DRIVES = new string[loFixed.Count];
-      int lnTrack = 0;
-      foreach (string lcDrive in loFixed)
+      var lnTrack = 0;
+      foreach (var lcDrive in loFixed)
       {
         Util.FIXED_DRIVES[lnTrack] = lcDrive;
         lnTrack++;
@@ -445,8 +443,8 @@ namespace TrashWizard
 
       Util.InitFixedDrives();
 
-      int lnCount = Util.FIXED_DRIVES.Length;
-      for (int i = 0; i < lnCount; ++i)
+      var lnCount = Util.FIXED_DRIVES.Length;
+      for (var i = 0; i < lnCount; ++i)
       {
         if (Util.FIXED_DRIVES[i].Equals(tcFullPath, StringComparison.OrdinalIgnoreCase))
         {
@@ -460,10 +458,10 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static string GetAppVersion()
     {
-      string lcVersion = "Development";
+      var lcVersion = "Development";
       if (!Util.IsDevelopmentVersion())
       {
-        Version loVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion;
+        var loVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion;
         lcVersion = loVersion.ToString();
       }
 

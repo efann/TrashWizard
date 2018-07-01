@@ -14,6 +14,7 @@
  */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -36,17 +37,17 @@ namespace TrashWizard.Win32
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 4)]
   public struct ShQueryrbInfo32Bit
   {
-    public Int32 cbSize;
-    public Int64 i64Size;
-    public Int64 i64NumItems;
+    public int cbSize;
+    public long i64Size;
+    public long i64NumItems;
   }
 
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
   public struct ShQueryrbInfo64Bit
   {
-    public Int32 cbSize;
-    public Int64 i64Size;
-    public Int64 i64NumItems;
+    public int cbSize;
+    public long i64Size;
+    public long i64NumItems;
   }
 
   // ---------------------------------------------------------------------------------------------------------------------
@@ -56,16 +57,20 @@ namespace TrashWizard.Win32
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
   public struct ShFileInfo
   {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
+    [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
     public IntPtr hIcon;
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
+
+    [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
     public IntPtr iIcon;
+
     public uint dwAttributes;
+
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
     public string szDisplayName;
+
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
     public string szTypeName;
-  };
+  }
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
@@ -81,12 +86,10 @@ namespace TrashWizard.Win32
     public const uint SHGFI_SMALLICON = 0x1; // 'Small icon
     public const uint SHGFI_USEFILEATTRIBUTES = 0x000000010;
     public const uint FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
-
-
   }
-  // ---------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------
 
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
 }
 // ---------------------------------------------------------------------------------------------------------------------

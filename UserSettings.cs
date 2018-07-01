@@ -101,7 +101,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void SetMainFormIncludeBrowserCaches(bool tlIncludeCaches)
     {
-      this.WriteSetting(UserSettings.MAINFORM_INCLUDE_BROWSER_CACHES[0], UserSettings.MAINFORM_INCLUDE_BROWSER_CACHES[1],
+      this.WriteSetting(UserSettings.MAINFORM_INCLUDE_BROWSER_CACHES[0],
+        UserSettings.MAINFORM_INCLUDE_BROWSER_CACHES[1],
         tlIncludeCaches);
     }
 

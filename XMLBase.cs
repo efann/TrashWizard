@@ -32,7 +32,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public XmlBase(string tcFileName, bool tlOverwriteXmlFile)
     {
-      string lcDirectory = Path.GetDirectoryName(tcFileName);
+      var lcDirectory = Path.GetDirectoryName(tcFileName);
 
       if (lcDirectory == null)
       {
@@ -72,25 +72,19 @@ namespace TrashWizard
 
       if (this.foXMLDocument.DocumentElement == null)
       {
-        XmlDeclaration loDeclaration = this.foXMLDocument.CreateXmlDeclaration("1.0", null, null);
+        var loDeclaration = this.foXMLDocument.CreateXmlDeclaration("1.0", null, null);
         this.foXMLDocument.AppendChild(loDeclaration);
 
-        XmlElement loElement = this.foXMLDocument.CreateElement(this.GetType().ToString());
+        var loElement = this.foXMLDocument.CreateElement(this.GetType().ToString());
         this.foXMLDocument.AppendChild(loElement);
       }
 
       this.foRootNode = this.foXMLDocument.DocumentElement;
     }
 
-    public XmlDocument XmlDocument
-    {
-      get { return this.foXMLDocument; }
-    }
+    public XmlDocument XmlDocument => this.foXMLDocument;
 
-    public XmlNode RootNode
-    {
-      get { return this.foRootNode; }
-    }
+    public XmlNode RootNode => this.foRootNode;
 
     // ---------------------------------------------------------------------------------------------------------------------
     public void SaveSettings()

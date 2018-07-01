@@ -29,8 +29,6 @@ namespace TrashWizard
 
     private readonly List<FileData> foFileListData = new List<FileData>();
 
-    private readonly XmlFileInformation foXmlFileInformation;
-
     private bool flShowAlert;
     private bool flShowFileAttributes;
     private bool flShowFileDate;
@@ -39,14 +37,12 @@ namespace TrashWizard
     private int fnFileSizeType = Util.FILESIZE_GBMBKB;
     private int fnFilesProcessed;
 
-    private List<DirectoryInfo> foFolderRoots;
-
     // ---------------------------------------------------------------------------------------------------------------------
     public FileInformation(string tcXmlFilePath)
     {
       this.fcXmlFilePath = tcXmlFilePath;
 
-      this.foXmlFileInformation = new XmlFileInformation(tcXmlFilePath);
+      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -56,7 +52,7 @@ namespace TrashWizard
 
       this.ResetVariables(tlShowAlert);
 
-      this.foXmlFileInformation = new XmlFileInformation(tcXmlFilePath);
+      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -68,7 +64,7 @@ namespace TrashWizard
       this.ResetVariables(tlShowAlert, tlShowFileSize, tnFileSizeType, tlShowFileDate, tnFileDateType,
         tlShowFileAttributes);
 
-      this.foXmlFileInformation = new XmlFileInformation(tcXmlFilePath);
+      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
     }
 
     public int FilesProcessed
@@ -85,20 +81,11 @@ namespace TrashWizard
       }
     }
 
-    public bool FileProcessComplete
-    {
-      get { return (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0); }
-    }
+    public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
 
-    public List<DirectoryInfo> FolderRoots
-    {
-      get { return this.foFolderRoots; }
-    }
+    public List<DirectoryInfo> FolderRoots { get; private set; }
 
-    public XmlFileInformation XmlFileInformation
-    {
-      get { return this.foXmlFileInformation; }
-    }
+    public XmlFileInformation XmlFileInformation { get; }
 
     // ---------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------------
@@ -144,14 +131,14 @@ namespace TrashWizard
     public void GenerateFileInformation(List<DirectoryInfo> toFolderRoots)
     {
       this.ClearVariables();
-      this.foFolderRoots = toFolderRoots;
+      this.FolderRoots = toFolderRoots;
 
       // First gather all the file information.
-      this.foFolderRoots.ForEach(delegate(DirectoryInfo loInfo) { this.GatherFileInformation(loInfo, 0); });
+      this.FolderRoots.ForEach(delegate(DirectoryInfo loInfo) { this.GatherFileInformation(loInfo, 0); });
 
       this.fnFilesProcessed = this.foFileListData.Count;
 
-      XmlFileInformation loXmlFileInformation = new XmlFileInformation(this.fcXmlFilePath);
+      var loXmlFileInformation = new XmlFileInformation(this.fcXmlFilePath);
       loXmlFileInformation.WriteFileData(this.foFileListData);
 
       loXmlFileInformation = null;
@@ -166,7 +153,7 @@ namespace TrashWizard
     {
       // Sometimes an error like PathTooLongException is thrown. No good documentation
       // on the types of errors though, so I just check for the generic error.
-      bool llError = false;
+      var llError = false;
       try
       {
         if (!Directory.Exists(toRoot.FullName))
@@ -189,7 +176,7 @@ namespace TrashWizard
 
       this.foFileListData.Add(new FileData(toRoot.FullName, toRoot.Name, true, tnFolderLevel, toRoot.LastWriteTime, 0L,
         toRoot.Attributes));
-      int lnRootIndex = this.foFileListData.Count - 1;
+      var lnRootIndex = this.foFileListData.Count - 1;
 
       // First, process all the files directly under this folder
       Exception loException = null;
@@ -210,22 +197,25 @@ namespace TrashWizard
         this.Alert(toRoot.FullName + "\n" + loException.Message);
       }
 
-      long lnTotalBytes = 0L;
+      var lnTotalBytes = 0L;
       if (loFiles != null)
       {
-        foreach (FileInfo loFile in loFiles)
+        foreach (var loFile in loFiles)
         {
           try
           {
             lnTotalBytes += loFile.Length;
           }
           catch (FileNotFoundException)
-          {}
+          {
+          }
           catch (IOException)
-          {}
+          {
+          }
           // This will catch SecurityException, ArgumentException, ArgumentNullException, DirectoryNotFoundException, FileNotFoundException, IOException, PlatformNotSupportedException & UnauthorizedAccessException
           catch (SystemException)
-          {}
+          {
+          }
 
           this.foFileListData.Add(new FileData(loFile.FullName, loFile.Name, false, tnFolderLevel, loFile.LastWriteTime,
             loFile.Length, loFile.Attributes));
@@ -235,9 +225,8 @@ namespace TrashWizard
       // Now find all the subdirectories under this directory.
       try
       {
-        DirectoryInfo[] loDirectories = toRoot.GetDirectories();
-        foreach (DirectoryInfo loDirectory in loDirectories)
-        {
+        var loDirectories = toRoot.GetDirectories();
+        foreach (var loDirectory in loDirectories)
           // Resursive call for each subdirectory.
           // Any uncaught exception from loadFilesIntoTreeView will stop the loop.
           // Here's a discussion of using try..catch and optimization.
@@ -247,16 +236,17 @@ namespace TrashWizard
             lnTotalBytes += this.GatherFileInformation(loDirectory, tnFolderLevel + 1);
           }
           catch (ThreadAbortException)
-          {}
+          {
+          }
           catch (Exception loErr)
           {
             Util.InfoMessage("Trash Wizard will continue. However notify www.beowurks.com of the following error:\n" +
                              loErr.Message);
           }
-        }
       }
       catch (ThreadAbortException)
-      {}
+      {
+      }
       // This will catch SecurityException, ArgumentException, ArgumentNullException, DirectoryNotFoundException, FileNotFoundException, IOException, PlatformNotSupportedException & UnauthorizedAccessException
       catch (SystemException loErr)
       {
@@ -282,13 +272,13 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public string BuildString(FileData toFileData)
     {
-      string lcInfo = "";
+      var lcInfo = "";
 
       if (this.flShowFileSize)
       {
-        long lnBytes = toFileData.Size;
-        int lnType = this.fnFileSizeType;
-        string lcBytes = "";
+        var lnBytes = toFileData.Size;
+        var lnType = this.fnFileSizeType;
+        var lcBytes = "";
 
         if (lnType == Util.FILESIZE_GBMBKB)
         {
@@ -308,8 +298,8 @@ namespace TrashWizard
 
       if (this.flShowFileDate)
       {
-        int lnType = this.fnFileDateType;
-        string lcDate = "";
+        var lnType = this.fnFileDateType;
+        var lcDate = "";
 
         if (lnType == Util.FILEDATE_SHORT)
         {
@@ -367,11 +357,12 @@ namespace TrashWizard
     {
       if (tlDisposing)
       {
-        if (this.foXmlFileInformation != null)
+        if (this.XmlFileInformation != null)
         {
-          this.foXmlFileInformation.Dispose();
+          this.XmlFileInformation.Dispose();
         }
       }
+
       // free native resources if there are any.
     }
 
