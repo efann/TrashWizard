@@ -12,6 +12,7 @@
 
 
 using System;
+using System.Globalization;
 using System.Xml;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public bool ReadSetting(string tcParent, string tcChild, bool tlDefaultValue)
     {
-      var llValue = tlDefaultValue;
+      bool llValue;
 
       var lcValue = this.FindTextValue(tcParent, tcChild);
       try
@@ -95,7 +96,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public int ReadSetting(string tcParent, string tcChild, int tnDefaultValue)
     {
-      var lnValue = tnDefaultValue;
+      int lnValue;
 
       var lcValue = this.FindTextValue(tcParent, tcChild);
       try
@@ -116,7 +117,7 @@ namespace TrashWizard
       var loNode = this.GetChildElementNode(tcParent, tcChild);
 
       loNode.RemoveAll();
-      var loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString());
+      var loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString(CultureInfo.CurrentCulture));
 
       loNode.AppendChild(loTextNode);
     }
@@ -124,7 +125,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public double ReadSetting(string tcParent, string tcChild, double tnDefaultValue)
     {
-      var lnValue = tnDefaultValue;
+      double lnValue;
 
       var lcValue = this.FindTextValue(tcParent, tcChild);
       try
@@ -142,8 +143,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private string FindTextValue(string tcParent, string tcChild)
     {
-      XmlElement loChild = null;
-      XmlElement loParent = null;
+      XmlElement loChild;
+      XmlElement loParent;
 
       var lcText = "";
       if ((loParent = this.FindNode(this.foRootNode, tcParent)) == null)
@@ -156,15 +157,12 @@ namespace TrashWizard
         return lcText;
       }
 
-      if (loChild != null)
+      var loFirstChild = loChild.FirstChild;
+      if (loFirstChild != null)
       {
-        var loFirstChild = loChild.FirstChild;
-        if (loFirstChild != null)
+        if (loFirstChild.NodeType == XmlNodeType.Text)
         {
-          if (loFirstChild.NodeType == XmlNodeType.Text)
-          {
-            lcText = ((XmlText) loFirstChild).Value;
-          }
+          lcText = ((XmlText) loFirstChild).Value;
         }
       }
 
@@ -197,8 +195,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private XmlElement GetChildElementNode(string tcParent, string tcChild)
     {
-      XmlElement loChild = null;
-      XmlElement loParent = null;
+      XmlElement loChild;
+      XmlElement loParent;
 
       if ((loParent = this.FindNode(this.foRootNode, tcParent)) == null)
       {

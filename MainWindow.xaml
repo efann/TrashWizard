@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:trashWizard="clr-namespace:TrashWizard"
         mc:Ignorable="d"
         Icon="images/icon/TrashWizard.ico"
         Title="Trash Wizard">
@@ -11,9 +10,23 @@
   <Window.Resources>
 
     <!--Styles for controls in a toolbar.-->
-    <Style x:Key="{x:Static ToolBar.SeparatorStyleKey}" TargetType="Separator">
-      <Setter Property="Background" Value="DarkBlue" />
+    <Style TargetType="Separator" x:Key="ToolbarSeparator">
+      <Setter Property="Background" Value="Teal" />
       <Setter Property="Width" Value="1" />
+    </Style>
+
+    <Style TargetType="Image" x:Key="ToolbarImage">
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="ToolbarButton">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="ToolBar.OverflowMode" Value="AsNeeded" />
     </Style>
 
   </Window.Resources>
@@ -118,19 +131,30 @@
     </Menu>
     <ToolBarTray DockPanel.Dock="Top">
       <ToolBar>
-        <Button x:Name="BtnRun1" ToolTip="Run the search for files." ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
-          <Image Source="images/run.png" />
+        <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}">
+          <StackPanel Orientation="Vertical">
+            <Image Source="images/run.png" Style="{StaticResource ToolbarImage}"/>
+            <TextBlock Text="Run" />
+          </StackPanel>
         </Button>
-        <Button x:Name="BtnSave1" ToolTip="Save the log files." ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
-          <Image Source="images/save.png" />
+        <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}">
+          <StackPanel Orientation="Vertical">
+            <Image Source="images/save.png"  Style="{StaticResource ToolbarImage}"/>
+            <TextBlock Text="Save" />
+          </StackPanel>
         </Button>
-        <Button x:Name="BtnRemove1" ToolTip="Remove the display files." ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
-          <Image Source="images/remove.png" />
+        <Button x:Name="BtnRemove1" ToolTip="Remove the displayed files." Style="{StaticResource ToolbarButton}">
+          <StackPanel Orientation="Vertical">
+            <Image Source="images/remove.png"  Style="{StaticResource ToolbarImage}"/>
+            <TextBlock Text="Remove" />
+          </StackPanel>
         </Button>
-        <Separator />
-        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations."
-                ToolBar.OverflowMode="AsNeeded" Cursor="Hand">
-          <Image Source="images/cancel.png" />
+        <Separator Style="{StaticResource ToolbarSeparator}" />
+        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}">
+          <StackPanel Orientation="Vertical">
+            <Image Source="images/cancel.png"  Style="{StaticResource ToolbarImage}"/>
+            <TextBlock Text="Cancel" />
+          </StackPanel>
         </Button>
       </ToolBar>
     </ToolBarTray>
@@ -148,11 +172,11 @@
               <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
-            <CheckBox x:Name="ChkIncludeTempFiles" Cursor="Hand" Grid.Row="0" Grid.Column="0">Temporary Files?</CheckBox>
-            <CheckBox x:Name="ChkIncludeBrowserCaches" Cursor="Hand" Grid.Row="1" Grid.Column="0">Browser caches?</CheckBox>
-            <CheckBox x:Name="ChkIncludeAdobeCaches" Cursor="Hand" Grid.Row="0" Grid.Column="1">Adobe caches?</CheckBox>
-            <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Cursor="Hand" Grid.Row="1" Grid.Column="1">Office Suite caches?</CheckBox>
-            <CheckBox x:Name="ChkIncludeRecycle" Cursor="Hand" Grid.Row="0" Grid.Column="2">Recycle Bin contents?</CheckBox>
+            <CheckBox x:Name="ChkIncludeTempFiles" Grid.Row="0" Grid.Column="0">Temporary Files?</CheckBox>
+            <CheckBox x:Name="ChkIncludeBrowserCaches" Grid.Row="1" Grid.Column="0">Browser caches?</CheckBox>
+            <CheckBox x:Name="ChkIncludeAdobeCaches" Grid.Row="0" Grid.Column="1">Adobe caches?</CheckBox>
+            <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1">Office Suite caches?</CheckBox>
+            <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2">Recycle Bin contents?</CheckBox>
           </Grid>
           <ListBox x:Name="ListBox1" />
         </StackPanel>

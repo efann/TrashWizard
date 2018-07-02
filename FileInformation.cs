@@ -141,7 +141,7 @@ namespace TrashWizard
       var loXmlFileInformation = new XmlFileInformation(this.fcXmlFilePath);
       loXmlFileInformation.WriteFileData(this.foFileListData);
 
-      loXmlFileInformation = null;
+      loXmlFileInformation.Dispose();
       this.foFileListData.Clear();
 
       GC.Collect();
@@ -180,7 +180,7 @@ namespace TrashWizard
 
       // First, process all the files directly under this folder
       Exception loException = null;
-      FileInfo[] loFiles = null;
+      FileInfo[] loFiles;
       try
       {
         loFiles = toRoot.GetFiles("*.*", SearchOption.TopDirectoryOnly);
