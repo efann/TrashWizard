@@ -1,5 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -140,6 +145,102 @@ namespace TrashWizard
       ThreadViewFilesRefreshAsNeeded
     }
 
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppExit(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      Application.Current.Shutdown();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppDiskCleanup(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var lcApplication = "cleanmgr.exe";
+
+      try
+      {
+        Process.Start(lcApplication);
+      }
+      catch (Exception loErr)
+      {
+        Util.ErrorMessage("There was a problem with " + lcApplication + ".\n\n" + loErr.Message);
+      }
+    }
+
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppLaunchHomePage(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      Util.LaunchBrowser(Util.HOME_PAGE_FOR_APPLICATION);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppLaunchHelpDocumentation(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      Util.LaunchBrowser(Util.HOME_PAGE_FOR_HELP);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppCheckForUpdates(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      Cursor loCurrent = this.Cursor;
+      this.Cursor = Cursors.Wait;
+
+      string lcAppVersion = Util.GetAppVersion();
+      string lcCurrentVersion = "";
+      using (WebClient client = new WebClient())
+      {
+        try
+        {
+          Uri loUrl = new Uri(@"http://www.beowurks.com/Software/php/Utilities/TrashWizardVersion.php?skipjavascript");
+          lcCurrentVersion = client.DownloadString(loUrl);
+        }
+        catch (WebException loErr)
+        {
+          Util.ErrorMessage("We're unable to determine the most current version of Trash Wizard:\n\nStatus: " +
+                            loErr.Status + "\nMessage: " + loErr.Message);
+
+          this.Cursor = loCurrent;
+          return;
+        }
+      }
+
+      if (lcCurrentVersion.Equals(lcAppVersion))
+      {
+        Util.InfoMessage("You have the most current version of Trash Wizard, which is " + lcCurrentVersion + ".");
+
+        this.Cursor = loCurrent;
+        return;
+      }
+
+      if (
+        Util.YesNo("Your version is currently " + lcAppVersion +
+                   ".\n\nDo you want to launch the setup application to get the newer version of " + lcCurrentVersion +
+                   "?\n\n\nBy the way, the application setup will be using Internet Explorer.\n\n"))
+      {
+        try
+        {
+          Process.Start("IExplore.exe", @"http://www.beowurks.com/Software/NET/TrashWizard/publish.htm");
+
+          this.Cursor = loCurrent;
+          this.AppExit(null, null);
+        }
+        catch (Win32Exception loErr)
+        {
+          Util.ErrorMessage("There was an error in launching the setup:\n" + loErr.Message);
+        }
+        catch (ObjectDisposedException loErr)
+        {
+          Util.ErrorMessage("There was an error in launching the setup:\n" + loErr.Message);
+        }
+        catch (FileNotFoundException loErr)
+        {
+          Util.ErrorMessage("There was an error in launching the setup:\n" + loErr.Message);
+        }
+      }
+
+      this.Cursor = loCurrent;
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

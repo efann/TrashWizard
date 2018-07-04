@@ -40,7 +40,7 @@
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemExit1" Header="E_xit" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemExit1" Header="E_xit" HorizontalAlignment="Left" Click="AppExit">
           <MenuItem.Icon>
             <Image Source="images/exit.png" />
           </MenuItem.Icon>
@@ -86,7 +86,8 @@
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemDiskCleanup1" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemDiskCleanup1" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left"
+                  Click="AppDiskCleanup">
           <MenuItem.Icon>
             <Image Source="images/player_play.png" />
           </MenuItem.Icon>
@@ -95,20 +96,22 @@
       </MenuItem>
 
       <MenuItem x:Name="MenuItemHelp1" Header="_Help">
-        <MenuItem x:Name="MenuItemHomePage1" Header="Home Page" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemHomePage1" Header="Home Page" HorizontalAlignment="Left" Click="AppLaunchHomePage">
           <MenuItem.Icon>
             <Image Source="images/home.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="MenuItemHelpDocumentation1" Header="Help Documentation" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemHelpDocumentation1" Header="Help Documentation" HorizontalAlignment="Left"
+                  Click="AppLaunchHelpDocumentation">
           <MenuItem.Icon>
             <Image Source="images/bookcase.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="MenuItemCheckForUpdates1" Header="Check for Updates..." HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemCheckForUpdates1" Header="Check for Updates..." HorizontalAlignment="Left"
+                  Click="AppCheckForUpdates">
           <MenuItem.Icon>
             <Image Source="images/updates.png" />
           </MenuItem.Icon>
@@ -133,26 +136,26 @@
       <ToolBar>
         <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}">
           <StackPanel Orientation="Vertical">
-            <Image Source="images/run.png" Style="{StaticResource ToolbarImage}"/>
+            <Image Source="images/run.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Run" />
           </StackPanel>
         </Button>
         <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}">
           <StackPanel Orientation="Vertical">
-            <Image Source="images/save.png"  Style="{StaticResource ToolbarImage}"/>
+            <Image Source="images/save.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Save" />
           </StackPanel>
         </Button>
         <Button x:Name="BtnRemove1" ToolTip="Remove the displayed files." Style="{StaticResource ToolbarButton}">
           <StackPanel Orientation="Vertical">
-            <Image Source="images/remove.png"  Style="{StaticResource ToolbarImage}"/>
+            <Image Source="images/remove.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Remove" />
           </StackPanel>
         </Button>
         <Separator Style="{StaticResource ToolbarSeparator}" />
         <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}">
           <StackPanel Orientation="Vertical">
-            <Image Source="images/cancel.png"  Style="{StaticResource ToolbarImage}"/>
+            <Image Source="images/cancel.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Cancel" />
           </StackPanel>
         </Button>
@@ -182,11 +185,21 @@
         </StackPanel>
       </TabItem>
       <TabItem Header="Files" Cursor="Hand">
-        <StackPanel Cursor="Arrow">
-          <TextBox x:Name="TxtDirectory1" />
-          <Button x:Name="BtnOpenFolder1">
-            <Image Source="images/folder_open.png" />
-          </Button>
+        <StackPanel Orientation="Vertical">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="24" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="24" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="TxtDirectory1" Grid.Row="0" Grid.Column="0" />
+            <Button x:Name="BtnOpenFolder1" Grid.Row="0" Grid.Column="1" ToolTip="Select the folder through the Browser dialog">
+              <Image Source="images/folder_open.png" />
+            </Button>
+          </Grid>
           <TreeView x:Name="TreeViewForFile1" />
           <DataGrid x:Name="GridViewForFile1" />
         </StackPanel>
