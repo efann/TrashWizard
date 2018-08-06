@@ -35,10 +35,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Toolkit.Win32.UI.Controls, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>packages\Microsoft.Toolkit.Win32.UI.Controls.3.0.0\lib\net462\Microsoft.Toolkit.Win32.UI.Controls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -68,21 +73,29 @@
     <Compile Include="Win32\RecycleBinShell32.cs" />
     <Compile Include="Win32\RecycleBinShell64.cs" />
     <Compile Include="Win32\Windows32.cs" />
+    <Compile Include="Windows\AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Windows\WebDisplay.xaml.cs">
+      <DependentUpon>WebDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XMLBase.cs" />
     <Compile Include="XMLFileInformation.cs" />
     <Compile Include="XMLSettings.cs" />
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Page Include="Windows\AboutWindow.xaml" />
+    <Page Include="Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\WebDisplay.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -100,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\about.png" />

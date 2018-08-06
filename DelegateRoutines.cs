@@ -17,6 +17,7 @@ using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using TrashWizard.Win32;
+using TrashWizard.Windows;
 using Cursor = System.Windows.Input.Cursor;
 
 // I designed this class to just de-clutter FormMain.

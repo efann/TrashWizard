@@ -8,8 +8,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using TrashWizard.Windows;
+
 // ---------------------------------------------------------------------------------------------------------------------
-namespace TrashWizard
+namespace TrashWizard.Windows
 {
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
@@ -167,7 +169,6 @@ namespace TrashWizard
       }
     }
 
-
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppLaunchHomePage(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
@@ -178,6 +179,23 @@ namespace TrashWizard
     private void AppLaunchHelpDocumentation(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       Util.LaunchBrowser(Util.HOME_PAGE_FOR_HELP);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppShowCredits(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var lnHeight = (int) (SystemParameters.VirtualScreenHeight * 0.4);
+      var lnWidth = (int) (SystemParameters.VirtualScreenWidth * 0.25);
+
+      var loDisplay = new WebDisplay(this, "https://www.beowurks.com/ajax/node/22", lnHeight, lnWidth);
+      loDisplay.ShowDialog();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppShowAbout(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var loDisplay = new AboutWindow(this);
+      loDisplay.ShowDialog();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -192,7 +210,9 @@ namespace TrashWizard
       {
         try
         {
-          Uri loUrl = new Uri(@"http://www.beowurks.com/Software/php/Utilities/TrashWizardVersion.php?skipjavascript");
+          // 1 is Trash Wizard
+          // 2 is JEquity
+          Uri loUrl = new Uri(@"http://www.beowurks.com/ajax/version/1?skipjavascript");
           lcCurrentVersion = client.DownloadString(loUrl);
         }
         catch (WebException loErr)
@@ -213,10 +233,10 @@ namespace TrashWizard
         return;
       }
 
-      if (
-        Util.YesNo("Your version is currently " + lcAppVersion +
-                   ".\n\nDo you want to launch the setup application to get the newer version of " + lcCurrentVersion +
-                   "?\n\n\nBy the way, the application setup will be using Internet Explorer.\n\n"))
+      if (Util.YesNo("Your version is currently " + lcAppVersion +
+                     ".\n\nDo you want to launch the setup application to get the newer version of " +
+                     lcCurrentVersion +
+                     "?\n\n\nBy the way, the application setup will be using Internet Explorer.\n\n"))
       {
         try
         {
