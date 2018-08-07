@@ -7,29 +7,6 @@
         WindowStartupLocation="CenterScreen"
         Icon="../images/icon/TrashWizard.ico"
         Title="Trash Wizard">
-  <Window.Resources>
-
-    <!--Styles for controls in a toolbar.-->
-    <Style TargetType="Separator" x:Key="ToolbarSeparator">
-      <Setter Property="Background" Value="Teal" />
-      <Setter Property="Width" Value="1" />
-    </Style>
-
-    <Style TargetType="Image" x:Key="ToolbarImage">
-      <Setter Property="Width" Value="24" />
-      <Setter Property="Height" Value="24" />
-    </Style>
-
-    <Style TargetType="Button" x:Key="ToolbarButton">
-      <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="Width" Value="48" />
-      <Setter Property="Height" Value="48" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="ToolBar.OverflowMode" Value="AsNeeded" />
-    </Style>
-
-  </Window.Resources>
 
   <StackPanel VerticalAlignment="Top">
     <Menu x:Name="MenuMain1" Width="Auto" Height="20">

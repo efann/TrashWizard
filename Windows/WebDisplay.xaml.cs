@@ -8,15 +8,17 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
-  public partial class WebDisplay : Window
+  public partial class WebDisplay : TrashWizard.Windows.BaseWindow
   {
     // ---------------------------------------------------------------------------------------------------------------------
-    public WebDisplay(Window toParent, string tcURL, int tnHeight, int tnWidth)
+    public WebDisplay(Window toParent, string tcURL, int tnHeight, int tnWidth) : base(toParent)
     {
-      this.InitializeComponent();
+      if (toParent == null)
+      {
+        throw new ArgumentNullException(nameof(toParent));
+      }
 
-      this.Owner = toParent;
-      this.Icon = toParent.Icon;
+      this.InitializeComponent();
 
       this.Height = tnHeight;
       this.Width = tnWidth;

@@ -1,12 +1,11 @@
-﻿<Window x:Class="TrashWizard.Windows.WebDisplay"
+﻿<local:BaseWindow x:Class="TrashWizard.Windows.WebDisplay"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:wpf="clr-namespace:Microsoft.Toolkit.Win32.UI.Controls.WPF;assembly=Microsoft.Toolkit.Win32.UI.Controls"
-        mc:Ignorable="d"
-        WindowStartupLocation="CenterOwner"
-        WindowStyle="ToolWindow">
+        xmlns:local="clr-namespace:TrashWizard.Windows"
+        mc:Ignorable="d">
   <!--
     WindowStyle="ToolWindow" produces a resizable window with no minimize or maximize buttons at the top. 
   -->
@@ -25,4 +24,4 @@
               VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1" />
     </WrapPanel>
   </Grid>
-</Window>
+</local:BaseWindow>
