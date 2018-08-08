@@ -117,6 +117,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static void UpdateNodeImage(ImageList toImageList, TreeNode toNode, bool tlFolder, string tcFullPath)
     {
+      /*
       var lcOverrideKey = "";
       if (tlFolder)
       {
@@ -129,6 +130,7 @@ namespace TrashWizard
 
       toNode.ImageKey = lcImage;
       toNode.SelectedImageKey = lcImage;
+      */
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

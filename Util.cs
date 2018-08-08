@@ -19,7 +19,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
+using System.Windows;
+using TrashWizard.Windows;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -56,11 +57,9 @@ namespace TrashWizard
     private const long BYTES_MEGA = 1024 * 1024;
     private const long BYTES_GIGA = 1024 * 1024 * 1024;
 
-    public static readonly string DATA_FOLDER = Util.IsDevelopmentVersion()
-      ? Util.AddBs(Application.StartupPath)
-      : Util.AddBs(
-        Util.AddBs(Util.AddBs(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) + "Beowurks") +
-        "TrashWizard");
+    public static readonly string DATA_FOLDER = Util.AddBs(
+      Util.AddBs(Util.AddBs(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) + "Beowurks") +
+      "TrashWizard");
 
     // By the way, you can't use the temporary folder 'cause that's where Trash Wizard removes files.
     public static readonly string XML_USER_SETTINGS = Util.DATA_FOLDER + Environment.UserName + ".Settings.xml";
@@ -83,52 +82,27 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public static void InfoMessage(string tcMessage)
     {
-      Util.DialogMessageBox(tcMessage, MessageBoxButtons.OK, MessageBoxIcon.Information);
+      Util.DialogMessageBox(tcMessage, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public static void ErrorMessage(string tcMessage)
     {
-      Util.DialogMessageBox(tcMessage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+      Util.DialogMessageBox(tcMessage, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public static bool YesNo(string tcMessage)
     {
-      var lnResult = Util.DialogMessageBox(tcMessage, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-      return lnResult == DialogResult.Yes;
+      return (Util.DialogMessageBox(tcMessage, MessageBoxButton.YesNo, MessageBoxImage.Question));
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private static DialogResult DialogMessageBox(string tcMessage, MessageBoxButtons toButtons, MessageBoxIcon toIcon)
+    private static Boolean DialogMessageBox(string tcMessage, MessageBoxButton toButtons, MessageBoxImage toBoxImage)
     {
-      Form loForm = null;
-      try
-      {
-        var loFormCollection = Application.OpenForms;
-        if ((loFormCollection != null) && (loFormCollection.Count > 0))
-        {
-          loForm = loFormCollection[loFormCollection.Count - 1];
-          if ((loForm != null) && loForm.InvokeRequired)
-          {
-            // Pass the same function to BeginInvoke,
-            // but the call would come on the correct
-            // thread and InvokeRequired will be false.
-            return
-              (DialogResult)
-              loForm.Invoke(new MessageBoxShowDelegate(Util.DialogMessageBox), tcMessage, toButtons, toIcon);
-          }
-        }
-      }
-      catch (Exception)
-      {
-        // ignored
-      }
+      var loDialog = new MessageDialog(Application.Current.MainWindow, tcMessage, toButtons, toBoxImage);
 
-      var lcCaption = loForm != null ? loForm.Text : "";
-
-      return MessageBox.Show(loForm, tcMessage, lcCaption, toButtons, toIcon);
+      return (loDialog.ShowDialog() == true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -287,6 +261,7 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    /*
     public static string BuildPathFromNode(TreeNode toNode)
     {
       var loNode = toNode;
@@ -303,7 +278,7 @@ namespace TrashWizard
       }
 
       return lcPath;
-    }
+    }*/
 
     // ---------------------------------------------------------------------------------------------------------------------
     public static string StripInfoLabelFromName(string tcName)
@@ -356,6 +331,7 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    /*
     public static string GetImageKey(ImageList toImageList, string tcPath, string tcOverrideKey)
     {
       string lcKey;
@@ -397,7 +373,7 @@ namespace TrashWizard
 
       return lcKey;
     }
-
+*/
     // ---------------------------------------------------------------------------------------------------------------------
     private static void InitFixedDrives()
     {
@@ -489,10 +465,6 @@ namespace TrashWizard
         Util.ErrorMessage("There was an error in visiting " + tcUrl + ":\n" + loErr.Message);
       }
     }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private delegate DialogResult MessageBoxShowDelegate(
-      string tcMessage, MessageBoxButtons toButtons, MessageBoxIcon toIcon);
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

@@ -30,6 +30,7 @@ namespace TrashWizard.Windows
 
       this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
       this.WindowStyle = WindowStyle.ThreeDBorderWindow;
+      this.SizeToContent = SizeToContent.WidthAndHeight;
 
       this.SourceInitialized += this.SetupWindowButtons;
     }

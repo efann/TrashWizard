@@ -81,6 +81,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Windows\MessageDialog.xaml.cs">
+      <DependentUpon>MessageDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\WebDisplay.xaml.cs">
       <DependentUpon>WebDisplay.xaml</DependentUpon>
     </Compile>
@@ -96,6 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Windows\MessageDialog.xaml" />
     <Page Include="Windows\WebDisplay.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +145,11 @@
     <Resource Include="images\stop.png" />
     <Resource Include="images\UnknownFileIcon.gif" />
     <Resource Include="images\updates.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\error.png" />
+    <Resource Include="images\help.png" />
+    <Resource Include="images\info.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
