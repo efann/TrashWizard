@@ -108,7 +108,7 @@
 
       </MenuItem>
     </Menu>
-    <ToolBarTray DockPanel.Dock="Top" Grid.Row="1">
+    <ToolBarTray Grid.Row="1">
       <ToolBar>
         <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}">
           <StackPanel Orientation="Vertical">
@@ -142,7 +142,10 @@
     -->
     <Grid Grid.Row="2">
       <TabControl x:Name="TabControlMain" Cursor="Arrow" VerticalAlignment="Stretch">
-        <TabItem Header="Temporary Files" Cursor="Hand">
+        <TabItem>
+          <TabItem.Header>
+            <TextBlock Text="Temporary Files" Cursor="Hand" />
+          </TabItem.Header>
           <DockPanel Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid DockPanel.Dock="Top">
               <Grid.RowDefinitions>
@@ -164,7 +167,10 @@
             <ListBox x:Name="ListBox1" DockPanel.Dock="Bottom" />
           </DockPanel>
         </TabItem>
-        <TabItem Header="Files" Cursor="Hand">
+        <TabItem>
+          <TabItem.Header>
+            <TextBlock Text="Files" Cursor="Hand" />
+          </TabItem.Header>
           <wpf:PieChart LegendLocation="Bottom" Hoverable="False" DataTooltip="{x:Null}" Grid.Column="0" Grid.Row="0">
             <wpf:PieChart.Series>
               <wpf:PieSeries Title="Maria" Values="3" DataLabels="True"
