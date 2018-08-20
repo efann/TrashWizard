@@ -7,7 +7,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
+using LiveCharts;
 using TrashWizard.Windows;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -26,6 +26,8 @@ namespace TrashWizard.Windows
 
     private Thread foThread;
 
+    public Func<ChartPoint, string> PointLabel { get; set; }
+
     // ---------------------------------------------------------------------------------------------------------------------
     public MainWindow()
     {
@@ -38,14 +40,12 @@ namespace TrashWizard.Windows
       this.ReadSettings();
       this.foDelegateRoutines.UpdateMenusAndControls(true);
 
-      //AssociatedIcon.InitializeImageList(this.imageList1);
+      PointLabel = chartPoint => string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
+      
+      DataContext = this;
     }
 
     public UserSettings UserSettings { get; } = new UserSettings();
-
-    public TreeView TreeViewForFile => this.TreeViewForFile1;
-
-    public DataGrid GridViewForFile => this.GridViewForFile1;
 
 
     public ListBox ListBox => this.ListBox1;
@@ -61,11 +61,7 @@ namespace TrashWizard.Windows
 
     public Button ButtonRemove => this.BtnRemove1;
 
-    public Button ButtonEllipse => this.BtnOpenFolder1;
-
-    public TabControl TabControl => this.TabControl1;
-
-    public TextBox TextBoxDirectory => this.TxtDirectory1;
+    public TabControl TabControl => this.TabControlMain;
 
     public MenuItem MenuItemCancel => this.MenuItemCancel1;
 
@@ -77,20 +73,11 @@ namespace TrashWizard.Windows
 
     public MenuItem MenuItemOptions => this.MenuItemOptions1;
 
-    public MenuItem MenuItemFilesInGrid => this.MenuItemFilesInGrid1;
-
-    public MenuItem MenuItemFilesInTreeview => this.MenuItemFilesInTreeview1;
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void CommonCommandBinding_CanExecute(object toSender, CanExecuteRoutedEventArgs teCanExecuteRoutedEventArgs)
     {
       teCanExecuteRoutedEventArgs.CanExecute = true;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public bool IsTreeViewForFiles()
-    {
-      return this.MenuItemFilesInTreeview1.IsChecked;
     }
 
     //-----------------------------------------------------------------------------
@@ -104,12 +91,7 @@ namespace TrashWizard.Windows
     {
       var loSettings = this.UserSettings;
 
-      this.TabControl1.SelectedIndex = loSettings.GetMainFormTabSelected();
-      this.TxtDirectory1.Text = loSettings.GetRootPathForFile();
-
-      var llTreeView = loSettings.GetViewTypeForFile() == Util.FILEVIEW_TREEVIEW;
-      this.MenuItemFilesInTreeview1.IsChecked = llTreeView;
-      this.MenuItemFilesInGrid1.IsChecked = !llTreeView;
+      this.TabControlMain.SelectedIndex = loSettings.GetMainFormTabSelected();
 
       this.ChkIncludeTempFiles.IsChecked = loSettings.GetMainFormIncludeTempFiles();
       this.ChkIncludeRecycle.IsChecked = loSettings.GetMainFormUseRecycleBin();
@@ -123,12 +105,7 @@ namespace TrashWizard.Windows
     {
       var loSettings = this.UserSettings;
 
-      loSettings.SetMainFormTabSelected(this.TabControl1.SelectedIndex);
-      loSettings.SetRootPathForFile(this.TxtDirectory1.Text);
-
-      var lnViewType = this.IsTreeViewForFiles() ? Util.FILEVIEW_TREEVIEW : Util.FILEVIEW_GRID;
-
-      loSettings.SetViewTypeForFile(lnViewType);
+      loSettings.SetMainFormTabSelected(this.TabControlMain.SelectedIndex);
 
       loSettings.SetMainFormIncludeTempFiles(this.ChkIncludeTempFiles.IsChecked == true);
       loSettings.SetMainFormUseRecycleBin(this.ChkIncludeRecycle.IsChecked == true);

@@ -22,7 +22,6 @@ namespace TrashWizard
     private static readonly string[] MAINFORM_SAVE = {"FormMain.SavePath", "Text"};
 
     private static readonly string[] MAINFORM_DIRECTORY_FILE = {"FormMain.File.txtDirectory1", "Text"};
-    private static readonly string[] MAINFORM_VIEW_FILE = {"FormMain.File.View", "Type"};
 
     private static readonly string[] MAINFORM_INCLUDE_TEMP_FILES = {"FormMain.Temp.Files", "Selected"};
     private static readonly string[] MAINFORM_USE_RECYCLE = {"FormMain.Recycle.Bin", "Selected"};
@@ -145,19 +144,6 @@ namespace TrashWizard
     public void SetRootPathForFile(string tcPath)
     {
       this.WriteSetting(UserSettings.MAINFORM_DIRECTORY_FILE[0], UserSettings.MAINFORM_DIRECTORY_FILE[1], tcPath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public int GetViewTypeForFile()
-    {
-      return this.ReadSetting(UserSettings.MAINFORM_VIEW_FILE[0], UserSettings.MAINFORM_VIEW_FILE[1],
-        Util.FILEVIEW_TREEVIEW);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetViewTypeForFile(int tnType)
-    {
-      this.WriteSetting(UserSettings.MAINFORM_VIEW_FILE[0], UserSettings.MAINFORM_VIEW_FILE[1], tnType);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

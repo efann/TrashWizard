@@ -12,7 +12,7 @@ namespace TrashWizard.Windows
   public partial class AboutWindow
   {
     // ---------------------------------------------------------------------------------------------------------------------
-    public AboutWindow(Window toParent) : base(toParent)
+    public AboutWindow(Window toParent) : base(toParent, true, false)
     {
       if (toParent == null)
       {

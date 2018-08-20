@@ -13,33 +13,32 @@ namespace TrashWizard.Windows
   {
     // ---------------------------------------------------------------------------------------------------------------------
     public MessageDialog(Window toParent, String tcMessage, MessageBoxButton toBoxButton, MessageBoxImage toBoxImage) :
-      base(toParent)
+      base(toParent, true, true)
     {
       this.InitializeComponent();
+      this.ResizeMode = ResizeMode.NoResize;
 
       this.lblMessage.Content = tcMessage;
       switch (toBoxButton)
       {
         case MessageBoxButton.OK:
-          this.pnlButtons.Children.Remove(this.btnYes);
-          this.pnlButtons.Children.Remove(this.btnNo);
-          this.pnlButtons.Children.Remove(this.btnCancel);
+          this.btnOK.Visibility = Visibility.Visible;
           break;
         case MessageBoxButton.OKCancel:
-          this.pnlButtons.Children.Remove(this.btnYes);
-          this.pnlButtons.Children.Remove(this.btnNo);
+          this.btnOK.Visibility = Visibility.Visible;
+          this.btnCancel.Visibility = Visibility.Visible;
           break;
         case MessageBoxButton.YesNo:
-          this.pnlButtons.Children.Remove(this.btnOK);
-          this.pnlButtons.Children.Remove(this.btnCancel);
+          this.btnYes.Visibility = Visibility.Visible;
+          this.btnNo.Visibility = Visibility.Visible;
           break;
         case MessageBoxButton.YesNoCancel:
-          this.pnlButtons.Children.Remove(this.btnOK);
+          this.btnYes.Visibility = Visibility.Visible;
+          this.btnNo.Visibility = Visibility.Visible;
+          this.btnCancel.Visibility = Visibility.Visible;
           break;
         default:
-          this.pnlButtons.Children.Remove(this.btnYes);
-          this.pnlButtons.Children.Remove(this.btnNo);
-          this.pnlButtons.Children.Remove(this.btnCancel);
+          this.btnOK.Visibility = Visibility.Visible;
           break;
       }
 

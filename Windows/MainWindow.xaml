@@ -3,13 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Icon="../images/icon/TrashWizard.ico"
         Title="Trash Wizard">
 
-  <StackPanel VerticalAlignment="Top">
-    <Menu x:Name="MenuMain1" Width="Auto" Height="20">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Menu x:Name="MenuMain1" Width="Auto" Height="20" Grid.Row="0">
       <MenuItem x:Name="MenuItemFile1" Header="_File">
         <MenuItem x:Name="MenuItemSave1" Header="Save..." HorizontalAlignment="Left">
           <MenuItem.Icon>
@@ -42,13 +48,6 @@
             <Image Source="../images/cancel.png" />
           </MenuItem.Icon>
         </MenuItem>
-      </MenuItem>
-
-      <MenuItem x:Name="MenuItemView1" Header="_View">
-        <MenuItem x:Name="MenuItemFilesInGrid1" Header="Files in Grid" HorizontalAlignment="Left" IsCheckable="True" />
-        <Separator />
-        <MenuItem x:Name="MenuItemFilesInTreeview1" Header="Files in Treeview" HorizontalAlignment="Left"
-                  IsCheckable="True" />
       </MenuItem>
 
       <MenuItem x:Name="MenuItemTools1" Header="_Tools">
@@ -109,7 +108,7 @@
 
       </MenuItem>
     </Menu>
-    <ToolBarTray DockPanel.Dock="Top">
+    <ToolBarTray DockPanel.Dock="Top" Grid.Row="1">
       <ToolBar>
         <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}">
           <StackPanel Orientation="Vertical">
@@ -138,50 +137,48 @@
         </Button>
       </ToolBar>
     </ToolBarTray>
-    <TabControl x:Name="TabControl1" Cursor="Arrow">
-      <TabItem Header="Temporary Files" Cursor="Hand">
-        <StackPanel Margin="8" Orientation="Vertical">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="25" />
-              <RowDefinition Height="25" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="200" />
-              <ColumnDefinition Width="200" />
-              <ColumnDefinition Width="200" />
-            </Grid.ColumnDefinitions>
+    <!--
+     From https://stackoverflow.com/questions/1967013/tabcontrol-verticalalignment-stretch-doesnt-do-anything
+    -->
+    <Grid Grid.Row="2">
+      <TabControl x:Name="TabControlMain" Cursor="Arrow" VerticalAlignment="Stretch">
+        <TabItem Header="Temporary Files" Cursor="Hand">
+          <DockPanel Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid DockPanel.Dock="Top">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="25" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+              </Grid.ColumnDefinitions>
 
-            <CheckBox x:Name="ChkIncludeTempFiles" Grid.Row="0" Grid.Column="0">Temporary Files?</CheckBox>
-            <CheckBox x:Name="ChkIncludeBrowserCaches" Grid.Row="1" Grid.Column="0">Browser caches?</CheckBox>
-            <CheckBox x:Name="ChkIncludeAdobeCaches" Grid.Row="0" Grid.Column="1">Adobe caches?</CheckBox>
-            <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1">Office Suite caches?</CheckBox>
-            <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2">Recycle Bin contents?</CheckBox>
-          </Grid>
-          <ListBox x:Name="ListBox1" />
-        </StackPanel>
-      </TabItem>
-      <TabItem Header="Files" Cursor="Hand">
-        <StackPanel Orientation="Vertical">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="24" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="*" />
-              <ColumnDefinition Width="24" />
-            </Grid.ColumnDefinitions>
-            <TextBox x:Name="TxtDirectory1" Grid.Row="0" Grid.Column="0" />
-            <Button x:Name="BtnOpenFolder1" Grid.Row="0" Grid.Column="1"
-                    ToolTip="Select the folder through the Browser dialog">
-              <Image Source="../images/folder_open.png" />
-            </Button>
-          </Grid>
-          <TreeView x:Name="TreeViewForFile1" />
-          <DataGrid x:Name="GridViewForFile1" />
-        </StackPanel>
-      </TabItem>
-    </TabControl>
-  </StackPanel>
+              <CheckBox x:Name="ChkIncludeTempFiles" Grid.Row="0" Grid.Column="0">Temporary Files?</CheckBox>
+              <CheckBox x:Name="ChkIncludeBrowserCaches" Grid.Row="1" Grid.Column="0">Browser caches?</CheckBox>
+              <CheckBox x:Name="ChkIncludeAdobeCaches" Grid.Row="0" Grid.Column="1">Adobe caches?</CheckBox>
+              <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1">Office Suite caches?</CheckBox>
+              <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2">Recycle Bin contents?</CheckBox>
+            </Grid>
+            <ListBox x:Name="ListBox1" DockPanel.Dock="Bottom" />
+          </DockPanel>
+        </TabItem>
+        <TabItem Header="Files" Cursor="Hand">
+          <wpf:PieChart LegendLocation="Bottom" Hoverable="False" DataTooltip="{x:Null}" Grid.Column="0" Grid.Row="0">
+            <wpf:PieChart.Series>
+              <wpf:PieSeries Title="Maria" Values="3" DataLabels="True"
+                             LabelPoint="{Binding PointLabel}" />
+              <wpf:PieSeries Title="Charles" Values="4" DataLabels="True"
+                             LabelPoint="{Binding PointLabel}" />
+              <wpf:PieSeries Title="Frida" Values="6" DataLabels="True"
+                             LabelPoint="{Binding PointLabel}" />
+              <wpf:PieSeries Title="Frederic" Values="2" DataLabels="True"
+                             LabelPoint="{Binding PointLabel}" />
+            </wpf:PieChart.Series>
+          </wpf:PieChart>
+        </TabItem>
+      </TabControl>
+    </Grid>
+  </Grid>
 </Window>

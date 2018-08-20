@@ -34,8 +34,6 @@ namespace TrashWizard
     public const int CLICK_OPENFOLDER = 0;
     public const int CLICK_OPENASSOCIATED = 1;
 
-    public const int FILEVIEW_GRID = 0;
-    public const int FILEVIEW_TREEVIEW = 1;
 
     public const int FILESIZE_GBMBKB = 0;
     public const int FILESIZE_KBONLY = 1;

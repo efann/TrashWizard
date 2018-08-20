@@ -8,10 +8,10 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
-  public partial class WebDisplay : TrashWizard.Windows.BaseWindow
+  public partial class WebDisplay
   {
     // ---------------------------------------------------------------------------------------------------------------------
-    public WebDisplay(Window toParent, string tcURL, int tnHeight, int tnWidth) : base(toParent)
+    public WebDisplay(Window toParent, string tcURL, int tnHeight, int tnWidth) : base(toParent, true, false)
     {
       if (toParent == null)
       {

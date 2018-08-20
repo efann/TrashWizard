@@ -66,7 +66,7 @@
         <Trigger Property="IsMouseOver" Value="True">
           <Setter Property="Background" Value="{StaticResource GrayBlueGradientBrushHover}" />
           <Setter Property="Foreground" Value="#444444" />
-          
+
           <Setter Property="Template">
             <Setter.Value>
               <ControlTemplate TargetType="Button">
@@ -79,13 +79,11 @@
               </ControlTemplate>
             </Setter.Value>
           </Setter>
-          
+
         </Trigger>
 
-        
-        </Style.Triggers>
+      </Style.Triggers>
     </Style>
-
 
   </Application.Resources>
 </Application>

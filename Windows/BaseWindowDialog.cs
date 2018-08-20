@@ -12,21 +12,35 @@ namespace TrashWizard.Windows
   // From https://stackoverflow.com/questions/48942579/inherit-from-a-wpf-window
   // You can't do the partial class / XAML file with Window inheritence
   // But this works.
-  public class BaseWindow : Window
+  public class BaseWindowDialog : Window
   {
     // From https://social.technet.microsoft.com/wiki/contents/articles/29183.wpf-disabling-or-hiding-the-minimize-maximize-or-close-button-of-a-window.aspx
-    private const int GWL_STYLE = -16;
+    private const int GWL_STYLE_MINMAX = -16;
 
     private const int WS_MAXIMIZEBOX = 0x10000; //maximize button
     private const int WS_MINIMIZEBOX = 0x20000; //minimize button
 
+    // From https://www.wpftutorial.net/RemoveIcon.html
+    private const int GWL_EXSTYLE_ICON = -20;
+    private const int WS_EX_DLGMODALFRAME = 0x0001;
+    private const int SWP_NOSIZE = 0x0001;
+    private const int SWP_NOMOVE = 0x0002;
+    private const int SWP_NOZORDER = 0x0004;
+    private const int SWP_FRAMECHANGED = 0x0020;
+
+    private readonly bool flRemoveIcon;
+    private readonly bool flRemoveMinMax;
+
     private IntPtr fnWindowHandle;
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public BaseWindow(Window toParent)
+    public BaseWindowDialog(Window toParent, bool tlRemoveMinMax, bool tlRemoveIcon)
     {
       this.Owner = toParent;
       this.Icon = toParent.Icon;
+
+      this.flRemoveMinMax = tlRemoveMinMax;
+      this.flRemoveIcon = tlRemoveIcon;
 
       this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
       this.WindowStyle = WindowStyle.ThreeDBorderWindow;
@@ -42,13 +56,53 @@ namespace TrashWizard.Windows
     [DllImport("user32.dll")]
     private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(IntPtr hwnd, IntPtr hwndInsertAfter,
+      int x, int y, int width, int height, uint flags);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SendMessage(IntPtr hwnd, uint msg,
+      IntPtr wParam, IntPtr lParam);
+
     // ---------------------------------------------------------------------------------------------------------------------
     private void SetupWindowButtons(object toSender, EventArgs teEventArgs)
     {
       this.fnWindowHandle = new WindowInteropHelper(this).Handle;
 
-      this.DisableMinimizeButton();
-      this.DisableMaximizeButton();
+      if (this.flRemoveMinMax)
+      {
+        this.DisableMinimizeButton();
+        this.DisableMaximizeButton();
+      }
+
+      if (this.flRemoveIcon)
+      {
+        this.RemoveIcon();
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void RemoveIcon()
+    {
+      if (this.fnWindowHandle == null)
+      {
+        throw new InvalidOperationException("The window has not yet been completely initialized");
+      }
+
+      // From https://stackoverflow.com/questions/18580430/hide-the-icon-from-a-wpf-window
+      // For some reason, if this is not set to null, the removal won't work.
+      this.Icon = null;
+
+      // Change the extended window style to not show a window icon
+      var extendedStyle = BaseWindowDialog.GetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_EXSTYLE_ICON);
+      BaseWindowDialog.SetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_EXSTYLE_ICON,
+        extendedStyle | BaseWindowDialog.WS_EX_DLGMODALFRAME);
+
+      // Update the window's non-client area to reflect the changes
+      BaseWindowDialog.SetWindowPos(this.fnWindowHandle, IntPtr.Zero, 0, 0, 0, 0, BaseWindowDialog.SWP_NOMOVE |
+                                                                                  BaseWindowDialog.SWP_NOSIZE |
+                                                                                  BaseWindowDialog.SWP_NOZORDER |
+                                                                                  BaseWindowDialog.SWP_FRAMECHANGED);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -59,8 +113,9 @@ namespace TrashWizard.Windows
         throw new InvalidOperationException("The window has not yet been completely initialized");
       }
 
-      BaseWindow.SetWindowLong(this.fnWindowHandle, BaseWindow.GWL_STYLE,
-        BaseWindow.GetWindowLong(this.fnWindowHandle, BaseWindow.GWL_STYLE) & ~BaseWindow.WS_MINIMIZEBOX);
+      BaseWindowDialog.SetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX,
+        BaseWindowDialog.GetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX) &
+        ~BaseWindowDialog.WS_MINIMIZEBOX);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -71,8 +126,9 @@ namespace TrashWizard.Windows
         throw new InvalidOperationException("The window has not yet been completely initialized");
       }
 
-      BaseWindow.SetWindowLong(this.fnWindowHandle, BaseWindow.GWL_STYLE,
-        BaseWindow.GetWindowLong(this.fnWindowHandle, BaseWindow.GWL_STYLE) & ~BaseWindow.WS_MAXIMIZEBOX);
+      BaseWindowDialog.SetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX,
+        BaseWindowDialog.GetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX) &
+        ~BaseWindowDialog.WS_MAXIMIZEBOX);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
