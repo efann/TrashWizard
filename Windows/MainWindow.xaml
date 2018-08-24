@@ -14,6 +14,7 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
+      <RowDefinition Height="25" />
     </Grid.RowDefinitions>
     <Menu x:Name="MenuMain1" Width="Auto" Height="20" Grid.Row="0">
       <MenuItem x:Name="MenuItemFile1" Header="_File">
@@ -110,7 +111,8 @@
     </Menu>
     <ToolBarTray Grid.Row="1">
       <ToolBar>
-        <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}">
+        <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}"
+                Click="AppRun">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/run.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Run" />
@@ -144,7 +146,7 @@
       <TabControl x:Name="TabControlMain" Cursor="Arrow" VerticalAlignment="Stretch">
         <TabItem>
           <TabItem.Header>
-            <TextBlock Text="Temporary Files" Cursor="Hand" />
+            <TextBlock Text="Temporary Files" />
           </TabItem.Header>
           <DockPanel Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid DockPanel.Dock="Top">
@@ -169,22 +171,41 @@
         </TabItem>
         <TabItem>
           <TabItem.Header>
-            <TextBlock Text="Files" Cursor="Hand" />
+            <TextBlock Text="Files" />
           </TabItem.Header>
-          <wpf:PieChart LegendLocation="Bottom" Hoverable="False" DataTooltip="{x:Null}" Grid.Column="0" Grid.Row="0">
-            <wpf:PieChart.Series>
-              <wpf:PieSeries Title="Maria" Values="3" DataLabels="True"
-                             LabelPoint="{Binding PointLabel}" />
-              <wpf:PieSeries Title="Charles" Values="4" DataLabels="True"
-                             LabelPoint="{Binding PointLabel}" />
-              <wpf:PieSeries Title="Frida" Values="6" DataLabels="True"
-                             LabelPoint="{Binding PointLabel}" />
-              <wpf:PieSeries Title="Frederic" Values="2" DataLabels="True"
-                             LabelPoint="{Binding PointLabel}" />
-            </wpf:PieChart.Series>
-          </wpf:PieChart>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Name="cboDrives1" Grid.Row="0" Grid.Column="0" Width="150" />
+            <Label Name="lblCurrentFolder1" Cursor="Hand" Grid.Row="1" Grid.Column="0"
+                   PreviewMouseLeftButtonUp="ClickOnLabel" />
+            <wpf:PieChart LegendLocation="Bottom" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+              <wpf:PieChart.Series>
+                <wpf:PieSeries Title="Maria" Values="3" DataLabels="True"
+                               LabelPoint="{Binding PointLabel}" />
+                <wpf:PieSeries Title="Charles" Values="4" DataLabels="True"
+                               LabelPoint="{Binding PointLabel}" />
+                <wpf:PieSeries Title="Frida" Values="6" DataLabels="True"
+                               LabelPoint="{Binding PointLabel}" />
+                <wpf:PieSeries Title="Frederic" Values="2" DataLabels="True"
+                               LabelPoint="{Binding PointLabel}" />
+              </wpf:PieChart.Series>
+            </wpf:PieChart>
+          </Grid>
         </TabItem>
       </TabControl>
     </Grid>
+    <StackPanel Grid.Row="3">
+      <StatusBar Name="lblTimeRunning1"  />
+    </StackPanel>
   </Grid>
 </Window>

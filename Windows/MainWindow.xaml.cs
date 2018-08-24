@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Security;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using LiveCharts;
-using TrashWizard.Windows;
+using Microsoft.Win32;
+using Timer = System.Timers.Timer;
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard.Windows
@@ -18,35 +21,7 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class MainWindow
   {
-    private readonly DelegateRoutines foDelegateRoutines;
-
-    private ThreadTypes fnThreadType;
-
-    private DateTime foStartTime;
-
-    private Thread foThread;
-
-    public Func<ChartPoint, string> PointLabel { get; set; }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public MainWindow()
-    {
-      this.InitializeComponent();
-
-      this.Title += $@" ({Util.GetAppVersion()})";
-
-      this.foDelegateRoutines = new DelegateRoutines(this);
-
-      this.ReadSettings();
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
-
-      PointLabel = chartPoint => string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
-      
-      DataContext = this;
-    }
-
     public UserSettings UserSettings { get; } = new UserSettings();
-
 
     public ListBox ListBox => this.ListBox1;
 
@@ -73,6 +48,50 @@ namespace TrashWizard.Windows
 
     public MenuItem MenuItemOptions => this.MenuItemOptions1;
 
+    public const string FILES_CURRENT_LABEL_START =
+      "No current folder selected. Select the Drive combobox and then press Run.";
+
+    private readonly UserSettings foUserSettings = new UserSettings();
+    
+    private readonly Timer tmrRunning1 = new Timer();
+
+    private enum ThreadTypes
+    {
+      ThreadTemporaryLocate,
+      ThreadTemporaryRemove,
+      ThreadFilesViewGraph
+    }
+
+    public Func<ChartPoint, string> PointLabel { get; set; }
+
+    private readonly DelegateRoutines foDelegateRoutines;
+
+    private ThreadTypes fnThreadType;
+
+    private DateTime foStartTime;
+
+    private Thread foThread;
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public MainWindow()
+    {
+      this.InitializeComponent();
+
+      this.Title += $@" ({Util.GetAppVersion()})";
+
+      this.foDelegateRoutines = new DelegateRoutines(this);
+
+      this.ReadSettings();
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+
+      this.PointLabel = chartPoint => $"{chartPoint.Y} ({chartPoint.Participation:P})";
+
+      this.DataContext = this;
+
+      this.lblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
+
+      this.setupComboboxex();
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void CommonCommandBinding_CanExecute(object toSender, CanExecuteRoutedEventArgs teCanExecuteRoutedEventArgs)
@@ -80,10 +99,181 @@ namespace TrashWizard.Windows
       teCanExecuteRoutedEventArgs.CanExecute = true;
     }
 
-    //-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void ClickOnLabel(object toSender, MouseButtonEventArgs e)
+    {
+      if (toSender == this.lblCurrentFolder1)
+      {
+        var loLabel = (Label) toSender;
+        if (loLabel.Content == MainWindow.FILES_CURRENT_LABEL_START)
+        {
+          Util.ErrorMessage(MainWindow.FILES_CURRENT_LABEL_START);
+        }
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void setupComboboxex()
+    {
+      var loCombo = this.cboDrives1;
+
+      // From https://stackoverflow.com/questions/623182/c-sharp-dropbox-of-drives
+      foreach (var Drives in Environment.GetLogicalDrives())
+      {
+        var DriveInf = new DriveInfo(Drives);
+        if (DriveInf.IsReady)
+        {
+          loCombo.Items.Add(DriveInf.Name);
+        }
+      }
+
+      if (loCombo.HasItems)
+      {
+        loCombo.SelectedIndex = 0;
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
     public bool IsThreadRunning()
     {
       return (this.foThread != null) && this.foThread.IsAlive;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void UpdateTimeRunning()
+    {
+      bool llThreadRunning = this.IsThreadRunning();
+
+      TimeSpan loDiff = DateTime.Now - this.foStartTime;
+      int lnSeconds = loDiff.Seconds;
+      int lnMinutes = loDiff.Minutes;
+      int lnHours = loDiff.Hours;
+
+      string lcHours = lnHours.ToString("00");
+      string lcMinutes = lnMinutes.ToString("00");
+      string lcSeconds = lnSeconds.ToString("00");
+
+      int lnFilesProcessed = 0;
+      int lnFilesDisplayed = 0;
+      switch (this.fnThreadType)
+      {
+        case ThreadTypes.ThreadTemporaryLocate:
+          lnFilesProcessed = this.foDelegateRoutines.FileInformationForTemporary.FilesProcessed;
+          lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForTemporary;
+          break;
+
+        case ThreadTypes.ThreadTemporaryRemove:
+          lnFilesProcessed = this.foDelegateRoutines.FileInformationForTemporary.FilesProcessed;
+          lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForTemporary;
+          break;
+
+        case ThreadTypes.ThreadFilesViewGraph:
+          lnFilesProcessed = this.foDelegateRoutines.FileInformationForFile.FilesProcessed;
+          lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForFile;
+          break;
+      }
+
+      string lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
+      string lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
+
+      this.lblTimeRunning1.Content = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
+                                     " files processed; " + lcFilesDisplayed + " files displayed out of " +
+                                     lcFilesProcessed + ")";
+
+      if (!llThreadRunning)
+      {
+        this.lblTimeRunning1.Text += " - operation complete!";
+        this.tmrRunning1.Enabled = false;
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void StartThread(ThreadTypes tnThreadType)
+    {
+      switch (tnThreadType)
+      {
+        case ThreadTypes.ThreadTemporaryLocate:
+          this.foThread = new Thread(this.PopulateControlForTemporaryFiles);
+          break;
+
+        case ThreadTypes.ThreadTemporaryRemove:
+          this.foThread = new Thread(this.RemoveTemporaryFiles);
+          break;
+
+        case ThreadTypes.ThreadFilesViewGraph:
+          this.foThread = new Thread(this.PopulateControlForFiles);
+          break;
+      }
+
+      this.fnThreadType = tnThreadType;
+      this.foStartTime = DateTime.Now;
+      this.tmrRunning1.Enabled = true;
+
+      this.foThread.Priority = ThreadPriority.Highest;
+
+      this.foThread.Start();
+
+
+      // Go ahead and update the time running: the timer is set at 1 second intervals
+      // and therefore lags behind when the thread first starts.
+      this.UpdateTimeRunning();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void RemoveTemporaryFiles()
+    {
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
+      this.foDelegateRoutines.UpdateMenusAndControls(false);
+
+      this.foDelegateRoutines.RemoveFilesFromTemporaryList();
+
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void StopThread()
+    {
+      if (this.foThread != null)
+      {
+        Exception loException = null;
+        try
+        {
+          this.foThread.Abort();
+        }
+        catch (SecurityException loErr)
+        {
+          loException = loErr;
+        }
+        catch (ThreadStateException loErr)
+        {
+          loException = loErr;
+        }
+
+        if (loException != null)
+        {
+          Util.ErrorMessage("There was an error in cancelling:\n" + loException.Message);
+        }
+      }
+
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+    }
+
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppRun(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var lnIndex = this.TabControlMain.SelectedIndex;
+      switch (lnIndex)
+      {
+        case 0:
+          this.StartThread(ThreadTypes.ThreadTemporaryLocate);
+          break;
+        case 1:
+          this.StartThread(ThreadTypes.ThreadFilesViewGraph);
+          break;
+      }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -114,14 +304,6 @@ namespace TrashWizard.Windows
       loSettings.SetMainFormIncludeOfficeSuiteCaches(this.ChkIncludeOfficeSuitesCaches.IsChecked == true);
 
       loSettings.SaveSettings();
-    }
-
-    private enum ThreadTypes
-    {
-      ThreadTemporaryLocate,
-      ThreadTemporaryRemove,
-      ThreadViewFilesForceRefresh,
-      ThreadViewFilesRefreshAsNeeded
     }
 
 
@@ -178,18 +360,18 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppCheckForUpdates(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      Cursor loCurrent = this.Cursor;
+      var loCurrent = this.Cursor;
       this.Cursor = Cursors.Wait;
 
-      string lcAppVersion = Util.GetAppVersion();
-      string lcCurrentVersion = "";
-      using (WebClient client = new WebClient())
+      var lcAppVersion = Util.GetAppVersion();
+      var lcCurrentVersion = "";
+      using (var client = new WebClient())
       {
         try
         {
           // 1 is Trash Wizard
           // 2 is JEquity
-          Uri loUrl = new Uri(@"http://www.beowurks.com/ajax/version/1?skipjavascript");
+          var loUrl = new Uri(@"http://www.beowurks.com/ajax/version/1?skipjavascript");
           lcCurrentVersion = client.DownloadString(loUrl);
         }
         catch (WebException loErr)
@@ -238,6 +420,247 @@ namespace TrashWizard.Windows
 
       this.Cursor = loCurrent;
     }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void PopulateControlForTemporaryFiles()
+    {
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
+      this.foDelegateRoutines.UpdateMenusAndControls(false);
+
+      this.foDelegateRoutines.ResetFileVariablesForTemporary();
+
+      List<DirectoryInfo> loDirectoryInfo = new List<DirectoryInfo>();
+
+      // Temporary Files
+      if (this.UserSettings.GetMainFormIncludeTempFiles())
+      {
+        loDirectoryInfo.Add(new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)));
+        loDirectoryInfo.Add(new DirectoryInfo(Path.GetTempPath()));
+
+        // Windows Temp Directory
+        string lcWindowsTemp = Util.GetWindowsTempDirectory();
+        if (lcWindowsTemp.Length > 0)
+        {
+          loDirectoryInfo.Add(new DirectoryInfo(lcWindowsTemp));
+        }
+      }
+
+      // Adobe Suite Cache
+      if (this.UserSettings.GetMainFormIncludeAdobeCaches())
+      {
+        List<DirectoryInfo> loDirectoryList = null;
+
+        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.AdobeFlashPlayerAliases);
+        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        {
+          loDirectoryInfo.Add(loDirInfo);
+        }
+      }
+
+      // Browser Cache
+      if (this.UserSettings.GetMainFormIncludeBrowserCaches())
+      {
+        List<DirectoryInfo> loDirectoryList = null;
+
+        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.GoogleChromeAliases);
+        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        {
+          loDirectoryInfo.Add(loDirInfo);
+        }
+
+        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MicrosoftInternetExplorerAliases);
+        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        {
+          loDirectoryInfo.Add(loDirInfo);
+        }
+
+        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MozillaFirefoxAliases);
+        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        {
+          loDirectoryInfo.Add(loDirInfo);
+        }
+      }
+
+      // Office Suite Cache
+      if (this.UserSettings.GetMainFormIncludeOfficeSuiteCaches())
+      {
+        List<DirectoryInfo> loDirectoryList = null;
+
+        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MicrosoftOfficeAliases);
+        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        {
+          loDirectoryInfo.Add(loDirInfo);
+        }
+      }
+
+      // Now search through the selected directories.
+      Exception loException = null;
+      try
+      {
+        this.foDelegateRoutines.UpdateListBox("Searching the following directories:");
+
+        loDirectoryInfo.ForEach(
+          delegate(DirectoryInfo loInfo) { this.foDelegateRoutines.UpdateListBox(loInfo.FullName); });
+
+        this.foDelegateRoutines.FileInformationForTemporary.GenerateFileInformation(loDirectoryInfo);
+
+        this.foDelegateRoutines.UpdateControlForTemporary();
+      }
+      catch (Exception loErr)
+      {
+        loException = loErr;
+      }
+
+      if (loException != null)
+      {
+        // Since this is a critical error, always show it.
+        string lcErrorMessage =
+          "A program error has occurred so the building of the file listing must stop. Please notify Beowurks at www.beowurks.com.\n\n" +
+          loException.Message + "\n\n" + loException + "\n" + loException.StackTrace;
+        Util.ErrorMessage(lcErrorMessage);
+      }
+
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
+    }
+    
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void PopulateControlForFiles(object toForce)
+    {
+      bool llForce;
+      if (toForce is bool)
+      {
+        llForce = (bool) toForce;
+      }
+      else
+      {
+        Util.ErrorMessage("Parameter for FormMain.populateControlForFile must be boolean!");
+        return;
+      }
+
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
+      this.foDelegateRoutines.UpdateMenusAndControls(false);
+
+      this.foDelegateRoutines.ResetFileVariablesForFile();
+
+      string lcStartDirectory = this.cboDrives1.Text;
+      List<DirectoryInfo> loStartDirectoryInfo = new List<DirectoryInfo> {new DirectoryInfo(lcStartDirectory)};
+
+      Exception loException = null;
+
+      try
+      {
+        bool llRefresh = llForce || !this.foDelegateRoutines.FileInformationForFile.FileProcessComplete;
+        // The following is awkward code. However, this.foDelegateRoutines.FileInformationForFile is used by
+        // both the Temporary Files and Files.
+        if (!llRefresh)
+        {
+          // Now check to see if the queried directories are the same.
+          List<DirectoryInfo> loCurrentDirectoryInfo = this.foDelegateRoutines.FileInformationForFile.FolderRoots;
+          if (loCurrentDirectoryInfo == null)
+          {
+            llRefresh = true;
+          }
+          else if (loCurrentDirectoryInfo.Count != loStartDirectoryInfo.Count)
+          {
+            llRefresh = true;
+          }
+          else
+          {
+            int lnCount = loCurrentDirectoryInfo.Count;
+            for (int i = 0; i < lnCount; ++i)
+            {
+              // Windows is case-insensitive.
+              if (!loCurrentDirectoryInfo[i].FullName.ToLower().Equals(loStartDirectoryInfo[i].FullName.ToLower()))
+              {
+                llRefresh = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (llRefresh)
+        {
+          this.foDelegateRoutines.FileInformationForFile.GenerateFileInformation(loStartDirectoryInfo);
+        }
+
+        //this.foDelegateRoutines.UpdateControlForFile();
+      }
+      catch (Exception loErr)
+      {
+        loException = loErr;
+      }
+
+      if (loException != null)
+      {
+        // Since this is a critical error, always show it.
+        string lcErrorMessage =
+          "A program error has occurred so the building of the file listing must stop. Please notify Beowurks at www.beowurks.com.\n\n" +
+          loException.Message + "\n\n" + loException + "\n" + loException.StackTrace;
+        Util.ErrorMessage(lcErrorMessage);
+      }
+
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
+    }
+
+    //-----------------------------------------------------------------------------
+    private void SaveInfoToTextForTemporary()
+    {
+      string lcLogFile = this.GetSaveFile();
+      if (lcLogFile == null)
+      {
+        return;
+      }
+
+      this.foDelegateRoutines.UpdateListBox("Writing log to " + lcLogFile);
+
+      try
+      {
+        // Create an instance of StreamWriter to write text to a file.
+        // The using statement also closes the StreamWriter.
+        using (StreamWriter loStream = new StreamWriter(lcLogFile))
+        {
+          int lnCount = this.ListBox1.Items.Count;
+          for (int i = 0; i < lnCount; ++i)
+          {
+            loStream.WriteLine(this.ListBox1.Items[i]);
+          }
+
+          Util.InfoMessage("The log file of " + lcLogFile + " has been saved.");
+        }
+      }
+      catch (Exception loErr)
+      {
+        this.foDelegateRoutines.UpdateListBox(loErr.Message);
+        Util.InfoMessage("Unable to save the log file of " + lcLogFile + " for the following reason:\n\n" +
+                         loErr.Message);
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+
+    private string GetSaveFile()
+    {
+      SaveFileDialog loSaveFileDialog = new SaveFileDialog
+      {
+        Filter = "Text File|*.txt",
+        Title = "Save Log File",
+        InitialDirectory = this.foUserSettings.GetSavePath()
+      };
+
+      if (loSaveFileDialog.ShowDialog() == true)
+      {
+        string lcFileName = loSaveFileDialog.FileName;
+        this.foUserSettings.SetSavePath(Directory.GetParent(lcFileName).FullName);
+
+        return lcFileName;
+      }
+
+      return null;
+    }
+
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

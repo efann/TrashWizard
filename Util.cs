@@ -19,7 +19,9 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 using TrashWizard.Windows;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -77,6 +79,9 @@ namespace TrashWizard
 
     public static int WindowRegisterId => Util.WINDOW_REGISTER_ID;
 
+    private delegate Boolean MessageBoxShowDelegate(string tcMessage, MessageBoxButton toButtons,
+      MessageBoxImage toBoxImage);
+
     // ---------------------------------------------------------------------------------------------------------------------
     public static void InfoMessage(string tcMessage)
     {
@@ -98,7 +103,26 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private static Boolean DialogMessageBox(string tcMessage, MessageBoxButton toButtons, MessageBoxImage toBoxImage)
     {
-      var loDialog = new MessageDialog(Application.Current.MainWindow, tcMessage, toButtons, toBoxImage);
+      MessageDialog loDialog;
+
+      var loDispatcher = Dispatcher.FromThread(Thread.CurrentThread);
+      var llOutsideGIU = ((loDispatcher == null) || !loDispatcher.CheckAccess());
+
+      if (llOutsideGIU)
+      {
+        Application.Current.Dispatcher.Invoke((Action) delegate
+        {
+          {
+            loDialog = new MessageDialog(Application.Current.MainWindow, tcMessage, toButtons, toBoxImage);
+
+            loDialog.ShowDialog();
+          }
+        });
+
+        return (true);
+      }
+
+      loDialog = new MessageDialog(Application.Current.MainWindow, tcMessage, toButtons, toBoxImage);
 
       return (loDialog.ShowDialog() == true);
     }
