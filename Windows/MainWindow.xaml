@@ -205,7 +205,11 @@
       </TabControl>
     </Grid>
     <StackPanel Grid.Row="3">
-      <StatusBar Name="lblTimeRunning1"  />
+      <StatusBar>
+        <StatusBarItem>
+          <TextBlock Name="lblTimeRunning1" />
+        </StatusBarItem>
+      </StatusBar>
     </StackPanel>
   </Grid>
 </Window>

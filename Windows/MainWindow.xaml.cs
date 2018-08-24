@@ -176,7 +176,7 @@ namespace TrashWizard.Windows
       string lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
       string lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
 
-      this.lblTimeRunning1.Content = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
+      this.lblTimeRunning1.Text = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
                                      " files processed; " + lcFilesDisplayed + " files displayed out of " +
                                      lcFilesProcessed + ")";
 
