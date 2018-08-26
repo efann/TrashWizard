@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Security;
 using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -52,8 +53,8 @@ namespace TrashWizard.Windows
       "No current folder selected. Select the Drive combobox and then press Run.";
 
     private readonly UserSettings foUserSettings = new UserSettings();
-    
-    private readonly Timer tmrRunning1 = new Timer();
+
+    private readonly Timer tmrRunning = new Timer();
 
     private enum ThreadTypes
     {
@@ -90,13 +91,10 @@ namespace TrashWizard.Windows
 
       this.lblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
 
-      this.setupComboboxex();
-    }
+      this.tmrRunning.Interval = 1000;
+      this.tmrRunning.Elapsed += this.tmrRunning_Tick;
 
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void CommonCommandBinding_CanExecute(object toSender, CanExecuteRoutedEventArgs teCanExecuteRoutedEventArgs)
-    {
-      teCanExecuteRoutedEventArgs.CanExecute = true;
+      this.setupComboboxex();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -177,13 +175,13 @@ namespace TrashWizard.Windows
       string lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
 
       this.lblTimeRunning1.Text = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
-                                     " files processed; " + lcFilesDisplayed + " files displayed out of " +
-                                     lcFilesProcessed + ")";
+                                  " files processed; " + lcFilesDisplayed + " files displayed out of " +
+                                  lcFilesProcessed + ")";
 
       if (!llThreadRunning)
       {
         this.lblTimeRunning1.Text += " - operation complete!";
-        this.tmrRunning1.Enabled = false;
+        this.tmrRunning.Enabled = false;
       }
     }
 
@@ -207,7 +205,8 @@ namespace TrashWizard.Windows
 
       this.fnThreadType = tnThreadType;
       this.foStartTime = DateTime.Now;
-      this.tmrRunning1.Enabled = true;
+
+      this.tmrRunning.Enabled = true;
 
       this.foThread.Priority = ThreadPriority.Highest;
 
@@ -523,7 +522,7 @@ namespace TrashWizard.Windows
       this.foDelegateRoutines.UpdateMenusAndControls(true);
       this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
     }
-    
+
     // ---------------------------------------------------------------------------------------------------------------------
     private void PopulateControlForFiles(object toForce)
     {
@@ -661,6 +660,11 @@ namespace TrashWizard.Windows
       return null;
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void tmrRunning_Tick(object toSource, ElapsedEventArgs teElapsedEventArgs)
+    {
+      this.UpdateTimeRunning();
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

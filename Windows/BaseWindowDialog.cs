@@ -33,23 +33,6 @@ namespace TrashWizard.Windows
 
     private IntPtr fnWindowHandle;
 
-    // ---------------------------------------------------------------------------------------------------------------------
-    public BaseWindowDialog(Window toParent, bool tlRemoveMinMax, bool tlRemoveIcon)
-    {
-      this.Owner = toParent;
-      this.Icon = toParent.Icon;
-
-      this.flRemoveMinMax = tlRemoveMinMax;
-      this.flRemoveIcon = tlRemoveIcon;
-
-      this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-      this.WindowStyle = WindowStyle.ThreeDBorderWindow;
-      this.SizeToContent = SizeToContent.WidthAndHeight;
-
-      this.SourceInitialized += this.SetupWindowButtons;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
     [DllImport("user32.dll")]
     private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
@@ -63,6 +46,27 @@ namespace TrashWizard.Windows
     [DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr hwnd, uint msg,
       IntPtr wParam, IntPtr lParam);
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public BaseWindowDialog(Window toParent, bool tlRemoveMinMax, bool tlRemoveIcon)
+    {
+      this.Owner = toParent;
+      if (toParent != null)
+      {
+        this.Icon = toParent.Icon;
+      }
+
+      this.ShowInTaskbar = false;
+
+      this.flRemoveMinMax = tlRemoveMinMax;
+      this.flRemoveIcon = tlRemoveIcon;
+
+      this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+      this.WindowStyle = WindowStyle.ThreeDBorderWindow;
+      this.SizeToContent = SizeToContent.WidthAndHeight;
+
+      this.SourceInitialized += this.SetupWindowButtons;
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void SetupWindowButtons(object toSender, EventArgs teEventArgs)

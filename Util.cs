@@ -79,9 +79,6 @@ namespace TrashWizard
 
     public static int WindowRegisterId => Util.WINDOW_REGISTER_ID;
 
-    private delegate Boolean MessageBoxShowDelegate(string tcMessage, MessageBoxButton toButtons,
-      MessageBoxImage toBoxImage);
-
     // ---------------------------------------------------------------------------------------------------------------------
     public static void InfoMessage(string tcMessage)
     {
@@ -106,15 +103,15 @@ namespace TrashWizard
       MessageDialog loDialog;
 
       var loDispatcher = Dispatcher.FromThread(Thread.CurrentThread);
-      var llOutsideGIU = ((loDispatcher == null) || !loDispatcher.CheckAccess());
 
-      if (llOutsideGIU)
+      // If outside of the Window GUI thread.
+      if ((loDispatcher == null) || !loDispatcher.CheckAccess())
       {
-        Application.Current.Dispatcher.Invoke((Action) delegate
+        Application.Current.Dispatcher.Invoke(delegate
         {
           {
             loDialog = new MessageDialog(Application.Current.MainWindow, tcMessage, toButtons, toBoxImage);
-
+            
             loDialog.ShowDialog();
           }
         });
