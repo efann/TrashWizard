@@ -25,6 +25,12 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public class FileInformation : IDisposable
   {
+    public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
+
+    public List<DirectoryInfo> FolderRoots { get; private set; }
+
+    public XmlFileInformation XmlFileInformation { get; }
+
     private readonly string fcXmlFilePath;
 
     private readonly List<FileData> foFileListData = new List<FileData>();
@@ -80,12 +86,6 @@ namespace TrashWizard
         return this.foFileListData.Count;
       }
     }
-
-    public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
-
-    public List<DirectoryInfo> FolderRoots { get; private set; }
-
-    public XmlFileInformation XmlFileInformation { get; }
 
     // ---------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------------
@@ -357,10 +357,7 @@ namespace TrashWizard
     {
       if (tlDisposing)
       {
-        if (this.XmlFileInformation != null)
-        {
-          this.XmlFileInformation.Dispose();
-        }
+        this.XmlFileInformation?.Dispose();
       }
 
       // free native resources if there are any.

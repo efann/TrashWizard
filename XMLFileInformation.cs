@@ -37,6 +37,8 @@ namespace TrashWizard
     public const string XML_TAG_SIZE = "s";
     public const string XML_TAG_FOLDERLEVEL = "l";
 
+    public int IndexTrack { get; private set; }
+
     private readonly string fcFileName;
 
     private XmlTextReader foXmlTextReader;
@@ -45,17 +47,6 @@ namespace TrashWizard
     public XmlFileInformation(string tcFileName)
     {
       this.fcFileName = tcFileName;
-    }
-
-    public int IndexTrack { get; private set; }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------------------------------
-    // Interface IDisposable
-    public void Dispose()
-    {
-      this.Dispose(true);
-      GC.SuppressFinalize(this);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -143,7 +134,8 @@ namespace TrashWizard
           this.foXmlTextReader.Close();
           return null;
         }
-      } while (loReader.Name.CompareTo(XmlFileInformation.XML_TAG_ELEMENT) != 0);
+      }
+      while (loReader.Name.CompareTo(XmlFileInformation.XML_TAG_ELEMENT) != 0);
 
       try
       {
@@ -170,7 +162,7 @@ namespace TrashWizard
 
     // ---------------------------------------------------------------------------------------------------------------------
     // Currently there's only 1 file to remove.
-    private void CleanUpFiles()
+    public void CleanUpFiles()
     {
       try
       {
@@ -200,11 +192,18 @@ namespace TrashWizard
         {
           this.foXmlTextReader.Close();
         }
-
-        this.CleanUpFiles();
       }
 
       // free native resources if there are any.
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
+    // Interface IDisposable
+    public void Dispose()
+    {
+      this.Dispose(true);
+      GC.SuppressFinalize(this);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

@@ -15,7 +15,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Media;
 using TrashWizard.Win32;
 using TrashWizard.Windows;
 using Cursor = System.Windows.Input.Cursor;
@@ -59,6 +61,7 @@ namespace TrashWizard
         loUserSettings.GetOptionsFormShowAlertForFile(), loUserSettings.GetOptionsFormShowFileSizeForFile(),
         loUserSettings.GetOptionsFormFileSizeTypeForFile(), loUserSettings.GetOptionsFormShowFileDateForFile(),
         loUserSettings.GetOptionsFormFileDateTypeForFile(), loUserSettings.GetOptionsFormShowFileAttributesForFile());
+
       this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING,
         loUserSettings.GetOptionsFormShowAlertForTemporary());
     }
@@ -263,7 +266,7 @@ namespace TrashWizard
 
       this.UpdateListBox("");
 
-      this.UpdateListBox("Press the Remove button to delete the above listed files.");
+      this.UpdateListBox("Press the Remove button to delete the above listed files.", true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -386,11 +389,11 @@ namespace TrashWizard
                          " (" +
                          Util.formatBytes_Actual(lnNewFreeSpace - lnCurrentFreeSpace) + ")");
       this.UpdateListBox("");
-      this.UpdateListBox("The operation has successfully completed.");
+      this.UpdateListBox("The operation has successfully completed.", true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public void UpdateListBox(string tcMessage)
+    public void UpdateListBox(string tcMessage, bool tlLast = false)
     {
       var loMainWindow = this.foMainWindow;
       var loDispatcher = loMainWindow.Dispatcher;
@@ -405,15 +408,31 @@ namespace TrashWizard
         // Pass the same function to BeginInvoke,
         // but the call would come on the correct
         // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new UpdateListBoxDelegate(this.UpdateListBox), tcMessage);
+        loDispatcher.Invoke(new UpdateListBoxDelegate(this.UpdateListBox), tcMessage, tlLast);
 
         return;
       }
 
-      loMainWindow.ListBox.Items.Add(tcMessage);
-      loMainWindow.ListBox.SelectedIndex = loMainWindow.ListBox.Items.Count - 1;
+      var loListBox = loMainWindow.ListBox;
+      loListBox.Items.Add(tcMessage);
+
+      // Must come after adding, duh.
+      var lnCount = loListBox.Items.Count;
+
+      if ((tlLast) || ((lnCount % 40) == 0))
+      {
+        // Excellent solution to scrolling to bottom. ScrollIntoView was really quirky and would not always work.
+        // https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added
+        if (loListBox != null)
+        {
+          var loBorder = (Border) VisualTreeHelper.GetChild(loListBox, 0);
+          var loScrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(loBorder, 0);
+          loScrollViewer.ScrollToBottom();
+        }
+      }
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateFormCursors(Cursor toCursor)
     {
       var loMainWindow = this.foMainWindow;
@@ -434,26 +453,9 @@ namespace TrashWizard
       }
 
       loMainWindow.Cursor = toCursor;
-      // Set all of the top level components in the form. By the way, this does
-      // not cascade down through each container.
-      /*
-      foreach (Control loControl in loMainWindow.Controls)
-      {
-        loControl.Cursor = toCursor;
-      }
-*/
-      // Since these containers have active components, I want an AppStarting cursor
-      // to appear instead of the hour glass cursor.
-
-      /*
-      loMainWindow.TreeViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
-      loMainWindow.GridViewForFile.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
-
-      loMainWindow.ListBox.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
-      loMainWindow.MenuStrip.Cursor = toCursor == Cursors.WaitCursor ? Cursors.AppStarting : toCursor;
-      */
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateMenusAndControls(bool tlEnable)
     {
       var loMainWindow = this.foMainWindow;
@@ -497,7 +499,7 @@ namespace TrashWizard
     private delegate void UpdateGridFromListDelegate();
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private delegate void UpdateListBoxDelegate(string tcMessage);
+    private delegate void UpdateListBoxDelegate(string tcMessage, bool tlLast);
 
     // ---------------------------------------------------------------------------------------------------------------------
     private delegate void UpdateFormCursorDelegate(Cursor toCursor);

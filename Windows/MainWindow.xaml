@@ -32,13 +32,13 @@
       </MenuItem>
 
       <MenuItem x:Name="MenuItemAction1" Header="_Action">
-        <MenuItem x:Name="MenuItemRun1" Header="Run" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemRun1" Header="Run" HorizontalAlignment="Left" Click="AppRun">
           <MenuItem.Icon>
             <Image Source="../images/run.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemRemove1" Header="Remove" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemRemove1" Header="Remove" HorizontalAlignment="Left" Click="AppRemove">
           <MenuItem.Icon>
             <Image Source="../images/remove.png" />
           </MenuItem.Icon>
@@ -124,7 +124,8 @@
             <TextBlock Text="Save" />
           </StackPanel>
         </Button>
-        <Button x:Name="BtnRemove1" ToolTip="Remove the displayed files." Style="{StaticResource ToolbarButton}">
+        <Button x:Name="BtnRemove1" ToolTip="Remove the displayed files." Style="{StaticResource ToolbarButton}"
+                Click="AppRemove">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/remove.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Remove" />

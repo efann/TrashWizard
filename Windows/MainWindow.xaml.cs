@@ -92,7 +92,7 @@ namespace TrashWizard.Windows
       this.lblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
 
       this.tmrRunning.Interval = 1000;
-      this.tmrRunning.Elapsed += this.tmrRunning_Tick;
+      this.tmrRunning.Elapsed += this.TimerElapsedEvent;
 
       this.setupComboboxex();
     }
@@ -259,7 +259,6 @@ namespace TrashWizard.Windows
       this.foDelegateRoutines.UpdateMenusAndControls(true);
     }
 
-
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppRun(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
@@ -273,6 +272,12 @@ namespace TrashWizard.Windows
           this.StartThread(ThreadTypes.ThreadFilesViewGraph);
           break;
       }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void AppRemove(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      this.StartThread(ThreadTypes.ThreadTemporaryRemove);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -504,6 +509,8 @@ namespace TrashWizard.Windows
         this.foDelegateRoutines.FileInformationForTemporary.GenerateFileInformation(loDirectoryInfo);
 
         this.foDelegateRoutines.UpdateControlForTemporary();
+
+        this.foDelegateRoutines.FileInformationForTemporary.XmlFileInformation.CleanUpFiles();
       }
       catch (Exception loErr)
       {
@@ -661,7 +668,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void tmrRunning_Tick(object toSource, ElapsedEventArgs teElapsedEventArgs)
+    private void TimerElapsedEvent(object toSource, ElapsedEventArgs teElapsedEventArgs)
     {
       this.UpdateTimeRunning();
     }
