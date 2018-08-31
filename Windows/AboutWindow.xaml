@@ -47,7 +47,7 @@
 
       <FlowDocumentReader Grid.Row="3">
         <FlowDocument>
-          <Table CellSpacing="5">
+          <Table Name="tblEnvironment" CellSpacing="5">
 
             <Table.Columns>
               <TableColumn />
@@ -66,14 +66,6 @@
                 </TableCell>
               </TableRow>
 
-              <TableRow>
-                <TableCell>
-                  <Paragraph>Mercury</Paragraph>
-                </TableCell>
-                <TableCell>
-                  <Paragraph>57,910,000 km</Paragraph>
-                </TableCell>
-              </TableRow>
             </TableRowGroup>
           </Table>
         </FlowDocument>

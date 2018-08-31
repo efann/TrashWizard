@@ -347,8 +347,8 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppShowCredits(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var lnHeight = (int) (SystemParameters.VirtualScreenHeight * 0.4);
-      var lnWidth = (int) (SystemParameters.VirtualScreenWidth * 0.25);
+      var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.4);
+      var lnWidth  =(int) (SystemParameters.PrimaryScreenWidth * 0.4);
 
       var loDisplay = new WebDisplay(this, "https://www.beowurks.com/ajax/node/22", lnHeight, lnWidth);
       loDisplay.ShowDialog();
@@ -357,7 +357,10 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppShowAbout(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var loDisplay = new AboutWindow(this);
+      var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.7);
+      var lnWidth  =(int) (SystemParameters.PrimaryScreenWidth * 0.4);
+
+      var loDisplay = new AboutWindow(this, lnHeight, lnWidth);
       loDisplay.ShowDialog();
     }
 

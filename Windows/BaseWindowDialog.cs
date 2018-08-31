@@ -63,8 +63,10 @@ namespace TrashWizard.Windows
 
       this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
       this.WindowStyle = WindowStyle.ThreeDBorderWindow;
-      this.SizeToContent = SizeToContent.WidthAndHeight;
-
+      // Don't use SizeToContent.WidthAndHeight. If items like
+      // webview don't have content at first, then the size will be 0.
+      this.SizeToContent = SizeToContent.Manual;
+      
       this.SourceInitialized += this.SetupWindowButtons;
     }
 

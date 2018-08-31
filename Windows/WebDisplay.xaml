@@ -1,21 +1,25 @@
 ﻿<local:BaseWindowDialog x:Class="TrashWizard.Windows.WebDisplay"
-                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:wpf="clr-namespace:Microsoft.Toolkit.Win32.UI.Controls.WPF;assembly=Microsoft.Toolkit.Win32.UI.Controls"
-                  xmlns:local="clr-namespace:TrashWizard.Windows"
-                  mc:Ignorable="d">
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:wpf="clr-namespace:Microsoft.Toolkit.Win32.UI.Controls.WPF;assembly=Microsoft.Toolkit.Win32.UI.Controls"
+                        xmlns:local="clr-namespace:TrashWizard.Windows"
+                        mc:Ignorable="d">
   <Grid Margin="15">
     <Grid.RowDefinitions>
-      <RowDefinition />
-      <RowDefinition />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-    <wpf:WebView x:Name="foWebView" Grid.Row="0" MinHeight="325" MinWidth="700" />
-    <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="0,15,0,0">
-      <Button Content="OK"
+    <wpf:WebView x:Name="foWebView" Grid.Row="0" />
+    <Grid Grid.Row="1" HorizontalAlignment="Right">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <Button Content="OK" Grid.Column="0"
               Name="btnOK" TabIndex="1600" IsDefault="True"
               Click="btnOk_Click" />
-    </WrapPanel>
+    </Grid>
   </Grid>
 </local:BaseWindowDialog>
