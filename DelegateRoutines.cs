@@ -32,12 +32,9 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   internal class DelegateRoutines : IDisposable
   {
-    // ---------------------------------------------------------------------------------------------------------------------
     public delegate void ResetFileVariablesDelegate();
 
-    // ---------------------------------------------------------------------------------------------------------------------
-    public delegate void ResetViewControlsForFileDelegate();
-
+    private static readonly int FILE_DISPLAY_SKIP = 100;
     private static readonly string INDENT = "  ";
 
     private readonly DataTable foDataTable = new DataTable();
@@ -419,7 +416,7 @@ namespace TrashWizard
       // Must come after adding, duh.
       var lnCount = loListBox.Items.Count;
 
-      if ((tlLast) || ((lnCount % 40) == 0))
+      if (tlLast || ((lnCount % DelegateRoutines.FILE_DISPLAY_SKIP) == 0))
       {
         // Excellent solution to scrolling to bottom. ScrollIntoView was really quirky and would not always work.
         // https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added

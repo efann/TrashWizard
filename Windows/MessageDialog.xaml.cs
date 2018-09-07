@@ -17,6 +17,9 @@ namespace TrashWizard.Windows
     {
       this.InitializeComponent();
       this.ResizeMode = ResizeMode.NoResize;
+      
+      // Otherwise, the dialog is too large with the button(s) in the middle right of the screen.
+      this.SizeToContent = SizeToContent.WidthAndHeight;
 
       this.lblMessage.Content = tcMessage;
       switch (toBoxButton)

@@ -1,14 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Deployment.Application;
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
-using System.Collections;
-using System.Data;
-using System.Deployment.Application;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard.Windows
@@ -114,14 +109,12 @@ namespace TrashWizard.Windows
       this.AddRow("Path.PathSeparator", Path.PathSeparator.ToString());
       this.AddRow("Path.VolumeSeparatorChar", Path.VolumeSeparatorChar.ToString());
 
-      IDictionary loEnvironmentVariables = Environment.GetEnvironmentVariables();
+      var loEnvironmentVariables = Environment.GetEnvironmentVariables();
       foreach (DictionaryEntry loEntry in loEnvironmentVariables)
-      {
         this.AddRow("System: " + loEntry.Key, loEntry.Value.ToString());
-      }
 
       this.AddRow("Windows Directory", Util.GetWindowsDirectory());
-      string lcWindowsTemp = Util.GetWindowsTempDirectory();
+      var lcWindowsTemp = Util.GetWindowsTempDirectory();
       if (lcWindowsTemp.Length > 0)
       {
         this.AddRow("Windows Temp Directory", lcWindowsTemp);
@@ -129,7 +122,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void AddRow(String tcLabel, String tcValue)
+    private void AddRow(string tcLabel, string tcValue)
     {
       this.tblEnvironment.RowGroups[0].Rows.Add(new TableRow());
       var lnCount = this.tblEnvironment.RowGroups[0].Rows.Count;

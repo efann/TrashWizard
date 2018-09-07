@@ -103,7 +103,7 @@ namespace TrashWizard.Windows
       if (toSender == this.lblCurrentFolder1)
       {
         var loLabel = (Label) toSender;
-        if (loLabel.Content == MainWindow.FILES_CURRENT_LABEL_START)
+        if (object.ReferenceEquals(loLabel.Content, MainWindow.FILES_CURRENT_LABEL_START))
         {
           Util.ErrorMessage(MainWindow.FILES_CURRENT_LABEL_START);
         }
