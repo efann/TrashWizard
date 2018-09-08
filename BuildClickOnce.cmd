@@ -3,5 +3,5 @@ set lcMSBuild="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSB
 
 rmdir bin /S /Q
 %lcMSBuild% /target:build
-%lcMSBuild% TrashWizard.csproj @TrashWizard.Prop.rsp
+%lcMSBuild% TrashWizard.csproj @TrashWizard.Response.txt
 

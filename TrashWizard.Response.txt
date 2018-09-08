@@ -1,0 +1,23 @@
+/target:publish
+/property:Install=true
+/property:InstallFrom=Web
+/property:UpdateEnabled=true
+/property:UpdateMode=Background
+/property:UpdateInterval=7
+/property:UpdateIntervalUnits=Days
+/property:UpdatePeriodically=true
+/property:UpdateRequired=true
+/property:MapFileExtensions=true
+/property:InstallUrl=http://www.beowurks.com/Software/NET/TrashWizard.WPF/
+/property:UpdateUrl=http://www.beowurks.com/Software/NET/TrashWizard.WPF/
+#No spaces in the property value are allowed.
+/property:ProductName="Trash Wizard"
+/property:PublisherName=Beowurks
+/property:MinimumRequiredVersion=2018.0.0.34
+/property:CreateWebPageOnPublish=true
+/property:WebPage=publish.htm
+/property:OpenBrowserOnPublish=false
+/property:ApplicationVersion=2018.0.0.34
+/property:UseApplicationTrust=false
+/property:PublishWizardCompleted=true
+/property:BootstrapperEnabled=true
