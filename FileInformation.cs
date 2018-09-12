@@ -1,15 +1,14 @@
 ﻿// =============================================================================
 // Trash Wizard : a Windows utility program for maintaining your temporary files.
 //  =============================================================================
-// 
-// (C) Copyright 2007-2017, by Beowurks.
-// 
+//  
+// (C) Copyright 2007-2018, by Beowurks.
+//  
 // This application is an open-source project; you can redistribute it and/or modify it under 
-// the terms of the Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php). 
+// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/). 
 // This EPL license applies retroactively to all previous versions of Trash Wizard.
 // 
-// Original Author:  Eddie Fann
-
+// Original Author: Eddie Fann
 
 using System;
 using System.Collections.Generic;
@@ -25,12 +24,6 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public class FileInformation : IDisposable
   {
-    public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
-
-    public List<DirectoryInfo> FolderRoots { get; private set; }
-
-    public XmlFileInformation XmlFileInformation { get; }
-
     private readonly string fcXmlFilePath;
 
     private readonly List<FileData> foFileListData = new List<FileData>();
@@ -72,6 +65,12 @@ namespace TrashWizard
 
       this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
     }
+
+    public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
+
+    public List<DirectoryInfo> FolderRoots { get; private set; }
+
+    public XmlFileInformation XmlFileInformation { get; }
 
     public int FilesProcessed
     {
@@ -231,6 +230,7 @@ namespace TrashWizard
           // Any uncaught exception from loadFilesIntoTreeView will stop the loop.
           // Here's a discussion of using try..catch and optimization.
           // http://www.programmersheaven.com/user/pheaven/blog/175-Do-trycatch-blocks-hurt-runtime-performance/
+        {
           try
           {
             lnTotalBytes += this.GatherFileInformation(loDirectory, tnFolderLevel + 1);
@@ -243,6 +243,7 @@ namespace TrashWizard
             Util.InfoMessage("Trash Wizard will continue. However notify www.beowurks.com of the following error:\n" +
                              loErr.Message);
           }
+        }
       }
       catch (ThreadAbortException)
       {

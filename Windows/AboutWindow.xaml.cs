@@ -1,4 +1,16 @@
-﻿using System;
+﻿// =============================================================================
+// Trash Wizard : a Windows utility program for maintaining your temporary files.
+//  =============================================================================
+//  
+// (C) Copyright 2007-2018, by Beowurks.
+//  
+// This application is an open-source project; you can redistribute it and/or modify it under 
+// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/). 
+// This EPL license applies retroactively to all previous versions of Trash Wizard.
+// 
+// Original Author: Eddie Fann
+
+using System;
 using System.Collections;
 using System.Deployment.Application;
 using System.IO;
@@ -13,6 +25,9 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class AboutWindow
   {
+    private const string TRASH_WIZARD_URL = "https://www.beowurks.com/applications/single/Trash-Wizard";
+    private const string BEOWURKS_URL = "https://www.beowurks.com/";
+
     // ---------------------------------------------------------------------------------------------------------------------
     public AboutWindow(Window toParent, int tnHeight, int tnWidth) : base(toParent, true, false)
     {
@@ -40,6 +55,8 @@ namespace TrashWizard.Windows
       {
         NavigateUri = new Uri("https://www.beowurks.com/")
       };
+
+      loHyperlink.Click += this.Hyperlink_Click;
 
       loInlines = this.lblCopyright.Inlines;
       loInlines.Clear();
@@ -111,7 +128,9 @@ namespace TrashWizard.Windows
 
       var loEnvironmentVariables = Environment.GetEnvironmentVariables();
       foreach (DictionaryEntry loEntry in loEnvironmentVariables)
+      {
         this.AddRow("System: " + loEntry.Key, loEntry.Value.ToString());
+      }
 
       this.AddRow("Windows Directory", Util.GetWindowsDirectory());
       var lcWindowsTemp = Util.GetWindowsTempDirectory();
@@ -133,12 +152,29 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void btnOk_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
+    private void BtnOk_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       this.DialogResult = true;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    private void Hyperlink_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      if (toSender.GetType() != typeof(Hyperlink))
+      {
+        return;
+      }
+
+      var loHyper = (Hyperlink) toSender;
+
+      Util.LaunchBrowser(loHyper.NavigateUri.AbsoluteUri);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void ButtonImage_OnClick(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      Util.LaunchBrowser(AboutWindow.TRASH_WIZARD_URL);
+    }
   }
 
   // ---------------------------------------------------------------------------------------------------------------------

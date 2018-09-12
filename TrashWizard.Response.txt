@@ -8,8 +8,8 @@
 /property:UpdatePeriodically=true
 /property:UpdateRequired=true
 /property:MapFileExtensions=true
-/property:InstallUrl=http://www.beowurks.com/Software/NET/TrashWizard.WPF/
-/property:UpdateUrl=http://www.beowurks.com/Software/NET/TrashWizard.WPF/
+/property:InstallUrl=https://www.beowurks.com/Software/NET/TrashWizard.WPF/
+/property:UpdateUrl=https://www.beowurks.com/Software/NET/TrashWizard.WPF/
 #No spaces in the property value are allowed.
 /property:ProductName="Trash Wizard"
 /property:PublisherName=Beowurks
@@ -21,3 +21,8 @@
 /property:UseApplicationTrust=false
 /property:PublishWizardCompleted=true
 /property:BootstrapperEnabled=true
+#
+/property:CreatePackageOnPublish=true
+/property:DeployOnBuild=true
+#Note the \\ before the ". Otherwise, it'll treat it as a special character.
+/property:PublishDir="D:\Temp\NET\TrashWizard\\"

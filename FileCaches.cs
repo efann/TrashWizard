@@ -1,15 +1,14 @@
 // =============================================================================
 // Trash Wizard : a Windows utility program for maintaining your temporary files.
 //  =============================================================================
-// 
-// (C) Copyright 2007-2017, by Beowurks.
-// 
+//  
+// (C) Copyright 2007-2018, by Beowurks.
+//  
 // This application is an open-source project; you can redistribute it and/or modify it under 
-// the terms of the Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php). 
+// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/). 
 // This EPL license applies retroactively to all previous versions of Trash Wizard.
 // 
-// Original Author:  Eddie Fann
-
+// Original Author: Eddie Fann
 
 using System;
 using System.Collections.Generic;
@@ -27,17 +26,17 @@ namespace TrashWizard
     // References for below folders came mainly from http://sourceforge.net/p/bleachbit/code/HEAD/tree/trunk/cleaners/
     // Also starting to use winapp2.ini: http://www.winapp2.com/Winapp2.ini
 
-    private static readonly string APPLICATION_DATA = "{ApplicationData}";
-    private static readonly string LOCAL_APP_DATA = "{LocalAppData}";
-    private static readonly string USER_PROFILE = "{UserProfile}";
+    private const string APPLICATION_DATA = "{ApplicationData}";
+    private const string LOCAL_APP_DATA = "{LocalAppData}";
+    private const string USER_PROFILE = "{UserProfile}";
 
-    private static readonly string ENV_APPLICATION_DATA =
+    private static readonly string EnvApplicationData =
       Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-    private static readonly string ENV_LOCAL_APP_DATA =
+    private static readonly string EnvLocalAppData =
       Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-    private static readonly string ENV_USER_PROFILE = Environment.GetEnvironmentVariable("USERPROFILE");
+    private static readonly string EnvUserProfile = Environment.GetEnvironmentVariable("USERPROFILE");
 
     public static string[] AdobeFlashPlayerAliases =
     {
@@ -108,9 +107,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private static string ConvertDirectoryAlias(string tcDirectory)
     {
-      var lcDirectory = tcDirectory.Replace(FileCaches.LOCAL_APP_DATA, FileCaches.ENV_LOCAL_APP_DATA)
-        .Replace(FileCaches.USER_PROFILE, FileCaches.ENV_USER_PROFILE)
-        .Replace(FileCaches.APPLICATION_DATA, FileCaches.ENV_APPLICATION_DATA);
+      var lcDirectory = tcDirectory.Replace(FileCaches.LOCAL_APP_DATA, FileCaches.EnvLocalAppData)
+        .Replace(FileCaches.USER_PROFILE, FileCaches.EnvUserProfile)
+        .Replace(FileCaches.APPLICATION_DATA, FileCaches.EnvApplicationData);
 
       return lcDirectory;
     }

@@ -1,4 +1,16 @@
-﻿using System;
+﻿// =============================================================================
+// Trash Wizard : a Windows utility program for maintaining your temporary files.
+//  =============================================================================
+//  
+// (C) Copyright 2007-2018, by Beowurks.
+//  
+// This application is an open-source project; you can redistribute it and/or modify it under 
+// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/). 
+// This EPL license applies retroactively to all previous versions of Trash Wizard.
+// 
+// Original Author: Eddie Fann
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -22,50 +34,14 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class MainWindow
   {
-    public UserSettings UserSettings { get; } = new UserSettings();
-
-    public ListBox ListBox => this.ListBox1;
-
-    public Menu MenuMain => this.MenuMain1;
-
-    // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
-    public Button ButtonCancel => this.BtnCancel1;
-
-    public Button ButtonSave => this.BtnSave1;
-
-    public Button ButtonRun => this.BtnRun1;
-
-    public Button ButtonRemove => this.BtnRemove1;
-
-    public TabControl TabControl => this.TabControlMain;
-
-    public MenuItem MenuItemCancel => this.MenuItemCancel1;
-
-    public MenuItem MenuItemSave => this.MenuItemSave1;
-
-    public MenuItem MenuItemRun => this.MenuItemRun1;
-
-    public MenuItem MenuItemRemove => this.MenuItemRemove1;
-
-    public MenuItem MenuItemOptions => this.MenuItemOptions1;
-
     public const string FILES_CURRENT_LABEL_START =
       "No current folder selected. Select the Drive combobox and then press Run.";
+
+    private readonly DelegateRoutines foDelegateRoutines;
 
     private readonly UserSettings foUserSettings = new UserSettings();
 
     private readonly Timer tmrRunning = new Timer();
-
-    private enum ThreadTypes
-    {
-      ThreadTemporaryLocate,
-      ThreadTemporaryRemove,
-      ThreadFilesViewGraph
-    }
-
-    public Func<ChartPoint, string> PointLabel { get; set; }
-
-    private readonly DelegateRoutines foDelegateRoutines;
 
     private ThreadTypes fnThreadType;
 
@@ -94,8 +70,37 @@ namespace TrashWizard.Windows
       this.tmrRunning.Interval = 1000;
       this.tmrRunning.Elapsed += this.TimerElapsedEvent;
 
-      this.setupComboboxex();
+      this.SetupComboboxex();
     }
+
+    public UserSettings UserSettings { get; } = new UserSettings();
+
+    public ListBox ListBox => this.ListBox1;
+
+    public Menu MenuMain => this.MenuMain1;
+
+    // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
+    public Button ButtonCancel => this.BtnCancel1;
+
+    public Button ButtonSave => this.BtnSave1;
+
+    public Button ButtonRun => this.BtnRun1;
+
+    public Button ButtonRemove => this.BtnRemove1;
+
+    public TabControl TabControl => this.TabControlMain;
+
+    public MenuItem MenuItemCancel => this.MenuItemCancel1;
+
+    public MenuItem MenuItemSave => this.MenuItemSave1;
+
+    public MenuItem MenuItemRun => this.MenuItemRun1;
+
+    public MenuItem MenuItemRemove => this.MenuItemRemove1;
+
+    public MenuItem MenuItemOptions => this.MenuItemOptions1;
+
+    public Func<ChartPoint, string> PointLabel { get; set; }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void ClickOnLabel(object toSender, MouseButtonEventArgs e)
@@ -111,7 +116,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void setupComboboxex()
+    private void SetupComboboxex()
     {
       var loCombo = this.cboDrives1;
 
@@ -140,19 +145,19 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateTimeRunning()
     {
-      bool llThreadRunning = this.IsThreadRunning();
+      var llThreadRunning = this.IsThreadRunning();
 
-      TimeSpan loDiff = DateTime.Now - this.foStartTime;
-      int lnSeconds = loDiff.Seconds;
-      int lnMinutes = loDiff.Minutes;
-      int lnHours = loDiff.Hours;
+      var loDiff = DateTime.Now - this.foStartTime;
+      var lnSeconds = loDiff.Seconds;
+      var lnMinutes = loDiff.Minutes;
+      var lnHours = loDiff.Hours;
 
-      string lcHours = lnHours.ToString("00");
-      string lcMinutes = lnMinutes.ToString("00");
-      string lcSeconds = lnSeconds.ToString("00");
+      var lcHours = lnHours.ToString("00");
+      var lcMinutes = lnMinutes.ToString("00");
+      var lcSeconds = lnSeconds.ToString("00");
 
-      int lnFilesProcessed = 0;
-      int lnFilesDisplayed = 0;
+      var lnFilesProcessed = 0;
+      var lnFilesDisplayed = 0;
       switch (this.fnThreadType)
       {
         case ThreadTypes.ThreadTemporaryLocate:
@@ -171,8 +176,8 @@ namespace TrashWizard.Windows
           break;
       }
 
-      string lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
-      string lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
+      var lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
+      var lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
 
       this.lblTimeRunning1.Text = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
                                   " files processed; " + lcFilesDisplayed + " files displayed out of " +
@@ -348,7 +353,7 @@ namespace TrashWizard.Windows
     private void AppShowCredits(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.4);
-      var lnWidth  =(int) (SystemParameters.PrimaryScreenWidth * 0.4);
+      var lnWidth = (int) (SystemParameters.PrimaryScreenWidth * 0.4);
 
       var loDisplay = new WebDisplay(this, "https://www.beowurks.com/ajax/node/22", lnHeight, lnWidth);
       loDisplay.ShowDialog();
@@ -357,8 +362,8 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppShowAbout(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.7);
-      var lnWidth  =(int) (SystemParameters.PrimaryScreenWidth * 0.4);
+      var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.5);
+      var lnWidth = (int) (SystemParameters.PrimaryScreenWidth * 0.4);
 
       var loDisplay = new AboutWindow(this, lnHeight, lnWidth);
       loDisplay.ShowDialog();
@@ -436,7 +441,7 @@ namespace TrashWizard.Windows
 
       this.foDelegateRoutines.ResetFileVariablesForTemporary();
 
-      List<DirectoryInfo> loDirectoryInfo = new List<DirectoryInfo>();
+      var loDirectoryInfo = new List<DirectoryInfo>();
 
       // Temporary Files
       if (this.UserSettings.GetMainFormIncludeTempFiles())
@@ -445,7 +450,7 @@ namespace TrashWizard.Windows
         loDirectoryInfo.Add(new DirectoryInfo(Path.GetTempPath()));
 
         // Windows Temp Directory
-        string lcWindowsTemp = Util.GetWindowsTempDirectory();
+        var lcWindowsTemp = Util.GetWindowsTempDirectory();
         if (lcWindowsTemp.Length > 0)
         {
           loDirectoryInfo.Add(new DirectoryInfo(lcWindowsTemp));
@@ -458,7 +463,7 @@ namespace TrashWizard.Windows
         List<DirectoryInfo> loDirectoryList = null;
 
         loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.AdobeFlashPlayerAliases);
-        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
         }
@@ -470,19 +475,19 @@ namespace TrashWizard.Windows
         List<DirectoryInfo> loDirectoryList = null;
 
         loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.GoogleChromeAliases);
-        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
         }
 
         loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MicrosoftInternetExplorerAliases);
-        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
         }
 
         loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MozillaFirefoxAliases);
-        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
         }
@@ -494,7 +499,7 @@ namespace TrashWizard.Windows
         List<DirectoryInfo> loDirectoryList = null;
 
         loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MicrosoftOfficeAliases);
-        foreach (DirectoryInfo loDirInfo in loDirectoryList)
+        foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
         }
@@ -523,7 +528,7 @@ namespace TrashWizard.Windows
       if (loException != null)
       {
         // Since this is a critical error, always show it.
-        string lcErrorMessage =
+        var lcErrorMessage =
           "A program error has occurred so the building of the file listing must stop. Please notify Beowurks at www.beowurks.com.\n\n" +
           loException.Message + "\n\n" + loException + "\n" + loException.StackTrace;
         Util.ErrorMessage(lcErrorMessage);
@@ -552,20 +557,20 @@ namespace TrashWizard.Windows
 
       this.foDelegateRoutines.ResetFileVariablesForFile();
 
-      string lcStartDirectory = this.cboDrives1.Text;
-      List<DirectoryInfo> loStartDirectoryInfo = new List<DirectoryInfo> {new DirectoryInfo(lcStartDirectory)};
+      var lcStartDirectory = this.cboDrives1.Text;
+      var loStartDirectoryInfo = new List<DirectoryInfo> {new DirectoryInfo(lcStartDirectory)};
 
       Exception loException = null;
 
       try
       {
-        bool llRefresh = llForce || !this.foDelegateRoutines.FileInformationForFile.FileProcessComplete;
+        var llRefresh = llForce || !this.foDelegateRoutines.FileInformationForFile.FileProcessComplete;
         // The following is awkward code. However, this.foDelegateRoutines.FileInformationForFile is used by
         // both the Temporary Files and Files.
         if (!llRefresh)
         {
           // Now check to see if the queried directories are the same.
-          List<DirectoryInfo> loCurrentDirectoryInfo = this.foDelegateRoutines.FileInformationForFile.FolderRoots;
+          var loCurrentDirectoryInfo = this.foDelegateRoutines.FileInformationForFile.FolderRoots;
           if (loCurrentDirectoryInfo == null)
           {
             llRefresh = true;
@@ -576,8 +581,8 @@ namespace TrashWizard.Windows
           }
           else
           {
-            int lnCount = loCurrentDirectoryInfo.Count;
-            for (int i = 0; i < lnCount; ++i)
+            var lnCount = loCurrentDirectoryInfo.Count;
+            for (var i = 0; i < lnCount; ++i)
             {
               // Windows is case-insensitive.
               if (!loCurrentDirectoryInfo[i].FullName.ToLower().Equals(loStartDirectoryInfo[i].FullName.ToLower()))
@@ -604,7 +609,7 @@ namespace TrashWizard.Windows
       if (loException != null)
       {
         // Since this is a critical error, always show it.
-        string lcErrorMessage =
+        var lcErrorMessage =
           "A program error has occurred so the building of the file listing must stop. Please notify Beowurks at www.beowurks.com.\n\n" +
           loException.Message + "\n\n" + loException + "\n" + loException.StackTrace;
         Util.ErrorMessage(lcErrorMessage);
@@ -617,7 +622,7 @@ namespace TrashWizard.Windows
     //-----------------------------------------------------------------------------
     private void SaveInfoToTextForTemporary()
     {
-      string lcLogFile = this.GetSaveFile();
+      var lcLogFile = this.GetSaveFile();
       if (lcLogFile == null)
       {
         return;
@@ -629,10 +634,10 @@ namespace TrashWizard.Windows
       {
         // Create an instance of StreamWriter to write text to a file.
         // The using statement also closes the StreamWriter.
-        using (StreamWriter loStream = new StreamWriter(lcLogFile))
+        using (var loStream = new StreamWriter(lcLogFile))
         {
-          int lnCount = this.ListBox1.Items.Count;
-          for (int i = 0; i < lnCount; ++i)
+          var lnCount = this.ListBox1.Items.Count;
+          for (var i = 0; i < lnCount; ++i)
           {
             loStream.WriteLine(this.ListBox1.Items[i]);
           }
@@ -652,7 +657,7 @@ namespace TrashWizard.Windows
 
     private string GetSaveFile()
     {
-      SaveFileDialog loSaveFileDialog = new SaveFileDialog
+      var loSaveFileDialog = new SaveFileDialog
       {
         Filter = "Text File|*.txt",
         Title = "Save Log File",
@@ -661,7 +666,7 @@ namespace TrashWizard.Windows
 
       if (loSaveFileDialog.ShowDialog() == true)
       {
-        string lcFileName = loSaveFileDialog.FileName;
+        var lcFileName = loSaveFileDialog.FileName;
         this.foUserSettings.SetSavePath(Directory.GetParent(lcFileName).FullName);
 
         return lcFileName;
@@ -674,6 +679,13 @@ namespace TrashWizard.Windows
     private void TimerElapsedEvent(object toSource, ElapsedEventArgs teElapsedEventArgs)
     {
       this.UpdateTimeRunning();
+    }
+
+    private enum ThreadTypes
+    {
+      ThreadTemporaryLocate,
+      ThreadTemporaryRemove,
+      ThreadFilesViewGraph
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

@@ -4,35 +4,42 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:local="clr-namespace:TrashWizard.Windows"
-                        mc:Ignorable="d">
-  <Grid Margin="15">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="Auto" />
-    </Grid.ColumnDefinitions>
+                        mc:Ignorable="d" Width="771">
+  <Grid Margin="15,12.624,15,0">
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" MaxWidth="256" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
 
-    <Grid Grid.Column="0">
+    <Grid Grid.Column="0" Grid.Row="0">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
       </Grid.RowDefinitions>
-      <Image Grid.Row="0" Source="../Images/Logo.png" />
-      <TextBlock Grid.Row="1">
+      <Button Grid.Row="0" Click="ButtonImage_OnClick" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              Height="Auto" Width="Auto" Background="Transparent">
+        <StackPanel>
+          <Image Source="../Images/Logo.png" />
+        </StackPanel>
+      </Button>
+      <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" TextWrapping="Wrap"
+                 Margin="0,0,0.44,0">
         Licensed under the
-        <Hyperlink NavigateUri="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License - v 2.0</Hyperlink>.
+        <Hyperlink NavigateUri="https://www.eclipse.org/legal/epl-2.0/" Click="Hyperlink_Click">Eclipse Public License - v 2.0</Hyperlink>
+        .
       </TextBlock>
     </Grid>
 
-    <Grid Grid.Column="1">
+    <Grid Grid.Column="1" Grid.Row="0">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
-        <RowDefinition Height="400" />
+        <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
       <!--
@@ -40,14 +47,17 @@
         left-align with the other TextBlocks.
       -->
       <TextBlock Name="lblTitle" Grid.Row="0">
-        <Hyperlink NavigateUri="https://www.beowurks.com/applications/single/Trash-Wizard">JEquity</Hyperlink>
+        <Hyperlink NavigateUri="https://www.beowurks.com/applications/single/Trash-Wizard" Click="Hyperlink_Click">Trash Wizard</Hyperlink>
       </TextBlock>
       <TextBlock Name="lblVersion" Grid.Row="1" />
       <TextBlock Name="lblCopyright" Grid.Row="2" />
 
-      <FlowDocumentReader Grid.Row="3">
+      <FlowDocumentReader Grid.Row="3" FontSize="11">
         <FlowDocument>
-          <Table Name="tblEnvironment" CellSpacing="5">
+          <Table Name="tblEnvironment" CellSpacing="5" FontFamily="Segoe UI" FontSize="12" BorderThickness="1">
+            <Table.BorderBrush>
+              <SolidColorBrush Color="Black" />
+            </Table.BorderBrush>
 
             <Table.Columns>
               <TableColumn />
@@ -71,13 +81,13 @@
         </FlowDocument>
       </FlowDocumentReader>
     </Grid>
-    
-    <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">
+
+    <WrapPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right">
       <Button Content="OK"
               Name="btnOK" TabIndex="1600" IsDefault="True"
-              Click="btnOk_Click" />
+              Click="BtnOk_Click" />
     </WrapPanel>
-    
+
   </Grid>
 
 </local:BaseWindowDialog>

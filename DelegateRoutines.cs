@@ -1,15 +1,14 @@
 ﻿// =============================================================================
 // Trash Wizard : a Windows utility program for maintaining your temporary files.
 //  =============================================================================
-// 
-// (C) Copyright 2007-2017, by Beowurks.
-// 
+//  
+// (C) Copyright 2007-2018, by Beowurks.
+//  
 // This application is an open-source project; you can redistribute it and/or modify it under 
-// the terms of the Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php). 
+// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/). 
 // This EPL license applies retroactively to all previous versions of Trash Wizard.
 // 
-// Original Author:  Eddie Fann
-
+// Original Author: Eddie Fann
 
 using System;
 using System.Collections.Generic;
@@ -254,12 +253,14 @@ namespace TrashWizard
 
       var laDrives = DriveInfo.GetDrives();
       foreach (var loDrive in laDrives)
+      {
         if (loDrive.DriveType == DriveType.Fixed)
         {
           this.UpdateListBox(loDrive.RootDirectory + " (free space): " +
                              Util.formatBytes_GB_MB_KB(loDrive.TotalFreeSpace) + " (" +
                              Util.formatBytes_Actual(loDrive.TotalFreeSpace) + ")");
         }
+      }
 
       this.UpdateListBox("");
 
@@ -274,10 +275,12 @@ namespace TrashWizard
       long lnCurrentFreeSpace = 0;
       laDrives = DriveInfo.GetDrives();
       foreach (var loDrive in laDrives)
+      {
         if (loDrive.DriveType == DriveType.Fixed)
         {
           lnCurrentFreeSpace += loDrive.TotalFreeSpace;
         }
+      }
 
       this.UpdateListBox("");
 
@@ -286,10 +289,12 @@ namespace TrashWizard
       // First display any files that have, for whatever reason,
       // already been removed.
       foreach (var lcFile in this.foTemporaryFileList.Values)
+      {
         if (!File.Exists(lcFile) && !Directory.Exists(lcFile))
         {
           this.UpdateListBox("Already removed " + lcFile);
         }
+      }
 
       // Now get rid of the files if possible.
       foreach (var lcFile in this.foTemporaryFileList.Values)
@@ -328,6 +333,7 @@ namespace TrashWizard
 
       // Now get rid of the sub-directories if possible.
       foreach (var lcFile in this.foTemporaryFileList.Values)
+      {
         if (Directory.Exists(lcFile))
         {
           try
@@ -340,6 +346,7 @@ namespace TrashWizard
             this.UpdateListBox("Unable to remove directory " + lcFile);
           }
         }
+      }
 
       var llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
       if (llRecycleBin)
@@ -372,6 +379,7 @@ namespace TrashWizard
       laDrives = DriveInfo.GetDrives();
       long lnNewFreeSpace = 0;
       foreach (var loDrive in laDrives)
+      {
         if (loDrive.DriveType == DriveType.Fixed)
         {
           var lnFree = loDrive.TotalFreeSpace;
@@ -379,6 +387,7 @@ namespace TrashWizard
           this.UpdateListBox(loDrive.RootDirectory + " (free space): " + Util.formatBytes_GB_MB_KB(lnFree) + " (" +
                              Util.formatBytes_Actual(lnFree) + ")");
         }
+      }
 
       this.UpdateListBox("");
       this.UpdateListBox("Total Removed (Temporary Files" + (llRecycleBin ? " & Recycle Bin" : " only") + "):");
