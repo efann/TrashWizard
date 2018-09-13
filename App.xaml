@@ -94,5 +94,10 @@
       <Setter Property="Cursor" Value="Hand" />
     </Style>
 
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
   </Application.Resources>
 </Application>

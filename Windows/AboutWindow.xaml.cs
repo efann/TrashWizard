@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Deployment.Application;
 using System.IO;
 using System.Windows;
@@ -27,6 +28,9 @@ namespace TrashWizard.Windows
   {
     private const string TRASH_WIZARD_URL = "https://www.beowurks.com/applications/single/Trash-Wizard";
     private const string BEOWURKS_URL = "https://www.beowurks.com/";
+
+    private readonly ObservableCollection<SystemEnvironment> foDataCollection =
+      new ObservableCollection<SystemEnvironment>();
 
     // ---------------------------------------------------------------------------------------------------------------------
     public AboutWindow(Window toParent, int tnHeight, int tnWidth) : base(toParent, true, false)
@@ -138,17 +142,16 @@ namespace TrashWizard.Windows
       {
         this.AddRow("Windows Temp Directory", lcWindowsTemp);
       }
+
+      this.grdSystem.DataContext = this.foDataCollection;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void AddRow(string tcLabel, string tcValue)
     {
-      this.tblEnvironment.RowGroups[0].Rows.Add(new TableRow());
-      var lnCount = this.tblEnvironment.RowGroups[0].Rows.Count;
-      var loRow = this.tblEnvironment.RowGroups[0].Rows[lnCount - 1];
+      var loSystem = new SystemEnvironment {Label = tcLabel, Value = tcValue};
 
-      loRow.Cells.Add(new TableCell(new Paragraph(new Run(tcLabel))));
-      loRow.Cells.Add(new TableCell(new Paragraph(new Run(tcValue))));
+      this.foDataCollection.Add(loSystem);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -175,6 +178,16 @@ namespace TrashWizard.Windows
     {
       Util.LaunchBrowser(AboutWindow.TRASH_WIZARD_URL);
     }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    //Defines the Grid object
+    public class SystemEnvironment
+    {
+      public string Label { get; set; }
+      public string Value { get; set; }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
   }
 
   // ---------------------------------------------------------------------------------------------------------------------

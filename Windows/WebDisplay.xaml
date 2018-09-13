@@ -11,7 +11,7 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-    <wpf:WebView x:Name="foWebView" Grid.Row="0" />
+    <wpf:WebView x:Name="foWebView" Grid.Row="0" NewWindowRequested="WebView_OnNewWindowRequested" />
     <Grid Grid.Row="1" HorizontalAlignment="Right">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />

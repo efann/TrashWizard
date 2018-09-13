@@ -12,6 +12,7 @@
 
 using System;
 using System.Windows;
+using Microsoft.Toolkit.Win32.UI.Controls.Interop.WinRT;
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -42,6 +43,15 @@ namespace TrashWizard.Windows
     private void btnOk_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       this.DialogResult = true;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void WebView_OnNewWindowRequested(object toSender,
+      WebViewControlNewWindowRequestedEventArgs teWebViewControlNewWindowRequestedEventArgs)
+    {
+      teWebViewControlNewWindowRequestedEventArgs.Handled = true;
+
+      Util.LaunchBrowser(teWebViewControlNewWindowRequestedEventArgs.Uri.ToString());
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

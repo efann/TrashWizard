@@ -26,9 +26,8 @@
           <Image Source="../Images/Logo.png" />
         </StackPanel>
       </Button>
-      <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" TextWrapping="Wrap"
-                 Margin="0,0,0.44,0">
-        Licensed under the
+      <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">
+        Licensed under the<LineBreak />
         <Hyperlink NavigateUri="https://www.eclipse.org/legal/epl-2.0/" Click="Hyperlink_Click">Eclipse Public License - v 2.0</Hyperlink>
         .
       </TextBlock>
@@ -52,34 +51,12 @@
       <TextBlock Name="lblVersion" Grid.Row="1" />
       <TextBlock Name="lblCopyright" Grid.Row="2" />
 
-      <FlowDocumentReader Grid.Row="3" FontSize="11">
-        <FlowDocument>
-          <Table Name="tblEnvironment" CellSpacing="5" FontFamily="Segoe UI" FontSize="12" BorderThickness="1">
-            <Table.BorderBrush>
-              <SolidColorBrush Color="Black" />
-            </Table.BorderBrush>
-
-            <Table.Columns>
-              <TableColumn />
-              <TableColumn />
-            </Table.Columns>
-
-            <TableRowGroup>
-
-              <!-- Header row for the table. -->
-              <TableRow Background="LightGoldenrodYellow">
-                <TableCell>
-                  <Paragraph FontWeight="Bold">Label</Paragraph>
-                </TableCell>
-                <TableCell>
-                  <Paragraph FontWeight="Bold">Value</Paragraph>
-                </TableCell>
-              </TableRow>
-
-            </TableRowGroup>
-          </Table>
-        </FlowDocument>
-      </FlowDocumentReader>
+      <DataGrid Name="grdSystem" Grid.Row="3" ItemsSource="{Binding}" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Label" Binding="{Binding Label}" />
+          <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+        </DataGrid.Columns>
+      </DataGrid>
     </Grid>
 
     <WrapPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right">
