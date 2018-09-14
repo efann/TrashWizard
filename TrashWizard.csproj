@@ -14,10 +14,10 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <LangVersion>latest</LangVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>d:\temp\NET\TrashWizard\</PublishUrl>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>d:\temp\NET\TrashWizard.WPF\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
+    <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
@@ -25,10 +25,18 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>http://www.beowurks.com/Software/NET/TrashWizard.WPF/</InstallUrl>
+    <TargetCulture>en-US</TargetCulture>
+    <ProductName>Trash Wizard</ProductName>
+    <PublisherName>Beowurks</PublisherName>
     <MinimumRequiredVersion>2018.0.0.34</MinimumRequiredVersion>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>34</ApplicationRevision>
     <ApplicationVersion>2018.0.0.34</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -70,6 +78,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>TrashWizard.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df">
@@ -158,6 +169,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -176,13 +188,7 @@
     <Resource Include="images\exit.png" />
     <Resource Include="images\folder_open.png" />
     <Resource Include="images\home.png" />
-    <Resource Include="images\icon\Logo32_16.png" />
-    <Resource Include="images\icon\Logo32_24.png" />
-    <Resource Include="images\icon\Logo32_256.png" />
-    <Resource Include="images\icon\Logo32_32.png" />
-    <Resource Include="images\icon\Logo32_48.png" />
     <Resource Include="images\icon\TrashWizard.ico" />
-    <Resource Include="images\Logo.png" />
     <Resource Include="images\okay.png" />
     <Resource Include="images\options.png" />
     <Resource Include="images\player_play.png" />
@@ -209,6 +215,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\icon\Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="TrashWizard.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

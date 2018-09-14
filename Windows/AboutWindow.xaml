@@ -23,7 +23,7 @@
       <Button Grid.Row="0" Click="ButtonImage_OnClick" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               Height="Auto" Width="Auto" Background="Transparent">
         <StackPanel>
-          <Image Source="../Images/Logo.png" />
+          <Image Source="../images/icon/Logo.png" />
         </StackPanel>
       </Button>
       <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">

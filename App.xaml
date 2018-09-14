@@ -28,25 +28,27 @@
           <Setter Property="TextBlock.TextDecorations" Value="Underline" />
         </Trigger>
       </Style.Triggers>
-      <Setter Property="Foreground" Value="Brown" />
+      <Setter Property="Foreground" Value="#002C54" />
       <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
     </Style>
 
     <LinearGradientBrush x:Key="GrayBlueGradientBrush" StartPoint="0,0" EndPoint="1,1">
-      <GradientStop Color="DarkGray" Offset="0" />
-      <GradientStop Color="#CCCCFF" Offset="0.5" />
-      <GradientStop Color="DarkGray" Offset="1" />
+      <GradientStop Color="#002C54" Offset="0" />
+      <GradientStop Color="#ABD7FF" Offset="0.5" />
+      <GradientStop Color="#002C54" Offset="1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="GrayBlueGradientBrushHover" StartPoint="0,0" EndPoint="1,1">
-      <GradientStop Color="#CCCCFF" Offset="0" />
-      <GradientStop Color="DarkGray" Offset="0.5" />
-      <GradientStop Color="#CCCCFF" Offset="1" />
+      <GradientStop Color="#ABD7FF" Offset="0" />
+      <GradientStop Color="#002C54" Offset="0.5" />
+      <GradientStop Color="#ABD7FF" Offset="1" />
     </LinearGradientBrush>
 
     <Style TargetType="{x:Type Button}">
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Width" Value="75" />
       <Setter Property="Height" Value="25" />
+      <Setter Property="Foreground" Value="#002C54" />
+      <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="Background" Value="{StaticResource GrayBlueGradientBrush}" />
 
       <Setter Property="Margin" Value="10,10,10,10" />
@@ -65,7 +67,7 @@
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
           <Setter Property="Background" Value="{StaticResource GrayBlueGradientBrushHover}" />
-          <Setter Property="Foreground" Value="#444444" />
+          <Setter Property="Foreground" Value="White" />
 
           <Setter Property="Template">
             <Setter.Value>
