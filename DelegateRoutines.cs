@@ -429,12 +429,9 @@ namespace TrashWizard
       {
         // Excellent solution to scrolling to bottom. ScrollIntoView was really quirky and would not always work.
         // https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added
-        if (loListBox != null)
-        {
-          var loBorder = (Border) VisualTreeHelper.GetChild(loListBox, 0);
-          var loScrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(loBorder, 0);
-          loScrollViewer.ScrollToBottom();
-        }
+        var loBorder = (Border) VisualTreeHelper.GetChild(loListBox, 0);
+        var loScrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(loBorder, 0);
+        loScrollViewer.ScrollToBottom();
       }
     }
 

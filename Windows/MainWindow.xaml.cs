@@ -18,13 +18,13 @@ using System.IO;
 using System.Net;
 using System.Security;
 using System.Threading;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using LiveCharts;
 using Microsoft.Win32;
-using Timer = System.Timers.Timer;
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard.Windows
@@ -41,7 +41,8 @@ namespace TrashWizard.Windows
 
     private readonly UserSettings foUserSettings = new UserSettings();
 
-    private readonly Timer tmrRunning = new Timer();
+    private readonly DispatcherTimer tmrRunning =
+      new DispatcherTimer(DispatcherPriority.Normal);
 
     private ThreadTypes fnThreadType;
 
@@ -67,8 +68,8 @@ namespace TrashWizard.Windows
 
       this.lblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
 
-      this.tmrRunning.Interval = 1000;
-      this.tmrRunning.Elapsed += this.TimerElapsedEvent;
+      this.tmrRunning.Tick += new EventHandler(this.TimerElapsedEvent);
+      this.tmrRunning.Interval = TimeSpan.FromMilliseconds(1000);
 
       this.SetupComboboxex();
     }
@@ -186,7 +187,7 @@ namespace TrashWizard.Windows
       if (!llThreadRunning)
       {
         this.lblTimeRunning1.Text += " - operation complete!";
-        this.tmrRunning.Enabled = false;
+        this.tmrRunning.Stop();
       }
     }
 
@@ -211,13 +212,11 @@ namespace TrashWizard.Windows
       this.fnThreadType = tnThreadType;
       this.foStartTime = DateTime.Now;
 
-      this.tmrRunning.Enabled = true;
-
       this.foThread.Priority = ThreadPriority.Highest;
 
       this.foThread.Start();
 
-
+      this.tmrRunning.Start();
       // Go ahead and update the time running: the timer is set at 1 second intervals
       // and therefore lags behind when the thread first starts.
       this.UpdateTimeRunning();
@@ -676,10 +675,12 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void TimerElapsedEvent(object toSource, ElapsedEventArgs teElapsedEventArgs)
+    private void TimerElapsedEvent(object toSender, EventArgs teEventArgs)
     {
       this.UpdateTimeRunning();
     }
+
+    // ---------------------------------------------------------------------------------------------------------------------
 
     private enum ThreadTypes
     {
