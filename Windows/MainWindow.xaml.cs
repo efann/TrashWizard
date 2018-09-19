@@ -25,7 +25,6 @@ using System.Windows.Threading;
 using LiveCharts;
 using Microsoft.Win32;
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard.Windows
 {
@@ -36,6 +35,35 @@ namespace TrashWizard.Windows
   {
     public const string FILES_CURRENT_LABEL_START =
       "No current folder selected. Select the Drive combobox and then press Run.";
+
+    public UserSettings UserSettings { get; } = new UserSettings();
+
+    public ListBox ListBox => this.ListBox1;
+
+    public Menu MenuMain => this.MenuMain1;
+
+    // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
+    public Button ButtonCancel => this.BtnCancel1;
+
+    public Button ButtonSave => this.BtnSave1;
+
+    public Button ButtonRun => this.BtnRun1;
+
+    public Button ButtonRemove => this.BtnRemove1;
+
+    public TabControl TabControl => this.TabControlMain;
+
+    public MenuItem MenuItemCancel => this.MenuItemCancel1;
+
+    public MenuItem MenuItemSave => this.MenuItemSave1;
+
+    public MenuItem MenuItemRun => this.MenuItemRun1;
+
+    public MenuItem MenuItemRemove => this.MenuItemRemove1;
+
+    public MenuItem MenuItemOptions => this.MenuItemOptions1;
+
+    public Func<ChartPoint, string> PointLabel { get; set; }
 
     private readonly DelegateRoutines foDelegateRoutines;
 
@@ -73,35 +101,6 @@ namespace TrashWizard.Windows
 
       this.SetupComboboxex();
     }
-
-    public UserSettings UserSettings { get; } = new UserSettings();
-
-    public ListBox ListBox => this.ListBox1;
-
-    public Menu MenuMain => this.MenuMain1;
-
-    // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
-    public Button ButtonCancel => this.BtnCancel1;
-
-    public Button ButtonSave => this.BtnSave1;
-
-    public Button ButtonRun => this.BtnRun1;
-
-    public Button ButtonRemove => this.BtnRemove1;
-
-    public TabControl TabControl => this.TabControlMain;
-
-    public MenuItem MenuItemCancel => this.MenuItemCancel1;
-
-    public MenuItem MenuItemSave => this.MenuItemSave1;
-
-    public MenuItem MenuItemRun => this.MenuItemRun1;
-
-    public MenuItem MenuItemRemove => this.MenuItemRemove1;
-
-    public MenuItem MenuItemOptions => this.MenuItemOptions1;
-
-    public Func<ChartPoint, string> PointLabel { get; set; }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void ClickOnLabel(object toSender, MouseButtonEventArgs e)
@@ -212,7 +211,7 @@ namespace TrashWizard.Windows
       this.fnThreadType = tnThreadType;
       this.foStartTime = DateTime.Now;
 
-      this.foThread.Priority = ThreadPriority.Highest;
+      this.foThread.Priority = ThreadPriority.Normal;
 
       this.foThread.Start();
 
@@ -235,7 +234,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void StopThread()
+    private void AppCancelThread()
     {
       if (this.foThread != null)
       {
@@ -318,6 +317,8 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppExit(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
+      this.WriteSettings();
+
       Application.Current.Shutdown();
     }
 
@@ -435,7 +436,7 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void PopulateControlForTemporaryFiles()
     {
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.AppStarting);
       this.foDelegateRoutines.UpdateMenusAndControls(false);
 
       this.foDelegateRoutines.ResetFileVariablesForTemporary();
@@ -678,6 +679,24 @@ namespace TrashWizard.Windows
     private void TimerElapsedEvent(object toSender, EventArgs teEventArgs)
     {
       this.UpdateTimeRunning();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void MainWindow_OnClosing(object toSender, CancelEventArgs teCancelEventArgs)
+    {
+      this.AppExit(toSender, null);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void CheckBox_OnClick(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      this.WriteSettings();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void Cancel_OnClick(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      this.AppCancelThread();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

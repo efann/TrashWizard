@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Icon="../images/icon/TrashWizard.ico"
-        Title="Trash Wizard">
+        Title="Trash Wizard"
+        Closing="MainWindow_OnClosing">
 
   <Grid>
     <Grid.RowDefinitions>
@@ -44,7 +45,7 @@
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemCancel1" Header="Cancel" HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemCancel1" Header="Cancel" HorizontalAlignment="Left" Click="Cancel_OnClick">
           <MenuItem.Icon>
             <Image Source="../images/cancel.png" />
           </MenuItem.Icon>
@@ -132,7 +133,7 @@
           </StackPanel>
         </Button>
         <Separator Style="{StaticResource ToolbarSeparator}" />
-        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}">
+        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}" Click="Cancel_OnClick">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/cancel.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Cancel" />
@@ -161,11 +162,11 @@
                 <ColumnDefinition Width="200" />
               </Grid.ColumnDefinitions>
 
-              <CheckBox x:Name="ChkIncludeTempFiles" Grid.Row="0" Grid.Column="0">Temporary Files?</CheckBox>
-              <CheckBox x:Name="ChkIncludeBrowserCaches" Grid.Row="1" Grid.Column="0">Browser caches?</CheckBox>
-              <CheckBox x:Name="ChkIncludeAdobeCaches" Grid.Row="0" Grid.Column="1">Adobe caches?</CheckBox>
-              <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1">Office Suite caches?</CheckBox>
-              <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2">Recycle Bin contents?</CheckBox>
+              <CheckBox x:Name="ChkIncludeTempFiles" Grid.Row="0" Grid.Column="0" Click="CheckBox_OnClick">Temporary Files?</CheckBox>
+              <CheckBox x:Name="ChkIncludeBrowserCaches" Grid.Row="1" Grid.Column="0" Click="CheckBox_OnClick">Browser caches?</CheckBox>
+              <CheckBox x:Name="ChkIncludeAdobeCaches" Grid.Row="0" Grid.Column="1" Click="CheckBox_OnClick">Adobe caches?</CheckBox>
+              <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1" Click="CheckBox_OnClick">Office Suite caches?</CheckBox>
+              <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2" Click="CheckBox_OnClick">Recycle Bin contents?</CheckBox>
             </Grid>
             <ListBox x:Name="ListBox1" DockPanel.Dock="Bottom" />
           </DockPanel>

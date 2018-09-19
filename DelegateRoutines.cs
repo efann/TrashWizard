@@ -14,14 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using TrashWizard.Win32;
 using TrashWizard.Windows;
-using Cursor = System.Windows.Input.Cursor;
 
-// I designed this class to just de-clutter FormMain.
 // ---------------------------------------------------------------------------------------------------------------------
 
 namespace TrashWizard
@@ -33,8 +32,8 @@ namespace TrashWizard
   {
     public delegate void ResetFileVariablesDelegate();
 
-    private static readonly int FILE_DISPLAY_SKIP = 100;
     private static readonly string INDENT = "  ";
+    private static readonly int LINE_COUNT_SKIP = 500;
 
     private readonly DataTable foDataTable = new DataTable();
 
@@ -69,6 +68,7 @@ namespace TrashWizard
     public int FilesDisplayedForFile => this.FileInformationForFile.XmlFileInformation.IndexTrack;
 
     public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
+
 
     // ---------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------------
@@ -153,23 +153,6 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void ResetFileVariablesForTemporary()
     {
-      // This results in a recursive call. If updateUI is not being called from the
-      // thread that originally created the GUI, then updateUI will be called again
-      // using updateUIDelegate which will post on the thread that owns these 
-      // controls' underlying window handle.
-
-      var loDispatcher = this.foMainWindow.Dispatcher;
-
-      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
-      {
-        // Pass the same function to BeginInvoke,
-        // but the call would come on the correct
-        // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new ResetFileVariablesDelegate(this.ResetFileVariablesForTemporary));
-
-        return;
-      }
-
       this.FileInformationForTemporary.XmlFileInformation.ResetVariables();
       var loUserSettings = this.foMainWindow.UserSettings;
       this.FileInformationForTemporary.ResetVariables(loUserSettings.GetOptionsFormShowAlertForTemporary());
@@ -402,113 +385,78 @@ namespace TrashWizard
     public void UpdateListBox(string tcMessage, bool tlLast = false)
     {
       var loMainWindow = this.foMainWindow;
-      var loDispatcher = loMainWindow.Dispatcher;
-
-      // This results in a recursive call. If updateUI is not being called from the
-      // thread that originally created the GUI, then updateUI will be called again
-      // using updateUIDelegate which will post on the thread that owns these 
-      // controls' underlying window handle.
-
-      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
+      Application.Current.Dispatcher.Invoke(delegate
       {
-        // Pass the same function to BeginInvoke,
-        // but the call would come on the correct
-        // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new UpdateListBoxDelegate(this.UpdateListBox), tcMessage, tlLast);
+        {
+          var loListBox = loMainWindow.ListBox;
+          loListBox.Items.Add(tcMessage);
 
-        return;
-      }
+          var lnCount = loListBox.Items.Count;
 
-      var loListBox = loMainWindow.ListBox;
-      loListBox.Items.Add(tcMessage);
-
-      // Must come after adding, duh.
-      var lnCount = loListBox.Items.Count;
-
-      if (tlLast || ((lnCount % DelegateRoutines.FILE_DISPLAY_SKIP) == 0))
-      {
-        // Excellent solution to scrolling to bottom. ScrollIntoView was really quirky and would not always work.
-        // https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added
-        var loBorder = (Border) VisualTreeHelper.GetChild(loListBox, 0);
-        var loScrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(loBorder, 0);
-        loScrollViewer.ScrollToBottom();
-      }
+          if ((tlLast) || ((lnCount % DelegateRoutines.LINE_COUNT_SKIP) == 0))
+          {
+            // This only works if you don't have any duplicates. Otherwise, it will scroll to the first match.
+            // So we create a unique line.
+            if (!tlLast)
+            {
+              var lcLines = $"<Marker at line # {lnCount} on {DateTime.Now:dddd, MMMM d, yyyy h:mm:ss tt}>";
+              loListBox.Items.Add(lcLines);
+              loListBox.ScrollIntoView(lcLines);
+            }
+            else
+            {
+              // Realize if you just use the loScrollViewer.ScrollToBottom, then the GUI locks. Apparently,
+              // once you call loScrollViewer.ScrollToBottom and are adding more lines, loScrollViewer.ScrollToBottom
+              // continues to watch and scroll thus locking the GUI. It's also slow. So just call the routine for the last line.
+              //
+              // Excellent solution to scrolling to bottom. ScrollIntoView was really quirky and would not always work.
+              // https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added
+              var loBorder = (Border) VisualTreeHelper.GetChild(loListBox, 0);
+              var loScrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(loBorder, 0);
+              loScrollViewer.ScrollToBottom();
+            }
+          }
+        }
+      });
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateFormCursors(Cursor toCursor)
     {
       var loMainWindow = this.foMainWindow;
-      var loDispatcher = loMainWindow.Dispatcher;
-
-      // This results in a recursive call. If updateUI is not being called from the
-      // thread that originally created the GUI, then updateUI will be called again
-      // using updateUIDelegate which will post on the thread that owns these 
-      // controls' underlying window handle.
-      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
+      Application.Current.Dispatcher.Invoke(delegate
       {
-        // Pass the same function to BeginInvoke,
-        // but the call would come on the correct
-        // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new UpdateFormCursorDelegate(this.UpdateFormCursors), toCursor);
-
-        return;
-      }
-
-      loMainWindow.Cursor = toCursor;
+        {
+          loMainWindow.Cursor = toCursor;
+        }
+      });
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateMenusAndControls(bool tlEnable)
     {
       var loMainWindow = this.foMainWindow;
-      var loDispatcher = loMainWindow.Dispatcher;
-
-      // This results in a recursive call. If updateUI is not being called from the
-      // thread that originally created the GUI, then updateUI will be called again
-      // using updateUIDelegate which will post on the thread that owns these 
-      // controls' underlying window handle.
-      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
+      Application.Current.Dispatcher.Invoke(delegate
       {
-        // Pass the same function to BeginInvoke,
-        // but the call would come on the correct
-        // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new UpdateMenusAndButtonsDelegate(this.UpdateMenusAndControls), tlEnable);
+        {
+          this.ResetViewControlsForFile();
 
-        return;
-      }
+          loMainWindow.ButtonCancel.IsEnabled = !tlEnable;
 
-      this.ResetViewControlsForFile();
+          loMainWindow.ButtonSave.IsEnabled = tlEnable;
+          loMainWindow.ButtonRun.IsEnabled = tlEnable;
+          loMainWindow.ButtonRemove.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
 
-      loMainWindow.ButtonCancel.IsEnabled = !tlEnable;
+          loMainWindow.MenuItemCancel.IsEnabled = loMainWindow.ButtonCancel.IsEnabled;
 
-      loMainWindow.ButtonSave.IsEnabled = tlEnable;
-      loMainWindow.ButtonRun.IsEnabled = tlEnable;
-      loMainWindow.ButtonRemove.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
+          loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
+          loMainWindow.MenuItemRun.IsEnabled = loMainWindow.ButtonRun.IsEnabled;
+          loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
 
-      loMainWindow.MenuItemCancel.IsEnabled = loMainWindow.ButtonCancel.IsEnabled;
-
-      loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
-      loMainWindow.MenuItemRun.IsEnabled = loMainWindow.ButtonRun.IsEnabled;
-      loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
-
-      loMainWindow.MenuItemOptions.IsEnabled = tlEnable;
+          loMainWindow.MenuItemOptions.IsEnabled = tlEnable;
+        }
+      });
     }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private delegate void UpdateTreeViewFromListDelegate(TreeNode toParentNode);
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private delegate void UpdateGridFromListDelegate();
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private delegate void UpdateListBoxDelegate(string tcMessage, bool tlLast);
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private delegate void UpdateFormCursorDelegate(Cursor toCursor);
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private delegate void UpdateMenusAndButtonsDelegate(bool tlEnable);
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

@@ -33,7 +33,6 @@ namespace TrashWizard
   public class Util
   {
     public const int CLICK_OPENFOLDER = 0;
-    public const int CLICK_OPENASSOCIATED = 1;
 
 
     public const int FILESIZE_GBMBKB = 0;
@@ -42,10 +41,6 @@ namespace TrashWizard
 
     public const int FILEDATE_SHORT = 0;
     public const int FILEDATE_LONG = 1;
-
-    public const int HWND_BROADCAST = 0xFFFF;
-
-    public const int RESTORE_WINDOW = 0x0001;
 
     public const string APP_GUID = "<<Trash Wizard X0a76b5a-12ab-45C5-b9d9-d693faa6e7B9 Trash Wizard>>";
 
@@ -103,7 +98,8 @@ namespace TrashWizard
 
       var loDispatcher = Dispatcher.FromThread(Thread.CurrentThread);
 
-      // If outside of the Window GUI thread.
+      // If outside of the Window GUI thread. And by the way, this only works when it's a display
+      // dialog, not a Yes/No. And you shouldn't be using a Yes/No dialog in a thread anyway. So there.
       if ((loDispatcher == null) || !loDispatcher.CheckAccess())
       {
         Application.Current.Dispatcher.Invoke(delegate
