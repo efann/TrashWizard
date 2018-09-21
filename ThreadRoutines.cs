@@ -28,7 +28,7 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
-  internal class DelegateRoutines : IDisposable
+  internal class ThreadRoutines : IDisposable
   {
     public delegate void ResetFileVariablesDelegate();
 
@@ -46,7 +46,7 @@ namespace TrashWizard
       new SortedList<string, string>(new ReverseStringComparer());
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public DelegateRoutines(MainWindow toMainWindow)
+    public ThreadRoutines(MainWindow toMainWindow)
     {
       this.foMainWindow = toMainWindow;
 
@@ -219,8 +219,8 @@ namespace TrashWizard
 
         this.UpdateListBox("Recycle Bin Info:");
 
-        this.UpdateListBox(DelegateRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
-        this.UpdateListBox(DelegateRoutines.INDENT + "Byte(s) in root folder: " +
+        this.UpdateListBox(ThreadRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
+        this.UpdateListBox(ThreadRoutines.INDENT + "Byte(s) in root folder: " +
                            Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) +
                            ")");
 
@@ -341,8 +341,8 @@ namespace TrashWizard
 
         this.UpdateListBox("Recycle Bin Info:");
 
-        this.UpdateListBox(DelegateRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
-        this.UpdateListBox(DelegateRoutines.INDENT + "Byte(s) in root folder: " +
+        this.UpdateListBox(ThreadRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
+        this.UpdateListBox(ThreadRoutines.INDENT + "Byte(s) in root folder: " +
                            Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) +
                            ")");
 
@@ -374,7 +374,7 @@ namespace TrashWizard
 
       this.UpdateListBox("");
       this.UpdateListBox("Total Removed (Temporary Files" + (llRecycleBin ? " & Recycle Bin" : " only") + "):");
-      this.UpdateListBox(DelegateRoutines.INDENT + Util.formatBytes_GB_MB_KB(lnNewFreeSpace - lnCurrentFreeSpace) +
+      this.UpdateListBox(ThreadRoutines.INDENT + Util.formatBytes_GB_MB_KB(lnNewFreeSpace - lnCurrentFreeSpace) +
                          " (" +
                          Util.formatBytes_Actual(lnNewFreeSpace - lnCurrentFreeSpace) + ")");
       this.UpdateListBox("");
@@ -393,10 +393,12 @@ namespace TrashWizard
 
           var lnCount = loListBox.Items.Count;
 
-          if ((tlLast) || ((lnCount % DelegateRoutines.LINE_COUNT_SKIP) == 0))
+          // This entire approach is much faster now than that from WinForms in the legacy TrashWizard.
+          if ((tlLast) || ((lnCount % ThreadRoutines.LINE_COUNT_SKIP) == 0))
           {
-            // This only works if you don't have any duplicates. Otherwise, it will scroll to the first match.
-            // So we create a unique line.
+            // This only works if you don't have any duplicates, which you will have if you press Run more than once.
+            // Otherwise, it will scroll to the first match.
+            // So we create a unique line, which is a little awkward.
             if (!tlLast)
             {
               var lcLines = $"<Marker at line # {lnCount} on {DateTime.Now:dddd, MMMM d, yyyy h:mm:ss tt}>";

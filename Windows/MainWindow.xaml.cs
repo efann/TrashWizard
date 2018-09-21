@@ -65,7 +65,7 @@ namespace TrashWizard.Windows
 
     public Func<ChartPoint, string> PointLabel { get; set; }
 
-    private readonly DelegateRoutines foDelegateRoutines;
+    private readonly ThreadRoutines foDelegateRoutines;
 
     private readonly UserSettings foUserSettings = new UserSettings();
 
@@ -85,7 +85,7 @@ namespace TrashWizard.Windows
 
       this.Title += $@" ({Util.GetAppVersion()})";
 
-      this.foDelegateRoutines = new DelegateRoutines(this);
+      this.foDelegateRoutines = new ThreadRoutines(this);
 
       this.ReadSettings();
       this.foDelegateRoutines.UpdateMenusAndControls(true);
@@ -620,7 +620,7 @@ namespace TrashWizard.Windows
     }
 
     //-----------------------------------------------------------------------------
-    private void SaveInfoToTextForTemporary()
+    private void AppSaveLogText(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       var lcLogFile = this.GetSaveFile();
       if (lcLogFile == null)
@@ -657,22 +657,24 @@ namespace TrashWizard.Windows
 
     private string GetSaveFile()
     {
+      var loSettings = this.UserSettings;
+
       var loSaveFileDialog = new SaveFileDialog
       {
         Filter = "Text File|*.txt",
         Title = "Save Log File",
-        InitialDirectory = this.foUserSettings.GetSavePath()
+        InitialDirectory = loSettings.GetSavePath()
       };
 
-      if (loSaveFileDialog.ShowDialog() == true)
+      if (loSaveFileDialog.ShowDialog() != true)
       {
-        var lcFileName = loSaveFileDialog.FileName;
-        this.foUserSettings.SetSavePath(Directory.GetParent(lcFileName).FullName);
-
-        return lcFileName;
+        return null;
       }
 
-      return null;
+      var lcFileName = loSaveFileDialog.FileName;
+      loSettings.SetSavePath(Directory.GetParent(lcFileName).FullName);
+
+      return lcFileName;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

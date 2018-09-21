@@ -120,7 +120,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DelegateRoutines.cs" />
+    <Compile Include="ThreadRoutines.cs" />
     <Compile Include="FileCaches.cs" />
     <Compile Include="FileData.cs" />
     <Compile Include="FileInformation.cs" />

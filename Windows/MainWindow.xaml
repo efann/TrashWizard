@@ -19,7 +19,7 @@
     </Grid.RowDefinitions>
     <Menu x:Name="MenuMain1" Width="Auto" Height="20" Grid.Row="0">
       <MenuItem x:Name="MenuItemFile1" Header="_File">
-        <MenuItem x:Name="MenuItemSave1" Header="Save..." HorizontalAlignment="Left">
+        <MenuItem x:Name="MenuItemSave1" Header="Save..." HorizontalAlignment="Left" Click="AppSaveLogText">
           <MenuItem.Icon>
             <Image Source="../images/save.png" />
           </MenuItem.Icon>
@@ -119,7 +119,7 @@
             <TextBlock Text="Run" />
           </StackPanel>
         </Button>
-        <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}">
+        <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}" Click="AppSaveLogText">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/save.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Save" />
@@ -133,7 +133,8 @@
           </StackPanel>
         </Button>
         <Separator Style="{StaticResource ToolbarSeparator}" />
-        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}" Click="Cancel_OnClick">
+        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}"
+                Click="Cancel_OnClick">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/cancel.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Cancel" />

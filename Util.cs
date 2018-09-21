@@ -53,7 +53,7 @@ namespace TrashWizard
 
     public static readonly string DATA_FOLDER = Util.AddBs(
       Util.AddBs(Util.AddBs(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) + "Beowurks") +
-      "TrashWizard");
+      "TrashWizard.WPF");
 
     // By the way, you can't use the temporary folder 'cause that's where Trash Wizard removes files.
     public static readonly string XML_USER_SETTINGS = Util.DATA_FOLDER + Environment.UserName + ".Settings.xml";

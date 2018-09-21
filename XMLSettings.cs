@@ -55,12 +55,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, bool tlValue)
     {
-      var loNode = this.GetChildElementNode(tcParent, tcChild);
-
-      loNode.RemoveAll();
-      var loTextNode = this.foXMLDocument.CreateTextNode(tlValue.ToString());
-
-      loNode.AppendChild(loTextNode);
+      this.WriteSetting(tcParent, tcChild, tlValue.ToString());
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -84,12 +79,7 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, int tnValue)
     {
-      var loNode = this.GetChildElementNode(tcParent, tcChild);
-
-      loNode.RemoveAll();
-      var loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString());
-
-      loNode.AppendChild(loTextNode);
+      this.WriteSetting(tcParent, tcChild, tnValue.ToString());
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -113,12 +103,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, double tnValue)
     {
-      var loNode = this.GetChildElementNode(tcParent, tcChild);
 
-      loNode.RemoveAll();
-      var loTextNode = this.foXMLDocument.CreateTextNode(tnValue.ToString(CultureInfo.CurrentCulture));
-
-      loNode.AppendChild(loTextNode);
+      this.WriteSetting(tcParent, tcChild, tnValue.ToString(CultureInfo.CurrentCulture));
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
