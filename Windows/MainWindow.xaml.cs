@@ -33,8 +33,28 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class MainWindow
   {
+    private enum ThreadTypes
+    {
+      ThreadTemporaryLocate,
+      ThreadTemporaryRemove,
+      ThreadFilesViewGraph
+    }
+
     public const string FILES_CURRENT_LABEL_START =
       "No current folder selected. Select the Drive combobox and then press Run.";
+
+    private ThreadTypes fnThreadType;
+
+    private readonly ThreadRoutines foDelegateRoutines;
+
+    private DateTime foStartTime;
+
+    private Thread foThread;
+
+    private readonly UserSettings foUserSettings = new UserSettings();
+
+    private readonly DispatcherTimer tmrRunning =
+      new DispatcherTimer(DispatcherPriority.Normal);
 
     public UserSettings UserSettings { get; } = new UserSettings();
 
@@ -65,25 +85,12 @@ namespace TrashWizard.Windows
 
     public Func<ChartPoint, string> PointLabel { get; set; }
 
-    private readonly ThreadRoutines foDelegateRoutines;
-
-    private readonly UserSettings foUserSettings = new UserSettings();
-
-    private readonly DispatcherTimer tmrRunning =
-      new DispatcherTimer(DispatcherPriority.Normal);
-
-    private ThreadTypes fnThreadType;
-
-    private DateTime foStartTime;
-
-    private Thread foThread;
-
     // ---------------------------------------------------------------------------------------------------------------------
     public MainWindow()
     {
       this.InitializeComponent();
 
-      this.Title += $@" ({Util.GetAppVersion()})";
+      this.Title += $@"-BETA ({Util.GetAppVersion()})";
 
       this.foDelegateRoutines = new ThreadRoutines(this);
 
@@ -312,7 +319,6 @@ namespace TrashWizard.Windows
 
       loSettings.SaveSettings();
     }
-
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppExit(object toSender, RoutedEventArgs teRoutedEventArgs)
@@ -703,12 +709,6 @@ namespace TrashWizard.Windows
 
     // ---------------------------------------------------------------------------------------------------------------------
 
-    private enum ThreadTypes
-    {
-      ThreadTemporaryLocate,
-      ThreadTemporaryRemove,
-      ThreadFilesViewGraph
-    }
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

@@ -28,15 +28,16 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://www.beowurks.com/Software/NET/TrashWizard.WPF/</InstallUrl>
     <TargetCulture>en-US</TargetCulture>
-    <ProductName>Trash Wizard</ProductName>
+    <ProductName>Trash Wizard 2018</ProductName>
     <PublisherName>Beowurks</PublisherName>
-    <MinimumRequiredVersion>2018.0.0.34</MinimumRequiredVersion>
+    <MinimumRequiredVersion>2018.0.0.37</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>34</ApplicationRevision>
-    <ApplicationVersion>2018.0.0.34</ApplicationVersion>
+    <ApplicationRevision>37</ApplicationRevision>
+    <ApplicationVersion>2018.0.0.37</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
