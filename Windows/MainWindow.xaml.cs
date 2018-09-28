@@ -101,18 +101,18 @@ namespace TrashWizard.Windows
 
       this.DataContext = this;
 
-      this.lblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
+      this.LblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
 
       this.tmrRunning.Tick += new EventHandler(this.TimerElapsedEvent);
       this.tmrRunning.Interval = TimeSpan.FromMilliseconds(1000);
 
-      this.SetupComboboxex();
+      this.SetupTreeView();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void ClickOnLabel(object toSender, MouseButtonEventArgs e)
     {
-      if (toSender == this.lblCurrentFolder1)
+      if (toSender == this.LblCurrentFolder1)
       {
         var loLabel = (Label) toSender;
         if (object.ReferenceEquals(loLabel.Content, MainWindow.FILES_CURRENT_LABEL_START))
@@ -123,23 +123,57 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void SetupComboboxex()
+    // From https://www.codeproject.com/Articles/21248/A-Simple-WPF-Explorer-Tree
+    private void SetupTreeView()
     {
-      var loCombo = this.cboDrives1;
+      var loTreeView = this.TrvwFolders;
 
-      // From https://stackoverflow.com/questions/623182/c-sharp-dropbox-of-drives
       foreach (var Drives in Environment.GetLogicalDrives())
       {
-        var DriveInf = new DriveInfo(Drives);
-        if (DriveInf.IsReady)
+        // From https://stackoverflow.com/questions/623182/c-sharp-dropbox-of-drives
+        var loDriveInfo = new DriveInfo(Drives);
+        if (loDriveInfo.IsReady)
         {
-          loCombo.Items.Add(DriveInf.Name);
+          var lcString = loDriveInfo.Name;
+          TreeViewItem loItem = new TreeViewItem
+          {
+            Header = lcString,
+            Tag = lcString,
+            FontWeight = FontWeights.Normal
+          };
+          loItem.Items.Add(null);
+          loItem.Expanded += new RoutedEventHandler(this.TreeViewFolderExpand);
+          loTreeView.Items.Add(loItem);
         }
       }
+    }
 
-      if (loCombo.HasItems)
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void TreeViewFolderExpand(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      TreeViewItem loItem = (TreeViewItem) toSender;
+      if ((loItem.Items.Count == 1) && (loItem.Items[0] == null))
       {
-        loCombo.SelectedIndex = 0;
+        loItem.Items.Clear();
+        try
+        {
+          foreach (var lcString in Directory.GetDirectories(loItem.Tag.ToString()))
+          {
+            TreeViewItem loSubItem = new TreeViewItem
+            {
+              Header = lcString.Substring(lcString.LastIndexOf("\\", StringComparison.Ordinal) + 1),
+              Tag = lcString,
+              FontWeight = FontWeights.Normal
+            };
+            loSubItem.Items.Add(null);
+            loSubItem.Expanded += new RoutedEventHandler(this.TreeViewFolderExpand);
+            loItem.Items.Add(loSubItem);
+          }
+        }
+        catch (Exception)
+        {
+          // ignored
+        }
       }
     }
 
@@ -186,13 +220,13 @@ namespace TrashWizard.Windows
       var lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
       var lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
 
-      this.lblTimeRunning1.Text = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
+      this.LblTimeRunning1.Text = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
                                   " files processed; " + lcFilesDisplayed + " files displayed out of " +
                                   lcFilesProcessed + ")";
 
       if (!llThreadRunning)
       {
-        this.lblTimeRunning1.Text += " - operation complete!";
+        this.LblTimeRunning1.Text += " - operation complete!";
         this.tmrRunning.Stop();
       }
     }
@@ -563,7 +597,7 @@ namespace TrashWizard.Windows
 
       this.foDelegateRoutines.ResetFileVariablesForFile();
 
-      var lcStartDirectory = this.cboDrives1.Text;
+      var lcStartDirectory = "c:\\";
       var loStartDirectoryInfo = new List<DirectoryInfo> {new DirectoryInfo(lcStartDirectory)};
 
       Exception loException = null;
@@ -708,7 +742,10 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-
+    private void TabControl_OnSelectionChanged(object toSender, SelectionChangedEventArgs teSelectionChangedEventArgs)
+    {
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
   }

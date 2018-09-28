@@ -119,7 +119,8 @@
             <TextBlock Text="Run" />
           </StackPanel>
         </Button>
-        <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}" Click="AppSaveLogText">
+        <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}"
+                Click="AppSaveLogText">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/save.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Save" />
@@ -146,7 +147,8 @@
      From https://stackoverflow.com/questions/1967013/tabcontrol-verticalalignment-stretch-doesnt-do-anything
     -->
     <Grid Grid.Row="2">
-      <TabControl x:Name="TabControlMain" Cursor="Arrow" VerticalAlignment="Stretch">
+      <TabControl x:Name="TabControlMain" Cursor="Arrow" VerticalAlignment="Stretch"
+                  SelectionChanged="TabControl_OnSelectionChanged">
         <TabItem>
           <TabItem.Header>
             <TextBlock Text="Temporary Files" />
@@ -179,7 +181,6 @@
           <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
               <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -188,18 +189,12 @@
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ComboBox Name="cboDrives1" Grid.Row="0" Grid.Column="0" Width="150" />
-            <Label Name="lblCurrentFolder1" Cursor="Hand" Grid.Row="1" Grid.Column="0"
+            <TreeView Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
+            <Label Name="LblCurrentFolder1" Cursor="Hand" Grid.Row="0" Grid.Column="1"
                    PreviewMouseLeftButtonUp="ClickOnLabel" />
-            <wpf:PieChart LegendLocation="Bottom" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <wpf:PieChart LegendLocation="Bottom" Grid.Row="1" Grid.Column="1">
               <wpf:PieChart.Series>
-                <wpf:PieSeries Title="Maria" Values="3" DataLabels="True"
-                               LabelPoint="{Binding PointLabel}" />
-                <wpf:PieSeries Title="Charles" Values="4" DataLabels="True"
-                               LabelPoint="{Binding PointLabel}" />
-                <wpf:PieSeries Title="Frida" Values="6" DataLabels="True"
-                               LabelPoint="{Binding PointLabel}" />
-                <wpf:PieSeries Title="Frederic" Values="2" DataLabels="True"
+                <wpf:PieSeries Title="Press Run to Start Analysis" Values="100" DataLabels="True"
                                LabelPoint="{Binding PointLabel}" />
               </wpf:PieChart.Series>
             </wpf:PieChart>
@@ -210,7 +205,7 @@
     <StackPanel Grid.Row="3">
       <StatusBar>
         <StatusBarItem>
-          <TextBlock Name="lblTimeRunning1" />
+          <TextBlock Name="LblTimeRunning1" />
         </StatusBarItem>
       </StatusBar>
     </StackPanel>

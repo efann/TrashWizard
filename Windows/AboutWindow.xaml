@@ -11,7 +11,7 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*" MaxWidth="256" />
+      <ColumnDefinition Width="*" MaxWidth="312" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
@@ -23,7 +23,7 @@
       <Button Grid.Row="0" Click="ButtonImage_OnClick" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               Height="Auto" Width="Auto" Background="Transparent">
         <StackPanel>
-          <Image Source="../images/icon/Logo.png" />
+          <Image Source="../images/icon/Logo.png" MaxWidth="256" MaxHeight="256" />
         </StackPanel>
       </Button>
       <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">

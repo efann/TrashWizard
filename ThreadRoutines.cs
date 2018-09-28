@@ -445,7 +445,7 @@ namespace TrashWizard
 
           loMainWindow.ButtonCancel.IsEnabled = !tlEnable;
 
-          loMainWindow.ButtonSave.IsEnabled = tlEnable;
+          loMainWindow.ButtonSave.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
           loMainWindow.ButtonRun.IsEnabled = tlEnable;
           loMainWindow.ButtonRemove.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
 

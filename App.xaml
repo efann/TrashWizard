@@ -74,6 +74,11 @@
           </ControlTemplate>
         </Setter.Value>
       </Setter>
+
+      <!--
+      From https://stackoverflow.com/questions/10768231/creating-a-transition-between-two-wpf-gradients-on-a-button
+      There is no LinearGradientAnimation
+      -->
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
           <Setter Property="Background" Value="{StaticResource GrayBlueGradientBrushHover}" />
@@ -108,6 +113,10 @@
 
     <Style TargetType="{x:Type DataGridColumnHeader}">
       <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style TargetType="{x:Type TreeViewItem}">
       <Setter Property="Cursor" Value="Hand" />
     </Style>
 

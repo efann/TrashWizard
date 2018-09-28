@@ -20,22 +20,22 @@
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
+    <UpdateMode>Background</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdatePeriodically>true</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://www.beowurks.com/Software/NET/TrashWizard.WPF/</InstallUrl>
     <TargetCulture>en-US</TargetCulture>
     <ProductName>Trash Wizard 2018</ProductName>
     <PublisherName>Beowurks</PublisherName>
-    <MinimumRequiredVersion>2018.0.0.37</MinimumRequiredVersion>
+    <MinimumRequiredVersion>2018.0.0.36</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>37</ApplicationRevision>
-    <ApplicationVersion>2018.0.0.37</ApplicationVersion>
+    <ApplicationRevision>36</ApplicationRevision>
+    <ApplicationVersion>2018.0.0.36</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
