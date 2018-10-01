@@ -103,7 +103,6 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void WriteSetting(string tcParent, string tcChild, double tnValue)
     {
-
       this.WriteSetting(tcParent, tcChild, tnValue.ToString(CultureInfo.CurrentCulture));
     }
 

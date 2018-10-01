@@ -172,6 +172,7 @@ namespace TrashWizard.Windows
 
     // ---------------------------------------------------------------------------------------------------------------------
     // From https://stackoverflow.com/questions/29005119/get-the-parent-node-of-a-child-in-wpf-c-sharp-treeview
+    // Never would have guessed this.
     public ItemsControl GetSelectedTreeViewItemParent(TreeViewItem toTreeViewItem)
     {
       DependencyObject loParent = VisualTreeHelper.GetParent(toTreeViewItem);
@@ -180,6 +181,10 @@ namespace TrashWizard.Windows
         if (loParent != null)
         {
           loParent = VisualTreeHelper.GetParent(loParent);
+        }
+        else
+        {
+          break;
         }
       }
 
