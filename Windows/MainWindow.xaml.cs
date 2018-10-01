@@ -21,6 +21,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using LiveCharts;
 using Microsoft.Win32;
@@ -143,9 +144,46 @@ namespace TrashWizard.Windows
           };
           loItem.Items.Add(null);
           loItem.Expanded += new RoutedEventHandler(this.TreeViewFolderExpand);
+          loItem.Selected += new RoutedEventHandler(this.TreeViewFolderSelected);
           loTreeView.Items.Add(loItem);
         }
       }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void TreeViewFolderSelected(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var loItem = (TreeViewItem) this.TrvwFolders.SelectedItem;
+      var lcPath = loItem.Header.ToString();
+
+      loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
+      while (loItem != null)
+      {
+        var lcHeader = loItem.Header.ToString();
+        var lcSeparator = Path.DirectorySeparatorChar.ToString();
+
+        lcPath = lcHeader + (lcHeader.EndsWith(lcSeparator) ? "" : lcSeparator) + lcPath;
+        loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
+      }
+
+      Util.InfoMessage(lcPath);
+    }
+
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // From https://stackoverflow.com/questions/29005119/get-the-parent-node-of-a-child-in-wpf-c-sharp-treeview
+    public ItemsControl GetSelectedTreeViewItemParent(TreeViewItem toTreeViewItem)
+    {
+      DependencyObject loParent = VisualTreeHelper.GetParent(toTreeViewItem);
+      while (!(loParent is TreeViewItem || loParent is TreeView))
+      {
+        if (loParent != null)
+        {
+          loParent = VisualTreeHelper.GetParent(loParent);
+        }
+      }
+
+      return loParent as ItemsControl;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
