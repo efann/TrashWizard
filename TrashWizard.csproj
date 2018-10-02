@@ -196,7 +196,6 @@
     <Resource Include="images\home.png" />
     <Resource Include="images\icon\TrashWizard.ico" />
     <Resource Include="images\okay.png" />
-    <Resource Include="images\options.png" />
     <Resource Include="images\player_play.png" />
     <Resource Include="images\remove.png" />
     <Resource Include="images\run.png" />

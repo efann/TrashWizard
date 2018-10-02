@@ -53,11 +53,6 @@
       </MenuItem>
 
       <MenuItem x:Name="MenuItemTools1" Header="_Tools">
-        <MenuItem x:Name="MenuItemOptions1" Header="Options..." HorizontalAlignment="Left">
-          <MenuItem.Icon>
-            <Image Source="../images/options.png" />
-          </MenuItem.Icon>
-        </MenuItem>
         <MenuItem x:Name="MenuItemDriveInfo1" Header="Drive Info" HorizontalAlignment="Left">
           <MenuItem.Icon>
             <Image Source="../images/driveinfo.png" />
@@ -190,11 +185,11 @@
             </Grid.ColumnDefinitions>
 
             <TreeView Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
-            <Label Name="LblCurrentFolder1" Cursor="Hand" Grid.Row="0" Grid.Column="1"
+            <Label Name="LblCurrentFolder" Cursor="Hand" Grid.Row="0" Grid.Column="1"
                    PreviewMouseLeftButtonUp="ClickOnLabel" />
             <wpf:PieChart LegendLocation="Bottom" Grid.Row="1" Grid.Column="1">
               <wpf:PieChart.Series>
-                <wpf:PieSeries Title="Press Run to Start Analysis" Values="100" DataLabels="True"
+                <wpf:PieSeries Title="Select a drive or folder to start analysis" Values="100" DataLabels="True"
                                LabelPoint="{Binding PointLabel}" />
               </wpf:PieChart.Series>
             </wpf:PieChart>

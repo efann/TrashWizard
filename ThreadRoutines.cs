@@ -32,6 +32,11 @@ namespace TrashWizard
   {
     public delegate void ResetFileVariablesDelegate();
 
+    public FileInformation FileInformationForTemporary { get; }
+
+    public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
+
+
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
 
@@ -52,32 +57,14 @@ namespace TrashWizard
 
       var loUserSettings = this.foMainWindow.UserSettings;
 
-      this.FileInformationForFile = new FileInformation(Util.XML_FILE_LISTING,
-        loUserSettings.GetOptionsFormShowAlertForFile(), loUserSettings.GetOptionsFormShowFileSizeForFile(),
-        loUserSettings.GetOptionsFormFileSizeTypeForFile(), loUserSettings.GetOptionsFormShowFileDateForFile(),
-        loUserSettings.GetOptionsFormFileDateTypeForFile(), loUserSettings.GetOptionsFormShowFileAttributesForFile());
-
-      this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING,
-        loUserSettings.GetOptionsFormShowAlertForTemporary());
+      this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING);
     }
 
-    public FileInformation FileInformationForFile { get; }
-
-    public FileInformation FileInformationForTemporary { get; }
-
-    public int FilesDisplayedForFile => this.FileInformationForFile.XmlFileInformation.IndexTrack;
-
-    public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
-
-
-    // ---------------------------------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------------------
     // Interface IDisposable
     public void Dispose()
     {
       this.foDataTable?.Dispose();
-
-      this.FileInformationForFile?.Dispose();
 
       this.FileInformationForTemporary?.Dispose();
     }
@@ -138,14 +125,6 @@ namespace TrashWizard
         return;
       }
 
-      this.FileInformationForFile.XmlFileInformation.ResetVariables();
-
-      var loUserSettings = this.foMainWindow.UserSettings;
-      this.FileInformationForFile.ResetVariables(loUserSettings.GetOptionsFormShowAlertForFile(),
-        loUserSettings.GetOptionsFormShowFileSizeForFile(), loUserSettings.GetOptionsFormFileSizeTypeForFile(),
-        loUserSettings.GetOptionsFormShowFileDateForFile(), loUserSettings.GetOptionsFormFileDateTypeForFile(),
-        loUserSettings.GetOptionsFormShowFileAttributesForFile());
-
       GC.Collect();
       GC.WaitForPendingFinalizers();
     }
@@ -155,7 +134,6 @@ namespace TrashWizard
     {
       this.FileInformationForTemporary.XmlFileInformation.ResetVariables();
       var loUserSettings = this.foMainWindow.UserSettings;
-      this.FileInformationForTemporary.ResetVariables(loUserSettings.GetOptionsFormShowAlertForTemporary());
 
       this.foTemporaryFileList.Clear();
 
@@ -454,8 +432,6 @@ namespace TrashWizard
           loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
           loMainWindow.MenuItemRun.IsEnabled = loMainWindow.ButtonRun.IsEnabled;
           loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
-
-          loMainWindow.MenuItemOptions.IsEnabled = tlEnable;
         }
       });
     }

@@ -82,8 +82,6 @@ namespace TrashWizard.Windows
 
     public MenuItem MenuItemRemove => this.MenuItemRemove1;
 
-    public MenuItem MenuItemOptions => this.MenuItemOptions1;
-
     public Func<ChartPoint, string> PointLabel { get; set; }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -102,7 +100,7 @@ namespace TrashWizard.Windows
 
       this.DataContext = this;
 
-      this.LblCurrentFolder1.Content = MainWindow.FILES_CURRENT_LABEL_START;
+      this.LblCurrentFolder.Content = MainWindow.FILES_CURRENT_LABEL_START;
 
       this.tmrRunning.Tick += new EventHandler(this.TimerElapsedEvent);
       this.tmrRunning.Interval = TimeSpan.FromMilliseconds(1000);
@@ -113,7 +111,7 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void ClickOnLabel(object toSender, MouseButtonEventArgs e)
     {
-      if (toSender == this.LblCurrentFolder1)
+      if (toSender == this.LblCurrentFolder)
       {
         var loLabel = (Label) toSender;
         if (object.ReferenceEquals(loLabel.Content, MainWindow.FILES_CURRENT_LABEL_START))
@@ -136,7 +134,7 @@ namespace TrashWizard.Windows
         if (loDriveInfo.IsReady)
         {
           var lcString = loDriveInfo.Name;
-          TreeViewItem loItem = new TreeViewItem
+          var loItem = new TreeViewItem
           {
             Header = lcString,
             Tag = lcString,
@@ -175,7 +173,7 @@ namespace TrashWizard.Windows
     // Never would have guessed this.
     public ItemsControl GetSelectedTreeViewItemParent(TreeViewItem toTreeViewItem)
     {
-      DependencyObject loParent = VisualTreeHelper.GetParent(toTreeViewItem);
+      var loParent = VisualTreeHelper.GetParent(toTreeViewItem);
       while (!(loParent is TreeViewItem || loParent is TreeView))
       {
         if (loParent != null)
@@ -194,7 +192,7 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void TreeViewFolderExpand(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      TreeViewItem loItem = (TreeViewItem) toSender;
+      var loItem = (TreeViewItem) toSender;
       if ((loItem.Items.Count == 1) && (loItem.Items[0] == null))
       {
         loItem.Items.Clear();
@@ -202,7 +200,7 @@ namespace TrashWizard.Windows
         {
           foreach (var lcString in Directory.GetDirectories(loItem.Tag.ToString()))
           {
-            TreeViewItem loSubItem = new TreeViewItem
+            var loSubItem = new TreeViewItem
             {
               Header = lcString.Substring(lcString.LastIndexOf("\\", StringComparison.Ordinal) + 1),
               Tag = lcString,
@@ -255,8 +253,6 @@ namespace TrashWizard.Windows
           break;
 
         case ThreadTypes.ThreadFilesViewGraph:
-          lnFilesProcessed = this.foDelegateRoutines.FileInformationForFile.FilesProcessed;
-          lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForFile;
           break;
       }
 
@@ -288,7 +284,6 @@ namespace TrashWizard.Windows
           break;
 
         case ThreadTypes.ThreadFilesViewGraph:
-          this.foThread = new Thread(this.PopulateControlForFiles);
           break;
       }
 
@@ -602,87 +597,6 @@ namespace TrashWizard.Windows
         this.foDelegateRoutines.UpdateControlForTemporary();
 
         this.foDelegateRoutines.FileInformationForTemporary.XmlFileInformation.CleanUpFiles();
-      }
-      catch (Exception loErr)
-      {
-        loException = loErr;
-      }
-
-      if (loException != null)
-      {
-        // Since this is a critical error, always show it.
-        var lcErrorMessage =
-          "A program error has occurred so the building of the file listing must stop. Please notify Beowurks at www.beowurks.com.\n\n" +
-          loException.Message + "\n\n" + loException + "\n" + loException.StackTrace;
-        Util.ErrorMessage(lcErrorMessage);
-      }
-
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void PopulateControlForFiles(object toForce)
-    {
-      bool llForce;
-      if (toForce is bool)
-      {
-        llForce = (bool) toForce;
-      }
-      else
-      {
-        Util.ErrorMessage("Parameter for FormMain.populateControlForFile must be boolean!");
-        return;
-      }
-
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
-      this.foDelegateRoutines.UpdateMenusAndControls(false);
-
-      this.foDelegateRoutines.ResetFileVariablesForFile();
-
-      var lcStartDirectory = "c:\\";
-      var loStartDirectoryInfo = new List<DirectoryInfo> {new DirectoryInfo(lcStartDirectory)};
-
-      Exception loException = null;
-
-      try
-      {
-        var llRefresh = llForce || !this.foDelegateRoutines.FileInformationForFile.FileProcessComplete;
-        // The following is awkward code. However, this.foDelegateRoutines.FileInformationForFile is used by
-        // both the Temporary Files and Files.
-        if (!llRefresh)
-        {
-          // Now check to see if the queried directories are the same.
-          var loCurrentDirectoryInfo = this.foDelegateRoutines.FileInformationForFile.FolderRoots;
-          if (loCurrentDirectoryInfo == null)
-          {
-            llRefresh = true;
-          }
-          else if (loCurrentDirectoryInfo.Count != loStartDirectoryInfo.Count)
-          {
-            llRefresh = true;
-          }
-          else
-          {
-            var lnCount = loCurrentDirectoryInfo.Count;
-            for (var i = 0; i < lnCount; ++i)
-            {
-              // Windows is case-insensitive.
-              if (!loCurrentDirectoryInfo[i].FullName.ToLower().Equals(loStartDirectoryInfo[i].FullName.ToLower()))
-              {
-                llRefresh = true;
-                break;
-              }
-            }
-          }
-        }
-
-        if (llRefresh)
-        {
-          this.foDelegateRoutines.FileInformationForFile.GenerateFileInformation(loStartDirectoryInfo);
-        }
-
-        //this.foDelegateRoutines.UpdateControlForFile();
       }
       catch (Exception loErr)
       {

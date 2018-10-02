@@ -134,18 +134,6 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public string GetRootPathForFile()
-    {
-      return this.ReadSetting(UserSettings.MAINFORM_DIRECTORY_FILE[0], UserSettings.MAINFORM_DIRECTORY_FILE[1], @"c:\");
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetRootPathForFile(string tcPath)
-    {
-      this.WriteSetting(UserSettings.MAINFORM_DIRECTORY_FILE[0], UserSettings.MAINFORM_DIRECTORY_FILE[1], tcPath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
     public string GetSavePath()
     {
       return this.ReadSetting(UserSettings.MAINFORM_SAVE[0], UserSettings.MAINFORM_SAVE[1], @"c:\");
@@ -155,44 +143,6 @@ namespace TrashWizard
     public void SetSavePath(string tcPath)
     {
       this.WriteSetting(UserSettings.MAINFORM_SAVE[0], UserSettings.MAINFORM_SAVE[1], tcPath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public int GetOptionsFormTabSelected()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_TABCONTROL[0], UserSettings.OPTIONFORM_TABCONTROL[1], 0);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormTabSelected(int tnSelected)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_TABCONTROL[0], UserSettings.OPTIONFORM_TABCONTROL[1], tnSelected);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public int GetOptionsFormClickForTemporary()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_CLICK_TEMP[0], UserSettings.OPTIONFORM_CLICK_TEMP[1],
-        Util.CLICK_OPENFOLDER);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormClickForTemporary(int tnSelected)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_CLICK_TEMP[0], UserSettings.OPTIONFORM_CLICK_TEMP[1], tnSelected);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public int GetOptionsFormClickForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_CLICK_FILE[0], UserSettings.OPTIONFORM_CLICK_FILE[1],
-        Util.CLICK_OPENFOLDER);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormClickForFile(int tnSelected)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_CLICK_FILE[0], UserSettings.OPTIONFORM_CLICK_FILE[1], tnSelected);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -207,90 +157,6 @@ namespace TrashWizard
     {
       this.WriteSetting(UserSettings.OPTIONFORM_SHOW_FILESIZE_FILE[0], UserSettings.OPTIONFORM_SHOW_FILESIZE_FILE[1],
         tlShowFileSize);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public int GetOptionsFormFileSizeTypeForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_FILESIZE_TYPE_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILESIZE_TYPE_FILE[1], Util.FILESIZE_GBMBKB);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormFileSizeTypeForFile(int tnSelected)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_FILESIZE_TYPE_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILESIZE_TYPE_FILE[1], tnSelected);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public bool GetOptionsFormShowFileDateForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_FILEDATE_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILEDATE_FILE[1], false);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormShowFileDateForFile(bool tlShowFileDate)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_FILEDATE_FILE[0], UserSettings.OPTIONFORM_SHOW_FILEDATE_FILE[1],
-        tlShowFileDate);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public int GetOptionsFormFileDateTypeForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_FILEDATE_TYPE_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILEDATE_TYPE_FILE[1], Util.FILEDATE_SHORT);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormFileDateTypeForFile(int tnSelected)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_FILEDATE_TYPE_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILEDATE_TYPE_FILE[1], tnSelected);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public bool GetOptionsFormShowFileAttributesForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_FILEATTRIBUTES_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILEATTRIBUTES_FILE[1], false);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormShowFileAttributesForFile(bool tlShowFileAttributes)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_FILEATTRIBUTES_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILEATTRIBUTES_FILE[1], tlShowFileAttributes);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public bool GetOptionsFormShowAlertForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_ALERT_FILE[0], UserSettings.OPTIONFORM_SHOW_ALERT_FILE[1],
-        false);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormShowAlertForFile(bool tlShowAlertFile)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_ALERT_FILE[0], UserSettings.OPTIONFORM_SHOW_ALERT_FILE[1],
-        tlShowAlertFile);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public bool GetOptionsFormShowAlertForTemporary()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_ALERT_TEMP[0], UserSettings.OPTIONFORM_SHOW_ALERT_TEMP[1],
-        false);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormShowAlertForTemporary(bool tlShowAlertFile)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_ALERT_TEMP[0], UserSettings.OPTIONFORM_SHOW_ALERT_TEMP[1],
-        tlShowAlertFile);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

@@ -22,48 +22,6 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public class FileInformation : IDisposable
   {
-    private readonly string fcXmlFilePath;
-
-    private readonly List<FileData> foFileListData = new List<FileData>();
-
-    private bool flShowAlert;
-    private bool flShowFileAttributes;
-    private bool flShowFileDate;
-    private bool flShowFileSize = true;
-    private int fnFileDateType = Util.FILEDATE_SHORT;
-    private int fnFileSizeType = Util.FILESIZE_GBMBKB;
-    private int fnFilesProcessed;
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public FileInformation(string tcXmlFilePath)
-    {
-      this.fcXmlFilePath = tcXmlFilePath;
-
-      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public FileInformation(string tcXmlFilePath, bool tlShowAlert)
-    {
-      this.fcXmlFilePath = tcXmlFilePath;
-
-      this.ResetVariables(tlShowAlert);
-
-      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public FileInformation(string tcXmlFilePath, bool tlShowAlert, bool tlShowFileSize, int tnFileSizeType,
-      bool tlShowFileDate, int tnFileDateType, bool tlShowFileAttributes)
-    {
-      this.fcXmlFilePath = tcXmlFilePath;
-
-      this.ResetVariables(tlShowAlert, tlShowFileSize, tnFileSizeType, tlShowFileDate, tnFileDateType,
-        tlShowFileAttributes);
-
-      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
-    }
-
     public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
 
     public List<DirectoryInfo> FolderRoots { get; private set; }
@@ -84,31 +42,26 @@ namespace TrashWizard
       }
     }
 
+    private readonly string fcXmlFilePath;
+
+    private readonly List<FileData> foFileListData = new List<FileData>();
+
+    private int fnFilesProcessed;
+
     // ---------------------------------------------------------------------------------------------------------------------
+    public FileInformation(string tcXmlFilePath)
+    {
+      this.fcXmlFilePath = tcXmlFilePath;
+
+      this.XmlFileInformation = new XmlFileInformation(tcXmlFilePath);
+    }
+
     // ---------------------------------------------------------------------------------------------------------------------
     // Interface IDisposable
     public void Dispose()
     {
       this.Dispose(true);
       GC.SuppressFinalize(this);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void ResetVariables(bool tlShowAlert)
-    {
-      this.flShowAlert = tlShowAlert;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void ResetVariables(bool tlShowAlert, bool tlShowFileSize, int tnFileSizeType, bool tlShowFileDate,
-      int tnFileDateType, bool tlShowFileAttributes)
-    {
-      this.flShowAlert = tlShowAlert;
-      this.flShowFileSize = tlShowFileSize;
-      this.fnFileSizeType = tnFileSizeType;
-      this.flShowFileDate = tlShowFileDate;
-      this.fnFileDateType = tnFileDateType;
-      this.flShowFileAttributes = tlShowFileAttributes;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -158,11 +111,8 @@ namespace TrashWizard
           llError = true;
         }
       }
-      catch (Exception loErr)
+      catch (Exception)
       {
-        // By the way, toRoot.FullName throws the error, so you can't use it in the
-        // message.
-        this.Alert(loErr.Message);
         llError = true;
       }
 
@@ -176,22 +126,15 @@ namespace TrashWizard
       var lnRootIndex = this.foFileListData.Count - 1;
 
       // First, process all the files directly under this folder
-      Exception loException = null;
       FileInfo[] loFiles;
       try
       {
         loFiles = toRoot.GetFiles("*.*", SearchOption.TopDirectoryOnly);
       }
       // This will catch SecurityException, ArgumentException, ArgumentNullException, DirectoryNotFoundException, FileNotFoundException, IOException, PlatformNotSupportedException & UnauthorizedAccessException
-      catch (SystemException loErr)
+      catch (SystemException)
       {
         loFiles = null;
-        loException = loErr;
-      }
-
-      if (loException != null)
-      {
-        this.Alert(toRoot.FullName + "\n" + loException.Message);
       }
 
       var lnTotalBytes = 0L;
@@ -247,99 +190,13 @@ namespace TrashWizard
       {
       }
       // This will catch SecurityException, ArgumentException, ArgumentNullException, DirectoryNotFoundException, FileNotFoundException, IOException, PlatformNotSupportedException & UnauthorizedAccessException
-      catch (SystemException loErr)
+      catch (SystemException)
       {
-        loException = loErr;
-      }
-
-      if (loException != null)
-      {
-        this.Alert(toRoot.FullName + "\n" + loException.Message);
       }
 
       this.foFileListData[lnRootIndex].Size = lnTotalBytes;
 
       return lnTotalBytes;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public string BuildString(int tnIndex)
-    {
-      return this.BuildString(this.foFileListData[tnIndex]);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public string BuildString(FileData toFileData)
-    {
-      var lcInfo = "";
-
-      if (this.flShowFileSize)
-      {
-        var lnBytes = toFileData.Size;
-        var lnType = this.fnFileSizeType;
-        var lcBytes = "";
-
-        if (lnType == Util.FILESIZE_GBMBKB)
-        {
-          lcBytes = Util.formatBytes_GB_MB_KB(lnBytes);
-        }
-        else if (lnType == Util.FILESIZE_KBONLY)
-        {
-          lcBytes = Util.formatBytes_KBOnly(lnBytes);
-        }
-        else if (lnType == Util.FILESIZE_ACTUAL)
-        {
-          lcBytes = Util.formatBytes_Actual(lnBytes);
-        }
-
-        lcInfo += lcBytes + "; ";
-      }
-
-      if (this.flShowFileDate)
-      {
-        var lnType = this.fnFileDateType;
-        var lcDate = "";
-
-        if (lnType == Util.FILEDATE_SHORT)
-        {
-          lcDate = Util.formatDate_Short(toFileData.DateModified);
-        }
-        else if (lnType == Util.FILEDATE_LONG)
-        {
-          lcDate = Util.formatDate_Long(toFileData.DateModified);
-        }
-
-        lcInfo += lcDate + "; ";
-      }
-
-      if (this.flShowFileAttributes)
-      {
-        lcInfo += Util.FormatAttributes(toFileData);
-      }
-
-      lcInfo = lcInfo.Trim();
-      if (lcInfo.EndsWith(";"))
-      {
-        lcInfo = lcInfo.Substring(0, lcInfo.Length - 1);
-      }
-
-      lcInfo = lcInfo.Trim();
-
-      if (lcInfo.Length > 0)
-      {
-        return Util.LABEL_MARK_BEGIN + lcInfo + Util.LABEL_MARK_END;
-      }
-
-      return "";
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void Alert(string tcMessage)
-    {
-      if (this.flShowAlert)
-      {
-        Util.ErrorMessage(tcMessage);
-      }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
