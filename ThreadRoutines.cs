@@ -377,24 +377,24 @@ namespace TrashWizard
       long lnTotal = 0;
       foreach (var loDirectory in loStartFolder.GetDirectories())
       {
-        long lnFolderSize = 0;
-
+        long lnFileSizeTotal = 0;
         try
         {
           //lnFolderSize = loDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
-          lnFolderSize = this.GetFilesSize(loDirectory.FullName);
+
+          lnFileSizeTotal = this.GatherFileSizes(loDirectory.FullName);
         }
         catch (Exception)
         {
           // ignored
         }
 
-        if (lnFolderSize > 0)
+        if (lnFileSizeTotal > 0)
         {
-          lnTotal += lnFolderSize;
+          lnTotal += lnFileSizeTotal;
 
           this.foGraphSeriesList.Add(new GraphSlice
-            {fcLabel = loDirectory.FullName, fnSize = lnFolderSize, foColor = Colors.Transparent});
+            {fcLabel = loDirectory.FullName, fnSize = lnFileSizeTotal, foColor = Colors.Transparent});
         }
       }
 
@@ -439,27 +439,25 @@ namespace TrashWizard
     // Unfortunately, something like
     // lnFolderSize = loDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
     // will throw an exception at the first problem, and rather than skip the file or folder, it stops.
-    private long GetFilesSize(string tcFolder)
+    private long GatherFileSizes(string tcFolder)
     {
-      long lnSize = 0;
-      try
-      {
-        foreach (var lcFolder in Directory.GetDirectories(tcFolder))
-        {
-          lnSize = this.GetFilesSize(lcFolder);
-        }
+      var loStartFolder = new DirectoryInfo(tcFolder);
+      var lnTotal = loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).Sum(file => file.Length);
+      ;
 
-        foreach (var loFile in Directory.GetFiles(tcFolder))
+      foreach (var lcFolder in Directory.GetDirectories(tcFolder))
+      {
+        try
         {
-          lnSize += loFile.Length;
+          lnTotal += this.GatherFileSizes(lcFolder);
+        }
+        catch (Exception)
+        {
+          // ignored
         }
       }
-      catch (Exception)
-      {
-        // ignored
-      }
 
-      return (lnSize);
+      return (lnTotal);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
