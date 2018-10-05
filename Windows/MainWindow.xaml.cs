@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Security;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +25,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using LiveCharts;
+using LiveCharts.Wpf;
 using Microsoft.Win32;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -34,34 +36,12 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class MainWindow
   {
-    private enum ThreadTypes
-    {
-      ThreadTemporaryLocate,
-      ThreadTemporaryRemove,
-      ThreadFilesViewGraph
-    }
-
     public const string FILES_CURRENT_LABEL_START =
-      "No current folder selected. Select the Drive combobox and then press Run.";
-
-    private ThreadTypes fnThreadType;
-
-    private readonly ThreadRoutines foDelegateRoutines;
-
-    private DateTime foStartTime;
-
-    private Thread foThread;
-
-    private readonly UserSettings foUserSettings = new UserSettings();
-
-    private readonly DispatcherTimer tmrRunning =
-      new DispatcherTimer(DispatcherPriority.Normal);
+      "No current folder selected. Select a folder shown on the left side of this window.";
 
     public UserSettings UserSettings { get; } = new UserSettings();
 
     public ListBox ListBox => this.ListBox1;
-
-    public Menu MenuMain => this.MenuMain1;
 
     // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
     public Button ButtonCancel => this.BtnCancel1;
@@ -82,7 +62,33 @@ namespace TrashWizard.Windows
 
     public MenuItem MenuItemRemove => this.MenuItemRemove1;
 
+    public PieChart PChrtFolders => this.PChrtFolders1;
+
     public Func<ChartPoint, string> PointLabel { get; set; }
+
+    private const string HTML_LINE_BREAK = "<br />\n";
+
+    private enum ThreadTypes
+    {
+      ThreadTemporaryLocate,
+      ThreadTemporaryRemove,
+      ThreadFilesViewGraph
+    }
+
+    private string fcCurrentSelectedFolder = "";
+
+    private ThreadTypes fnThreadType;
+
+    private readonly ThreadRoutines foDelegateRoutines;
+
+    private DateTime foStartTime;
+
+    private Thread foThread;
+
+    private readonly UserSettings foUserSettings = new UserSettings();
+
+    private readonly DispatcherTimer tmrRunning =
+      new DispatcherTimer(DispatcherPriority.Normal);
 
     // ---------------------------------------------------------------------------------------------------------------------
     public MainWindow()
@@ -164,7 +170,9 @@ namespace TrashWizard.Windows
         loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
       }
 
-      Util.InfoMessage(lcPath);
+      this.LblCurrentFolder.Content = lcPath;
+      this.fcCurrentSelectedFolder = lcPath;
+      this.StartThread(ThreadTypes.ThreadFilesViewGraph);
     }
 
 
@@ -284,6 +292,7 @@ namespace TrashWizard.Windows
           break;
 
         case ThreadTypes.ThreadFilesViewGraph:
+          this.foThread = new Thread(this.GraphFolderSpace);
           break;
       }
 
@@ -307,6 +316,18 @@ namespace TrashWizard.Windows
       this.foDelegateRoutines.UpdateMenusAndControls(false);
 
       this.foDelegateRoutines.RemoveFilesFromTemporaryList();
+
+      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void GraphFolderSpace()
+    {
+      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
+      this.foDelegateRoutines.UpdateMenusAndControls(false);
+
+      this.foDelegateRoutines.GraphFolderSpaceForFiles(this.fcCurrentSelectedFolder);
 
       this.foDelegateRoutines.UpdateMenusAndControls(true);
       this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
@@ -416,6 +437,50 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    private void AppDriveInfo(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var loHtml = new StringBuilder();
+
+      loHtml.Append(
+        "<html>\n<head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'></head>\n<body style='font-family: Microsoft Sans Serif; font-size: 12px; background-color: #C0D9D9; border: none; padding: 10px;'>"
+        + "\n<p style='text-align: center; font-weight: bold;'>This system has the following drives:</p>\n");
+
+
+      var loDrives = DriveInfo.GetDrives();
+
+      loHtml.Append("<p>\n");
+      foreach (var loDrive in loDrives)
+      {
+        loHtml.Append($@"<b>Drive {loDrive.Name}</b>{MainWindow.HTML_LINE_BREAK}");
+        loHtml.Append($@"&nbsp;&nbsp;<b>File type:</b> {loDrive.DriveType}{MainWindow.HTML_LINE_BREAK}");
+        if (loDrive.IsReady)
+        {
+          loHtml.Append($@"&nbsp;&nbsp;<b>Volume label:</b> {loDrive.VolumeLabel}{MainWindow.HTML_LINE_BREAK}");
+          loHtml.Append($@"&nbsp;&nbsp;<b>File system:</b> {loDrive.DriveFormat}{MainWindow.HTML_LINE_BREAK}");
+
+          loHtml.Append(
+            $@"&nbsp;&nbsp;<b>Available space to current user:</b> {Util.formatBytes_Actual(loDrive.AvailableFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
+          loHtml.Append(
+            $@"&nbsp;&nbsp;<b>Total available space:</b> {Util.formatBytes_Actual(loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
+          loHtml.Append(
+            $@"&nbsp;&nbsp;<b>Total space used:</b> {Util.formatBytes_Actual(loDrive.TotalSize - loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
+          loHtml.Append(
+            $@"&nbsp;&nbsp;<b>Total size of drive:</b> {Util.formatBytes_Actual(loDrive.TotalSize)}{MainWindow.HTML_LINE_BREAK}");
+        }
+
+        loHtml.Append(MainWindow.HTML_LINE_BREAK);
+      }
+
+      loHtml.Append("</p></body></html>");
+
+      var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.4);
+      var lnWidth = (int) (SystemParameters.PrimaryScreenWidth * 0.4);
+
+      var loDisplay = new WebDisplay(this, loHtml.ToString(), lnHeight, lnWidth);
+      loDisplay.ShowDialog();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
     private void AppLaunchHomePage(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       Util.LaunchBrowser(Util.HOME_PAGE_FOR_APPLICATION);
@@ -433,7 +498,7 @@ namespace TrashWizard.Windows
       var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.4);
       var lnWidth = (int) (SystemParameters.PrimaryScreenWidth * 0.4);
 
-      var loDisplay = new WebDisplay(this, "https://www.beowurks.com/ajax/node/22", lnHeight, lnWidth);
+      var loDisplay = new WebDisplay(this, new Uri("https://www.beowurks.com/ajax/node/22"), lnHeight, lnWidth);
       loDisplay.ShowDialog();
     }
 

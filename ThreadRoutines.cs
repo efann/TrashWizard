@@ -14,10 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using LiveCharts;
+using LiveCharts.Wpf;
 using TrashWizard.Win32;
 using TrashWizard.Windows;
 
@@ -36,7 +39,6 @@ namespace TrashWizard
 
     public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
 
-
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
 
@@ -50,12 +52,19 @@ namespace TrashWizard
     private readonly SortedList<string, string> foTemporaryFileList =
       new SortedList<string, string>(new ReverseStringComparer());
 
+    private struct GraphSlice
+    {
+      public string fcLabel;
+      public long fnSize;
+      public Color foColor;
+    }
+
+    private readonly List<GraphSlice> foGraphSeriesList = new List<GraphSlice>();
+
     // ---------------------------------------------------------------------------------------------------------------------
     public ThreadRoutines(MainWindow toMainWindow)
     {
       this.foMainWindow = toMainWindow;
-
-      var loUserSettings = this.foMainWindow.UserSettings;
 
       this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING);
     }
@@ -67,66 +76,6 @@ namespace TrashWizard
       this.foDataTable?.Dispose();
 
       this.FileInformationForTemporary?.Dispose();
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void ResetViewControlsForFile()
-    {
-      /*
-      MainWindow loMainWindow = this.foMainWindow;
-      var loDispatcher = loMainWindow.Dispatcher;
-
-      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
-      {
-        // Pass the same function to BeginInvoke,
-        // but the call would come on the correct
-        // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new ResetViewControlsForFileDelegate(this.ResetViewControlsForFile));
-        return;
-      }
-
-      int lnWidth = (loMainWindow.ButtonEllipse.Location.X + loMainWindow.ButtonEllipse.Size.Width) -
-                    loMainWindow.TreeViewForFile.Location.X - 1;
-
-      if (loMainWindow.IsTreeViewForFiles())
-      {
-        loMainWindow.TreeViewForFile.Visible = true;
-        loMainWindow.TreeViewForFile.Width = lnWidth;
-
-        loMainWindow.GridViewForFile.Visible = false;
-      }
-      else
-      {
-        loMainWindow.GridViewForFile.Visible = true;
-        loMainWindow.GridViewForFile.Location = loMainWindow.TreeViewForFile.Location;
-        loMainWindow.GridViewForFile.Width = lnWidth;
-
-        loMainWindow.TreeViewForFile.Visible = false;
-      }
-      */
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void ResetFileVariablesForFile()
-    {
-      // This results in a recursive call. If updateUI is not being called from the
-      // thread that originally created the GUI, then updateUI will be called again
-      // using updateUIDelegate which will post on the thread that owns these 
-      // controls' underlying window handle.
-      var loDispatcher = this.foMainWindow.Dispatcher;
-
-      if (!loDispatcher.CheckAccess()) // CheckAccess returns true if you're on the dispatcher thread
-      {
-        // Pass the same function to BeginInvoke,
-        // but the call would come on the correct
-        // thread and InvokeRequired will be false.
-        loDispatcher.Invoke(new ResetFileVariablesDelegate(this.ResetFileVariablesForFile));
-
-        return;
-      }
-
-      GC.Collect();
-      GC.WaitForPendingFinalizers();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -401,10 +350,124 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    public void GraphFolderSpaceForFiles(string tcCurrentFolder)
+    {
+      this.foGraphSeriesList.Clear();
+
+      var loDrive = new DriveInfo(tcCurrentFolder.Substring(0, 1));
+      var llRoot = loDrive.RootDirectory.FullName.ToLower().Equals(tcCurrentFolder.ToLower());
+
+      if (llRoot)
+      {
+        var lnSpace = loDrive.TotalFreeSpace;
+        this.foGraphSeriesList.Add(
+          new GraphSlice {fcLabel = "Free Space", fnSize = lnSpace, foColor = Colors.LightGray});
+      }
+
+      var loStartFolder = new DirectoryInfo(tcCurrentFolder);
+
+      // First get the size of the files in the current folder.
+      var lnFilesSize = loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).Sum(file => file.Length);
+      if (lnFilesSize != 0)
+      {
+        this.foGraphSeriesList.Add(new GraphSlice
+          {fcLabel = "File(s)", fnSize = lnFilesSize, foColor = Colors.Transparent});
+      }
+
+      long lnTotal = 0;
+      foreach (var loDirectory in loStartFolder.GetDirectories())
+      {
+        long lnFolderSize = 0;
+
+        try
+        {
+          //lnFolderSize = loDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
+          lnFolderSize = this.GetFilesSize(loDirectory.FullName);
+        }
+        catch (Exception)
+        {
+          // ignored
+        }
+
+        if (lnFolderSize > 0)
+        {
+          lnTotal += lnFolderSize;
+
+          this.foGraphSeriesList.Add(new GraphSlice
+            {fcLabel = loDirectory.FullName, fnSize = lnFolderSize, foColor = Colors.Transparent});
+        }
+      }
+
+      if (llRoot)
+      {
+        var lnUsed = loDrive.TotalSize - loDrive.TotalFreeSpace;
+        if (lnUsed > lnTotal)
+        {
+          this.foGraphSeriesList.Add(new GraphSlice
+            {fcLabel = "Unknown", fnSize = lnUsed - lnTotal, foColor = Colors.Crimson});
+        }
+      }
+
+      var loMainWindow = this.foMainWindow;
+
+      Application.Current.Dispatcher.Invoke(delegate
+      {
+        {
+          var loChart = loMainWindow.PChrtFolders;
+          loChart.Series = new SeriesCollection();
+
+          foreach (var loGraph in this.foGraphSeriesList)
+          {
+            var loPieSeries = new PieSeries
+            {
+              Title = loGraph.fcLabel,
+              Values = new ChartValues<long> {loGraph.fnSize}
+            };
+
+            if (loGraph.foColor != Colors.Transparent)
+            {
+              loPieSeries.Fill = new SolidColorBrush(loGraph.foColor);
+            }
+
+            loChart.Series.Add(loPieSeries);
+          }
+        }
+      });
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // Unfortunately, something like
+    // lnFolderSize = loDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
+    // will throw an exception at the first problem, and rather than skip the file or folder, it stops.
+    private long GetFilesSize(string tcFolder)
+    {
+      long lnSize = 0;
+      try
+      {
+        foreach (var lcFolder in Directory.GetDirectories(tcFolder))
+        {
+          lnSize = this.GetFilesSize(lcFolder);
+        }
+
+        foreach (var loFile in Directory.GetFiles(tcFolder))
+        {
+          lnSize += loFile.Length;
+        }
+      }
+      catch (Exception)
+      {
+        // ignored
+      }
+
+      return (lnSize);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateFormCursors(Cursor toCursor)
     {
       var loMainWindow = this.foMainWindow;
       Application.Current.Dispatcher.Invoke(delegate
+
       {
         {
           loMainWindow.Cursor = toCursor;
@@ -412,36 +475,38 @@ namespace TrashWizard
       });
     }
 
-    // ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
     public void UpdateMenusAndControls(bool tlEnable)
     {
       var loMainWindow = this.foMainWindow;
       Application.Current.Dispatcher.Invoke(delegate
+
       {
         {
-          this.ResetViewControlsForFile();
-
           loMainWindow.ButtonCancel.IsEnabled = !tlEnable;
 
-          loMainWindow.ButtonSave.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
-          loMainWindow.ButtonRun.IsEnabled = tlEnable;
-          loMainWindow.ButtonRemove.IsEnabled = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
+          var llTabSpecific = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
+          loMainWindow.ButtonRun.IsEnabled = llTabSpecific;
+          loMainWindow.ButtonSave.IsEnabled = llTabSpecific;
+          loMainWindow.ButtonRemove.IsEnabled = llTabSpecific;
 
           loMainWindow.MenuItemCancel.IsEnabled = loMainWindow.ButtonCancel.IsEnabled;
 
-          loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
           loMainWindow.MenuItemRun.IsEnabled = loMainWindow.ButtonRun.IsEnabled;
+          loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
           loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
+
+          loMainWindow.PChrtFolders.IsEnabled = tlEnable;
         }
       });
     }
 
-    // ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
   }
 
-  // ---------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 }
 
 //-----------------------------------------------------------------------------

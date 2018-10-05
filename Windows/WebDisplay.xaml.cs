@@ -23,8 +23,11 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class WebDisplay
   {
+    private readonly object foHtmlInitializer;
+
     // ---------------------------------------------------------------------------------------------------------------------
-    public WebDisplay(Window toParent, string tcURL, int tnHeight, int tnWidth) : base(toParent, true, false)
+    public WebDisplay(Window toParent, object toHtmlInitializer, int tnHeight, int tnWidth) : base(toParent, true,
+      false)
     {
       if (toParent == null)
       {
@@ -33,14 +36,14 @@ namespace TrashWizard.Windows
 
       this.InitializeComponent();
 
+      this.foHtmlInitializer = toHtmlInitializer;
+
       this.Height = tnHeight;
       this.Width = tnWidth;
-
-      this.foWebView.Navigate(new Uri(tcURL));
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void btnOk_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
+    private void BtnOk_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       this.DialogResult = true;
     }
@@ -52,6 +55,26 @@ namespace TrashWizard.Windows
       teWebViewControlNewWindowRequestedEventArgs.Handled = true;
 
       Util.LaunchBrowser(teWebViewControlNewWindowRequestedEventArgs.Uri.ToString());
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // When calling WebView.NavigateToString, the routine hangs at while (!_initializationComplete.WaitOne(InitializationBlockingTime));
+    // From https://github.com/windows-toolkit/WindowsCommunityToolkit/issues/2374,
+    // they recommend loading the WebView from the OnLoaded event handler to allow the control to initialize through the dispatcher queue.
+    private void WebDisplay_OnLoaded(object toSender, RoutedEventArgs teRoutedEventArgs)
+    {
+      var loUri = this.foHtmlInitializer as Uri;
+      if (loUri != null)
+      {
+        this.foWebView.Navigate(loUri);
+        return;
+      }
+
+      var lcString = this.foHtmlInitializer as string;
+      if (lcString != null)
+      {
+        this.foWebView.NavigateToString(lcString);
+      }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

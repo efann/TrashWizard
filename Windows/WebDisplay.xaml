@@ -5,7 +5,8 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:wpf="clr-namespace:Microsoft.Toolkit.Win32.UI.Controls.WPF;assembly=Microsoft.Toolkit.Win32.UI.Controls"
                         xmlns:local="clr-namespace:TrashWizard.Windows"
-                        mc:Ignorable="d">
+                        mc:Ignorable="d"
+                        Loaded="WebDisplay_OnLoaded">
   <Grid Margin="15">
     <Grid.RowDefinitions>
       <RowDefinition Height="*" />
@@ -19,7 +20,7 @@
 
       <Button Content="OK" Grid.Column="0"
               Name="btnOK" TabIndex="1600" IsDefault="True"
-              Click="btnOk_Click" />
+              Click="BtnOk_Click" />
     </Grid>
   </Grid>
 </local:BaseWindowDialog>

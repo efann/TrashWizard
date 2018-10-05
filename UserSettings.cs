@@ -20,36 +20,11 @@ namespace TrashWizard
     private static readonly string[] MAINFORM_TABCONTROL = {"FormMain.tabControl1", "SelectedIndex"};
     private static readonly string[] MAINFORM_SAVE = {"FormMain.SavePath", "Text"};
 
-    private static readonly string[] MAINFORM_DIRECTORY_FILE = {"FormMain.File.txtDirectory1", "Text"};
-
     private static readonly string[] MAINFORM_INCLUDE_TEMP_FILES = {"FormMain.Temp.Files", "Selected"};
     private static readonly string[] MAINFORM_USE_RECYCLE = {"FormMain.Recycle.Bin", "Selected"};
     private static readonly string[] MAINFORM_INCLUDE_BROWSER_CACHES = {"FormMain.Brower.Cache", "Selected"};
     private static readonly string[] MAINFORM_INCLUDE_ADOBE_CACHES = {"FormMain.Adobe.Cache", "Selected"};
     private static readonly string[] MAINFORM_INCLUDE_OFFICE_SUITE_CACHES = {"FormMain.OfficeSuites.Cache", "Selected"};
-
-    private static readonly string[] OPTIONFORM_TABCONTROL = {"FormOptions1.tabControl1", "SelectedIndex"};
-
-    // The option for determining if a folder is opened or the file is opened in its 
-    // associated application.
-    private static readonly string[] OPTIONFORM_CLICK_FILE = {"FormOptions1.Click.File", "Selected"};
-    private static readonly string[] OPTIONFORM_CLICK_TEMP = {"FormOptions1.Click.Temporary", "Selected"};
-
-    //----
-    private static readonly string[] OPTIONFORM_SHOW_FILESIZE_FILE = {"FormOptions1.ShowFileSize.File", "Selected"};
-    private static readonly string[] OPTIONFORM_SHOW_FILESIZE_TYPE_FILE = {"FormOptions1.ShowFileSize.File", "Type"};
-
-    private static readonly string[] OPTIONFORM_SHOW_FILEDATE_FILE = {"FormOptions1.ShowFileDate.File", "Selected"};
-    private static readonly string[] OPTIONFORM_SHOW_FILEDATE_TYPE_FILE = {"FormOptions1.ShowFileDate.File", "Type"};
-
-    private static readonly string[] OPTIONFORM_SHOW_FILEATTRIBUTES_FILE =
-    {
-      "FormOptions1.ShowFileAttributes.File",
-      "Selected"
-    };
-
-    private static readonly string[] OPTIONFORM_SHOW_ALERT_FILE = {"FormOptions1.ShowAlert.File", "Selected"};
-    private static readonly string[] OPTIONFORM_SHOW_ALERT_TEMP = {"FormOptions1.ShowAlert.Temporary", "Selected"};
 
     // ---------------------------------------------------------------------------------------------------------------------
     public int GetMainFormTabSelected()
@@ -143,20 +118,6 @@ namespace TrashWizard
     public void SetSavePath(string tcPath)
     {
       this.WriteSetting(UserSettings.MAINFORM_SAVE[0], UserSettings.MAINFORM_SAVE[1], tcPath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public bool GetOptionsFormShowFileSizeForFile()
-    {
-      return this.ReadSetting(UserSettings.OPTIONFORM_SHOW_FILESIZE_FILE[0],
-        UserSettings.OPTIONFORM_SHOW_FILESIZE_FILE[1], true);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public void SetOptionsFormShowFileSizeForFile(bool tlShowFileSize)
-    {
-      this.WriteSetting(UserSettings.OPTIONFORM_SHOW_FILESIZE_FILE[0], UserSettings.OPTIONFORM_SHOW_FILESIZE_FILE[1],
-        tlShowFileSize);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
