@@ -554,7 +554,7 @@ namespace TrashWizard.Windows
       {
         try
         {
-          Process.Start("IExplore.exe", @"http://www.beowurks.com/Software/NET/TrashWizard/publish.htm");
+          Process.Start("IExplore.exe", @"http://www.beowurks.com/Software/NET/TrashWizard.WPF/publish.htm");
 
           this.Cursor = loCurrent;
           this.AppExit(null, null);
