@@ -442,8 +442,22 @@ namespace TrashWizard
     private long GatherFileSizes(string tcFolder)
     {
       var loStartFolder = new DirectoryInfo(tcFolder);
-      var lnTotal = loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).Sum(file => file.Length);
-      ;
+      // I could use the following:
+      // var lnTotal = loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).Sum(file => file.Length);
+      // However, if there's an exception reading one of the files, it will stop.
+      long lnTotal = 0;
+      foreach (var loFileInfo in loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+      {
+        try
+        {
+          lnTotal += loFileInfo.Length;
+        }
+        catch (Exception)
+        {
+          // ignored
+        }
+      }
+
 
       foreach (var lcFolder in Directory.GetDirectories(tcFolder))
       {
