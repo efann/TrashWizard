@@ -412,7 +412,7 @@ namespace TrashWizard
       Application.Current.Dispatcher.Invoke(delegate
       {
         {
-          string LoLabelPoint(ChartPoint chartPoint)
+          string FncLabelPoint(ChartPoint chartPoint)
           {
             return $"{Util.formatBytes_GB_MB_KB(chartPoint.Y)}";
           }
@@ -427,8 +427,9 @@ namespace TrashWizard
             {
               Title = loGraph.fcLabel,
               Values = new ChartValues<long> {loGraph.fnSize},
-              LabelPoint = LoLabelPoint,
+              LabelPoint = FncLabelPoint,
               DataLabels = false
+              
             };
 
             if (loGraph.fcLabel.Equals(ThreadRoutines.UNKNOWN_BYTES))
