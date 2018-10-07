@@ -187,10 +187,12 @@
             <TreeView Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
             <Label Name="LblCurrentFolder" Cursor="Hand" Grid.Row="0" Grid.Column="1"
                    PreviewMouseLeftButtonUp="ClickOnLabel" />
-            <wpf:PieChart Name="PChrtFolders1" LegendLocation="Bottom" Grid.Row="1" Grid.Column="1" >
+            <wpf:PieChart Name="PChrtFolders1" LegendLocation="Left" Grid.Row="1" Grid.Column="1">
+              <wpf:PieChart.DataTooltip>
+                <wpf:DefaultTooltip SelectionMode="OnlySender" />
+              </wpf:PieChart.DataTooltip>
               <wpf:PieChart.Series>
-                <wpf:PieSeries Title="Select a drive or folder to start analysis" Values="100" DataLabels="True"
-                               LabelPoint="{Binding PointLabel}" />
+                <wpf:PieSeries Title="Select a drive or folder to start analysis" Values="100" DataLabels="True" />
               </wpf:PieChart.Series>
             </wpf:PieChart>
           </Grid>

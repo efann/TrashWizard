@@ -64,8 +64,6 @@ namespace TrashWizard.Windows
 
     public PieChart PChrtFolders => this.PChrtFolders1;
 
-    public Func<ChartPoint, string> PointLabel { get; set; }
-
     private const string HTML_LINE_BREAK = "<br />\n";
 
     private enum ThreadTypes
@@ -102,14 +100,12 @@ namespace TrashWizard.Windows
       this.ReadSettings();
       this.foDelegateRoutines.UpdateMenusAndControls(true);
 
-      this.PointLabel = chartPoint => $"{chartPoint.Y} ({chartPoint.Participation:P})";
-
       this.DataContext = this;
 
       this.LblCurrentFolder.Content = MainWindow.FILES_CURRENT_LABEL_START;
 
       this.tmrRunning.Tick += new EventHandler(this.TimerElapsedEvent);
-      this.tmrRunning.Interval = TimeSpan.FromMilliseconds(1000);
+      this.tmrRunning.Interval = TimeSpan.FromMilliseconds(250);
 
       this.SetupTreeView();
     }

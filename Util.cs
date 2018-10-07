@@ -200,6 +200,14 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    public static string formatBytes_GB_MB_KB(double tnBytes)
+    {
+      long lnBytes = Convert.ToInt64(tnBytes);
+
+      return (Util.formatBytes_GB_MB_KB(lnBytes));
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
     public static string formatBytes_GB_MB_KB(long tnBytes)
     {
       var lcValue = "";

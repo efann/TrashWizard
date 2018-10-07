@@ -41,6 +41,7 @@ namespace TrashWizard
 
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
+    private static readonly string UNKNOWN_BYTES = "<Unaccounted Bytes>";
 
     private readonly DataTable foDataTable = new DataTable();
 
@@ -380,8 +381,6 @@ namespace TrashWizard
         long lnFileSizeTotal = 0;
         try
         {
-          //lnFolderSize = loDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
-
           lnFileSizeTotal = this.GatherFileSizes(loDirectory.FullName);
         }
         catch (Exception)
@@ -404,7 +403,7 @@ namespace TrashWizard
         if (lnUsed > lnTotal)
         {
           this.foGraphSeriesList.Add(new GraphSlice
-            {fcLabel = "Unknown", fnSize = lnUsed - lnTotal, foColor = Colors.Crimson});
+            {fcLabel = ThreadRoutines.UNKNOWN_BYTES, fnSize = lnUsed - lnTotal, foColor = Colors.Crimson});
         }
       }
 
@@ -413,7 +412,13 @@ namespace TrashWizard
       Application.Current.Dispatcher.Invoke(delegate
       {
         {
+          string LoLabelPoint(ChartPoint chartPoint)
+          {
+            return $"{Util.formatBytes_GB_MB_KB(chartPoint.Y)}";
+          }
+
           var loChart = loMainWindow.PChrtFolders;
+
           loChart.Series = new SeriesCollection();
 
           foreach (var loGraph in this.foGraphSeriesList)
@@ -421,10 +426,16 @@ namespace TrashWizard
             var loPieSeries = new PieSeries
             {
               Title = loGraph.fcLabel,
-              Values = new ChartValues<long> {loGraph.fnSize}
+              Values = new ChartValues<long> {loGraph.fnSize},
+              LabelPoint = LoLabelPoint,
+              DataLabels = false
             };
 
-            if (loGraph.foColor != Colors.Transparent)
+            if (loGraph.fcLabel.Equals(ThreadRoutines.UNKNOWN_BYTES))
+            {
+              loPieSeries.Fill = new LinearGradientBrush(loGraph.foColor, Colors.Black, 24.0);
+            }
+            else if (loGraph.foColor != Colors.Transparent)
             {
               loPieSeries.Fill = new SolidColorBrush(loGraph.foColor);
             }
@@ -508,7 +519,7 @@ namespace TrashWizard
           loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
           loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
 
-          loMainWindow.PChrtFolders.IsEnabled = tlEnable;
+          loMainWindow.TrvwFolders.IsEnabled = tlEnable;
         }
       });
     }
