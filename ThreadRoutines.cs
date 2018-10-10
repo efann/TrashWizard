@@ -35,13 +35,16 @@ namespace TrashWizard
   {
     public delegate void ResetFileVariablesDelegate();
 
+    public static readonly string UNKNOWN_BYTES = "<Unaccounted Bytes>";
+    public static readonly string FREE_SPACE_BYTES = "<Unused Space>";
+    public static readonly string FILES_BYTES = "<Individual file(s) in the current folder>";
+
     public FileInformation FileInformationForTemporary { get; }
 
     public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
 
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
-    private static readonly string UNKNOWN_BYTES = "<Unaccounted Bytes>";
 
     private readonly DataTable foDataTable = new DataTable();
 
@@ -362,7 +365,7 @@ namespace TrashWizard
       {
         var lnSpace = loDrive.TotalFreeSpace;
         this.foGraphSeriesList.Add(
-          new GraphSlice {fcLabel = "Free Space", fnSize = lnSpace, foColor = Colors.LightGray});
+          new GraphSlice {fcLabel = ThreadRoutines.FREE_SPACE_BYTES, fnSize = lnSpace, foColor = Colors.LightGray});
       }
 
       var loStartFolder = new DirectoryInfo(tcCurrentFolder);
@@ -372,7 +375,7 @@ namespace TrashWizard
       if (lnFilesSize != 0)
       {
         this.foGraphSeriesList.Add(new GraphSlice
-          {fcLabel = "File(s)", fnSize = lnFilesSize, foColor = Colors.Transparent});
+          {fcLabel = ThreadRoutines.FILES_BYTES, fnSize = lnFilesSize, foColor = Colors.Yellow});
       }
 
       long lnTotal = 0;
@@ -429,16 +432,14 @@ namespace TrashWizard
               Values = new ChartValues<long> {loGraph.fnSize},
               LabelPoint = FncLabelPoint,
               DataLabels = false
-              
             };
 
-            if (loGraph.fcLabel.Equals(ThreadRoutines.UNKNOWN_BYTES))
+            var llGradient = (loGraph.fcLabel.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
+                              loGraph.fcLabel.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
+                              loGraph.fcLabel.Equals(ThreadRoutines.FILES_BYTES));
+            if (llGradient)
             {
               loPieSeries.Fill = new LinearGradientBrush(loGraph.foColor, Colors.Black, 24.0);
-            }
-            else if (loGraph.foColor != Colors.Transparent)
-            {
-              loPieSeries.Fill = new SolidColorBrush(loGraph.foColor);
             }
 
             loChart.Series.Add(loPieSeries);
@@ -521,6 +522,7 @@ namespace TrashWizard
           loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
 
           loMainWindow.TrvwFolders.IsEnabled = tlEnable;
+          loMainWindow.PChrtFolders.IsEnabled = tlEnable;
         }
       });
     }

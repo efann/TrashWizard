@@ -26,6 +26,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using LiveCharts;
 using LiveCharts.Wpf;
+using LiveCharts.Wpf.Points;
 using Microsoft.Win32;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -144,14 +145,14 @@ namespace TrashWizard.Windows
           };
           loItem.Items.Add(null);
           loItem.Expanded += new RoutedEventHandler(this.TreeViewFolderExpand);
-          loItem.Selected += new RoutedEventHandler(this.TreeViewFolderSelected);
+          loItem.Selected += new RoutedEventHandler(this.TreeViewFolder_Selected);
           loTreeView.Items.Add(loItem);
         }
       }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void TreeViewFolderSelected(object toSender, RoutedEventArgs teRoutedEventArgs)
+    private void TreeViewFolder_Selected(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       var loItem = (TreeViewItem) this.TrvwFolders.SelectedItem;
       var lcPath = loItem.Header.ToString();
@@ -171,6 +172,24 @@ namespace TrashWizard.Windows
       this.StartThread(ThreadTypes.ThreadFilesViewGraph);
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void PieChart_OnDataClick(object toSender, ChartPoint toChartPoint)
+    {
+      var lcPath = toChartPoint.SeriesView.Title;
+
+      var llInvalidPath = (lcPath.Equals(ThreadRoutines.UNKNOWN_BYTES) || lcPath.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
+                        lcPath.Equals(ThreadRoutines.FILES_BYTES));
+
+      if (llInvalidPath)
+      {
+        Util.ErrorMessage($@"{lcPath} is an invalid folder name.");
+        return;
+      }
+
+      this.LblCurrentFolder.Content = lcPath;
+      this.fcCurrentSelectedFolder = lcPath;
+      this.StartThread(ThreadTypes.ThreadFilesViewGraph);
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
     // From https://stackoverflow.com/questions/29005119/get-the-parent-node-of-a-child-in-wpf-c-sharp-treeview
