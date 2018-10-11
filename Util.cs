@@ -200,15 +200,15 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public static string formatBytes_GB_MB_KB(double tnBytes)
+    public static string FormatBytes_GB_MB_KB(double tnBytes)
     {
-      long lnBytes = Convert.ToInt64(tnBytes);
+      var lnBytes = Convert.ToInt64(tnBytes);
 
-      return (Util.formatBytes_GB_MB_KB(lnBytes));
+      return (Util.FormatBytes_GB_MB_KB(lnBytes));
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public static string formatBytes_GB_MB_KB(long tnBytes)
+    public static string FormatBytes_GB_MB_KB(long tnBytes)
     {
       var lcValue = "";
       double lnConvert = 0;
@@ -225,18 +225,18 @@ namespace TrashWizard
       }
       else if (tnBytes >= Util.BYTES_KILO)
       {
-        lcValue = Util.formatBytes_KBOnly(tnBytes);
+        lcValue = Util.FormatBytes_KBOnly(tnBytes);
       }
       else
       {
-        lcValue = Util.formatBytes_Actual(tnBytes);
+        lcValue = Util.FormatBytes_Actual(tnBytes);
       }
 
       return lcValue;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public static string formatBytes_KBOnly(long tnBytes)
+    public static string FormatBytes_KBOnly(long tnBytes)
     {
       var lcValue = "";
       double lnConvert = 0;
@@ -248,68 +248,21 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public static string formatBytes_Actual(long tnBytes)
+    public static string FormatBytes_Actual(long tnBytes)
     {
       return tnBytes.ToString("#,##0") + " bytes";
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public static string formatDate_Long(DateTime tdDateTime)
+    public static string FormatDate_Long(DateTime tdDateTime)
     {
       return tdDateTime.ToString("F");
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public static string formatDate_Short(DateTime tdDateTime)
+    public static string FormatDate_Short(DateTime tdDateTime)
     {
       return tdDateTime.ToString("g");
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public static string FormatAttributes(FileData toFileData)
-    {
-      var lcAttributes = "";
-
-      // If it is a root drive, it will also be a folder, etc. 
-      // So you don't have to check for an ending comma.
-      if (Util.IsDriveRoot(toFileData.FullName))
-      {
-        lcAttributes += "Drive, ";
-      }
-
-      lcAttributes += toFileData.Attributes.ToString();
-
-      return lcAttributes.Replace("Directory", "Folder").Trim();
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    /*
-    public static string BuildPathFromNode(TreeNode toNode)
-    {
-      var loNode = toNode;
-      var lcPath = Util.StripInfoLabelFromName(loNode.Text);
-      while (loNode.Parent != null)
-      {
-        loNode = loNode.Parent;
-        lcPath = Util.AddBs(Util.StripInfoLabelFromName(loNode.Text)) + lcPath;
-      }
-
-      if (Directory.Exists(lcPath))
-      {
-        lcPath = Util.AddBs(lcPath);
-      }
-
-      return lcPath;
-    }*/
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    public static string StripInfoLabelFromName(string tcName)
-    {
-      var lnPos = tcName.LastIndexOf(Util.LABEL_MARK_BEGIN);
-
-      var lcPath = lnPos >= 0 ? tcName.Substring(0, lnPos) : tcName;
-
-      return lcPath.Trim();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -352,50 +305,6 @@ namespace TrashWizard
       }
     }
 
-    // ---------------------------------------------------------------------------------------------------------------------
-    /*
-    public static string GetImageKey(ImageList toImageList, string tcPath, string tcOverrideKey)
-    {
-      string lcKey;
-      // This null check code was sugggested by ReSharper.
-      var lcTempVar = Path.GetExtension(tcPath);
-
-      if ((tcOverrideKey.Length == 0) && (lcTempVar != null))
-      {
-        var lcExtension = lcTempVar.ToLower();
-
-        // By the way, DLLs all have the same icon.
-        if (lcExtension.Equals(".exe") || lcExtension.Equals(".com") || lcExtension.Equals(".msi"))
-        {
-          lcExtension = tcPath;
-        }
-        else if (lcExtension.Length == 0)
-        {
-          lcExtension = AssociatedIcon.EXTENSION_EMPTY;
-        }
-
-        lcKey = lcExtension;
-      }
-      else
-      {
-        lcKey = tcOverrideKey;
-      }
-
-      if (!toImageList.Images.ContainsKey(lcKey))
-      {
-        try
-        {
-          toImageList.Images.Add(lcKey, AssociatedIcon.GetSystemIcon(tcPath));
-        }
-        catch (Exception)
-        {
-          lcKey = AssociatedIcon.EXTENSION_UNKNOWN;
-        }
-      }
-
-      return lcKey;
-    }
-*/
     // ---------------------------------------------------------------------------------------------------------------------
     private static void InitFixedDrives()
     {

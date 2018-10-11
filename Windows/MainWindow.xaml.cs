@@ -26,7 +26,6 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using LiveCharts;
 using LiveCharts.Wpf;
-using LiveCharts.Wpf.Points;
 using Microsoft.Win32;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -37,9 +36,6 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class MainWindow
   {
-    public const string FILES_CURRENT_LABEL_START =
-      "No current folder selected. Select a folder shown on the left side of this window.";
-
     public UserSettings UserSettings { get; } = new UserSettings();
 
     public ListBox ListBox => this.ListBox1;
@@ -103,25 +99,31 @@ namespace TrashWizard.Windows
 
       this.DataContext = this;
 
-      this.LblCurrentFolder.Content = MainWindow.FILES_CURRENT_LABEL_START;
+      this.LblCurrentFolder.Content = ThreadRoutines.FILES_CURRENT_LABEL_START;
 
-      this.tmrRunning.Tick += new EventHandler(this.TimerElapsedEvent);
+      this.tmrRunning.Tick += this.TimerElapsedEvent;
       this.tmrRunning.Interval = TimeSpan.FromMilliseconds(250);
 
       this.SetupTreeView();
+      this.SetupPieChart();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void ClickOnLabel(object toSender, MouseButtonEventArgs e)
+    private void SetupPieChart()
     {
-      if (toSender == this.LblCurrentFolder)
+      var loChart = this.PChrtFolders;
+
+      loChart.Series = new SeriesCollection();
+
+      var loPieSeries = new PieSeries
       {
-        var loLabel = (Label) toSender;
-        if (object.ReferenceEquals(loLabel.Content, MainWindow.FILES_CURRENT_LABEL_START))
-        {
-          Util.ErrorMessage(MainWindow.FILES_CURRENT_LABEL_START);
-        }
-      }
+        Title = ThreadRoutines.FILES_CURRENT_LABEL_START,
+        Values = new ChartValues<long> {100L},
+        DataLabels = false,
+        Fill = new LinearGradientBrush(Colors.Teal, Colors.Black, 24.0)
+      };
+
+      loChart.Series.Add(loPieSeries);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -144,17 +146,86 @@ namespace TrashWizard.Windows
             FontWeight = FontWeights.Normal
           };
           loItem.Items.Add(null);
-          loItem.Expanded += new RoutedEventHandler(this.TreeViewFolderExpand);
-          loItem.Selected += new RoutedEventHandler(this.TreeViewFolder_Selected);
+          loItem.Expanded += this.TreeViewFolderExpand;
+          loItem.Selected += this.TreeViewFolder_Selected;
           loTreeView.Items.Add(loItem);
         }
       }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    private void Label_Click(object toSender, MouseButtonEventArgs e)
+    {
+      if (toSender == this.LblCurrentFolder)
+      {
+        var loLabel = (Label) toSender;
+        if (object.ReferenceEquals(loLabel.Content, ThreadRoutines.FILES_CURRENT_LABEL_START))
+        {
+          Util.ErrorMessage(ThreadRoutines.FILES_CURRENT_LABEL_START);
+          return;
+        }
+
+        Util.OpenFileAssociation(loLabel.Content.ToString(), true);
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
     private void TreeViewFolder_Selected(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var loItem = (TreeViewItem) this.TrvwFolders.SelectedItem;
+      if (this.TrvwFolders.SelectedItem is TreeViewItem loItem)
+      {
+        loItem.IsExpanded = true;
+
+        var lcPath = this.BuildPathName(loItem);
+
+        this.LblCurrentFolder.Content = lcPath;
+        this.fcCurrentSelectedFolder = lcPath;
+        this.StartThread(ThreadTypes.ThreadFilesViewGraph);
+      }
+      else
+      {
+        Util.ErrorMessage("loItem is not a TreeViewItem in TreeViewFolder_Selected.");
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void PieChart_OnDataClick(object toSender, ChartPoint toChartPoint)
+    {
+      var lcPath = toChartPoint.SeriesView.Title;
+
+      var llInvalidPath = (lcPath.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
+                           lcPath.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
+                           lcPath.Equals(ThreadRoutines.FILES_BYTES) ||
+                           lcPath.Equals(ThreadRoutines.FILES_CURRENT_LABEL_START));
+
+      if (llInvalidPath)
+      {
+        Util.ErrorMessage($@"{lcPath} is an invalid folder name.");
+        return;
+      }
+
+      if (this.TrvwFolders.SelectedItem is TreeViewItem loItem)
+      {
+        var lnCount = loItem.Items.Count;
+        for (var i = 0; i < lnCount; ++i)
+        {
+          if (loItem.Items[i] is TreeViewItem loSubItem)
+          {
+            if (lcPath.Equals(this.BuildPathName(loSubItem)))
+            {
+              loSubItem.IsSelected = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private string BuildPathName(TreeViewItem toItem)
+    {
+      var loItem = toItem;
+
       var lcPath = loItem.Header.ToString();
 
       loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
@@ -167,28 +238,7 @@ namespace TrashWizard.Windows
         loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
       }
 
-      this.LblCurrentFolder.Content = lcPath;
-      this.fcCurrentSelectedFolder = lcPath;
-      this.StartThread(ThreadTypes.ThreadFilesViewGraph);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void PieChart_OnDataClick(object toSender, ChartPoint toChartPoint)
-    {
-      var lcPath = toChartPoint.SeriesView.Title;
-
-      var llInvalidPath = (lcPath.Equals(ThreadRoutines.UNKNOWN_BYTES) || lcPath.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
-                        lcPath.Equals(ThreadRoutines.FILES_BYTES));
-
-      if (llInvalidPath)
-      {
-        Util.ErrorMessage($@"{lcPath} is an invalid folder name.");
-        return;
-      }
-
-      this.LblCurrentFolder.Content = lcPath;
-      this.fcCurrentSelectedFolder = lcPath;
-      this.StartThread(ThreadTypes.ThreadFilesViewGraph);
+      return (lcPath);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -230,7 +280,7 @@ namespace TrashWizard.Windows
               FontWeight = FontWeights.Normal
             };
             loSubItem.Items.Add(null);
-            loSubItem.Expanded += new RoutedEventHandler(this.TreeViewFolderExpand);
+            loSubItem.Expanded += this.TreeViewFolderExpand;
             loItem.Items.Add(loSubItem);
           }
         }
@@ -474,13 +524,13 @@ namespace TrashWizard.Windows
           loHtml.Append($@"&nbsp;&nbsp;<b>File system:</b> {loDrive.DriveFormat}{MainWindow.HTML_LINE_BREAK}");
 
           loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Available space to current user:</b> {Util.formatBytes_Actual(loDrive.AvailableFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
+            $@"&nbsp;&nbsp;<b>Available space to current user:</b> {Util.FormatBytes_Actual(loDrive.AvailableFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
           loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Total available space:</b> {Util.formatBytes_Actual(loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
+            $@"&nbsp;&nbsp;<b>Total available space:</b> {Util.FormatBytes_Actual(loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
           loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Total space used:</b> {Util.formatBytes_Actual(loDrive.TotalSize - loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
+            $@"&nbsp;&nbsp;<b>Total space used:</b> {Util.FormatBytes_Actual(loDrive.TotalSize - loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
           loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Total size of drive:</b> {Util.formatBytes_Actual(loDrive.TotalSize)}{MainWindow.HTML_LINE_BREAK}");
+            $@"&nbsp;&nbsp;<b>Total size of drive:</b> {Util.FormatBytes_Actual(loDrive.TotalSize)}{MainWindow.HTML_LINE_BREAK}");
         }
 
         loHtml.Append(MainWindow.HTML_LINE_BREAK);
@@ -534,7 +584,7 @@ namespace TrashWizard.Windows
       this.Cursor = Cursors.Wait;
 
       var lcAppVersion = Util.GetAppVersion();
-      var lcCurrentVersion = "";
+      string lcCurrentVersion;
       using (var client = new WebClient())
       {
         try
@@ -618,9 +668,7 @@ namespace TrashWizard.Windows
       // Adobe Suite Cache
       if (this.UserSettings.GetMainFormIncludeAdobeCaches())
       {
-        List<DirectoryInfo> loDirectoryList = null;
-
-        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.AdobeFlashPlayerAliases);
+        var loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.AdobeFlashPlayerAliases);
         foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
@@ -630,9 +678,7 @@ namespace TrashWizard.Windows
       // Browser Cache
       if (this.UserSettings.GetMainFormIncludeBrowserCaches())
       {
-        List<DirectoryInfo> loDirectoryList = null;
-
-        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.GoogleChromeAliases);
+        var loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.GoogleChromeAliases);
         foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
@@ -654,9 +700,7 @@ namespace TrashWizard.Windows
       // Office Suite Cache
       if (this.UserSettings.GetMainFormIncludeOfficeSuiteCaches())
       {
-        List<DirectoryInfo> loDirectoryList = null;
-
-        loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MicrosoftOfficeAliases);
+        var loDirectoryList = FileCaches.BuildDirectoryInfo(FileCaches.MicrosoftOfficeAliases);
         foreach (var loDirInfo in loDirectoryList)
         {
           loDirectoryInfo.Add(loDirInfo);
@@ -782,6 +826,15 @@ namespace TrashWizard.Windows
     private void TabControl_OnSelectionChanged(object toSender, SelectionChangedEventArgs teSelectionChangedEventArgs)
     {
       this.foDelegateRoutines.UpdateMenusAndControls(true);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void ListBox_OnMouseDoubleClick(object toSender, MouseButtonEventArgs teMouseButtonEventArgs)
+    {
+      var lnIndex = this.ListBox1.SelectedIndex;
+      var lcPath = this.ListBox1.Items[lnIndex].ToString();
+
+      Util.OpenFileAssociation(lcPath, true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

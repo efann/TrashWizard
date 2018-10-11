@@ -35,9 +35,12 @@ namespace TrashWizard
   {
     public delegate void ResetFileVariablesDelegate();
 
-    public static readonly string UNKNOWN_BYTES = "<Unaccounted Bytes>";
-    public static readonly string FREE_SPACE_BYTES = "<Unused Space>";
-    public static readonly string FILES_BYTES = "<Individual file(s) in the current folder>";
+    public const string FILES_CURRENT_LABEL_START =
+      "No current folder selected. Select a folder shown on the left side of this window.";
+
+    public const string UNKNOWN_BYTES = "<Unaccounted Bytes>";
+    public const string FREE_SPACE_BYTES = "<Unused Space>";
+    public const string FILES_BYTES = "<Individual file(s) in the current folder>";
 
     public FileInformation FileInformationForTemporary { get; }
 
@@ -138,8 +141,8 @@ namespace TrashWizard
       }
 
       this.UpdateListBox("");
-      this.UpdateListBox("Total Temporary Files: " + Util.formatBytes_GB_MB_KB(lnTotalSize) + " (" +
-                         Util.formatBytes_Actual(lnTotalSize) + ")");
+      this.UpdateListBox("Total Temporary Files: " + Util.FormatBytes_GB_MB_KB(lnTotalSize) + " (" +
+                         Util.FormatBytes_Actual(lnTotalSize) + ")");
       this.UpdateListBox("");
 
       var llRecycleBin = this.foMainWindow.UserSettings.GetMainFormUseRecycleBin();
@@ -152,7 +155,7 @@ namespace TrashWizard
 
         this.UpdateListBox(ThreadRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
         this.UpdateListBox(ThreadRoutines.INDENT + "Byte(s) in root folder: " +
-                           Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) +
+                           Util.FormatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.FormatBytes_Actual(loInfo.Bytes) +
                            ")");
 
         if (lcError.Length != 0)
@@ -171,8 +174,8 @@ namespace TrashWizard
         if (loDrive.DriveType == DriveType.Fixed)
         {
           this.UpdateListBox(loDrive.RootDirectory + " (free space): " +
-                             Util.formatBytes_GB_MB_KB(loDrive.TotalFreeSpace) + " (" +
-                             Util.formatBytes_Actual(loDrive.TotalFreeSpace) + ")");
+                             Util.FormatBytes_GB_MB_KB(loDrive.TotalFreeSpace) + " (" +
+                             Util.FormatBytes_Actual(loDrive.TotalFreeSpace) + ")");
         }
       }
 
@@ -274,7 +277,7 @@ namespace TrashWizard
 
         this.UpdateListBox(ThreadRoutines.INDENT + "File(s) and/or folder(s) in root folder: " + loInfo.Items);
         this.UpdateListBox(ThreadRoutines.INDENT + "Byte(s) in root folder: " +
-                           Util.formatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.formatBytes_Actual(loInfo.Bytes) +
+                           Util.FormatBytes_GB_MB_KB(loInfo.Bytes) + " (" + Util.FormatBytes_Actual(loInfo.Bytes) +
                            ")");
 
         if (lcError.Length != 0)
@@ -286,8 +289,8 @@ namespace TrashWizard
       }
 
       this.UpdateListBox("");
-      this.UpdateListBox("Total Temporary Files Removed: " + Util.formatBytes_GB_MB_KB(lnTotalSize) + " (" +
-                         Util.formatBytes_Actual(lnTotalSize) + ")");
+      this.UpdateListBox("Total Temporary Files Removed: " + Util.FormatBytes_GB_MB_KB(lnTotalSize) + " (" +
+                         Util.FormatBytes_Actual(lnTotalSize) + ")");
       this.UpdateListBox("");
 
       laDrives = DriveInfo.GetDrives();
@@ -298,16 +301,16 @@ namespace TrashWizard
         {
           var lnFree = loDrive.TotalFreeSpace;
           lnNewFreeSpace += lnFree;
-          this.UpdateListBox(loDrive.RootDirectory + " (free space): " + Util.formatBytes_GB_MB_KB(lnFree) + " (" +
-                             Util.formatBytes_Actual(lnFree) + ")");
+          this.UpdateListBox(loDrive.RootDirectory + " (free space): " + Util.FormatBytes_GB_MB_KB(lnFree) + " (" +
+                             Util.FormatBytes_Actual(lnFree) + ")");
         }
       }
 
       this.UpdateListBox("");
       this.UpdateListBox("Total Removed (Temporary Files" + (llRecycleBin ? " & Recycle Bin" : " only") + "):");
-      this.UpdateListBox(ThreadRoutines.INDENT + Util.formatBytes_GB_MB_KB(lnNewFreeSpace - lnCurrentFreeSpace) +
+      this.UpdateListBox(ThreadRoutines.INDENT + Util.FormatBytes_GB_MB_KB(lnNewFreeSpace - lnCurrentFreeSpace) +
                          " (" +
-                         Util.formatBytes_Actual(lnNewFreeSpace - lnCurrentFreeSpace) + ")");
+                         Util.FormatBytes_Actual(lnNewFreeSpace - lnCurrentFreeSpace) + ")");
       this.UpdateListBox("");
       this.UpdateListBox("The operation has successfully completed.", true);
     }
@@ -359,7 +362,7 @@ namespace TrashWizard
       this.foGraphSeriesList.Clear();
 
       var loDrive = new DriveInfo(tcCurrentFolder.Substring(0, 1));
-      var llRoot = loDrive.RootDirectory.FullName.ToLower().Equals(tcCurrentFolder.ToLower());
+      var llRoot = Util.IsDriveRoot(tcCurrentFolder);
 
       if (llRoot)
       {
@@ -417,7 +420,7 @@ namespace TrashWizard
         {
           string FncLabelPoint(ChartPoint chartPoint)
           {
-            return $"{Util.formatBytes_GB_MB_KB(chartPoint.Y)}";
+            return $"{Util.FormatBytes_GB_MB_KB(chartPoint.Y)}";
           }
 
           var loChart = loMainWindow.PChrtFolders;

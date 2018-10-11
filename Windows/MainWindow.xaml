@@ -166,7 +166,7 @@
               <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1" Click="CheckBox_OnClick">Office Suite caches?</CheckBox>
               <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2" Click="CheckBox_OnClick">Recycle Bin contents?</CheckBox>
             </Grid>
-            <ListBox x:Name="ListBox1" DockPanel.Dock="Bottom" />
+            <ListBox x:Name="ListBox1" DockPanel.Dock="Bottom" MouseDoubleClick="ListBox_OnMouseDoubleClick" />
           </DockPanel>
         </TabItem>
         <TabItem>
@@ -186,15 +186,12 @@
 
             <TreeView Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
             <Label Name="LblCurrentFolder" Cursor="Hand" Grid.Row="0" Grid.Column="1"
-                   PreviewMouseLeftButtonUp="ClickOnLabel" />
+                   PreviewMouseLeftButtonUp="Label_Click" />
             <wpf:PieChart Name="PChrtFolders1" LegendLocation="Bottom" Grid.Row="1" Grid.Column="1"
                           DataClick="PieChart_OnDataClick">
               <wpf:PieChart.DataTooltip>
                 <wpf:DefaultTooltip SelectionMode="OnlySender" />
               </wpf:PieChart.DataTooltip>
-              <wpf:PieChart.Series>
-                <wpf:PieSeries Title="Select a drive or folder to start analysis" Values="100" DataLabels="False" />
-              </wpf:PieChart.Series>
             </wpf:PieChart>
           </Grid>
         </TabItem>
