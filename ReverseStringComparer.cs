@@ -10,6 +10,7 @@
 // 
 // Original Author: Eddie Fann
 
+using System;
 using System.Collections.Generic;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -26,7 +27,7 @@ namespace TrashWizard
     {
       // By switching the first and second variables, 
       // the comparison is reversed.
-      return string.Compare(tcSecond, tcFirst, true);
+      return String.Compare(tcSecond, tcFirst, StringComparison.OrdinalIgnoreCase);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

@@ -142,7 +142,8 @@ namespace TrashWizard
           this.foXmlTextReader.Close();
           return null;
         }
-      } while (loReader.Name.CompareTo(XmlFileInformation.XML_TAG_ELEMENT) != 0);
+      }
+      while (String.Compare(loReader.Name, XmlFileInformation.XML_TAG_ELEMENT, StringComparison.Ordinal) != 0);
 
       try
       {

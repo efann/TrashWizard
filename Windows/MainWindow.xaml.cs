@@ -156,10 +156,10 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void Label_Click(object toSender, MouseButtonEventArgs e)
     {
-      if (toSender == this.LblCurrentFolder)
+      if (toSender.Equals(this.LblCurrentFolder))
       {
         var loLabel = (Label) toSender;
-        if (object.ReferenceEquals(loLabel.Content, ThreadRoutines.FILES_CURRENT_LABEL_START))
+        if (loLabel.Content.ToString().Equals(ThreadRoutines.FILES_CURRENT_LABEL_START))
         {
           Util.ErrorMessage(ThreadRoutines.FILES_CURRENT_LABEL_START);
           return;
@@ -216,6 +216,35 @@ namespace TrashWizard.Windows
               loSubItem.IsSelected = true;
               break;
             }
+          }
+        }
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void PieChart_OnDataHover(object toSender, ChartPoint toChartPoint)
+    {
+      var lcPath = toChartPoint.SeriesView.Title;
+
+      var llInvalidPath = (lcPath.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
+                           lcPath.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
+                           lcPath.Equals(ThreadRoutines.FILES_BYTES) ||
+                           lcPath.Equals(ThreadRoutines.FILES_CURRENT_LABEL_START));
+
+      if (llInvalidPath)
+      {
+        return;
+      }
+
+      if (this.TrvwFolders.SelectedItem is TreeViewItem loItem)
+      {
+        var lnCount = loItem.Items.Count;
+        for (var i = 0; i < lnCount; ++i)
+        {
+          if (loItem.Items[i] is TreeViewItem loSubItem)
+          {
+            loSubItem.FontWeight =
+              (lcPath.Equals(this.BuildPathName(loSubItem))) ? FontWeights.Bold : FontWeights.Normal;
           }
         }
       }
@@ -311,30 +340,31 @@ namespace TrashWizard.Windows
       var lcMinutes = lnMinutes.ToString("00");
       var lcSeconds = lnSeconds.ToString("00");
 
-      var lnFilesProcessed = 0;
-      var lnFilesDisplayed = 0;
+      var lcText = "";
       switch (this.fnThreadType)
       {
-        case ThreadTypes.ThreadTemporaryLocate:
-          lnFilesProcessed = this.foDelegateRoutines.FileInformationForTemporary.FilesProcessed;
-          lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForTemporary;
-          break;
-
         case ThreadTypes.ThreadTemporaryRemove:
-          lnFilesProcessed = this.foDelegateRoutines.FileInformationForTemporary.FilesProcessed;
-          lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForTemporary;
+        case ThreadTypes.ThreadTemporaryLocate:
+          var lnFilesProcessed = this.foDelegateRoutines.FileInformationForTemporary.FilesProcessed;
+          var lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForTemporary;
+
+          var lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
+          var lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
+
+          lcText =
+            $"{lcHours}:{lcMinutes}:{lcSeconds} ({lcFilesProcessed} files processed; {lcFilesDisplayed} files displayed out of {lcFilesProcessed})";
           break;
 
         case ThreadTypes.ThreadFilesViewGraph:
+          var lcFoldersProcessed = this.foDelegateRoutines.FoldersProcessedForFilesGraph.ToString("#,#0.");
+          var lcFoldersTotal = this.foDelegateRoutines.FoldersTotalForFilesGraph.ToString("#,#0.");
+
+          lcText =
+            $"{lcHours}:{lcMinutes}:{lcSeconds} ({lcFoldersProcessed} folders processed out of {lcFoldersTotal})";
           break;
       }
 
-      var lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
-      var lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
-
-      this.LblTimeRunning1.Text = lcHours + ":" + lcMinutes + ":" + lcSeconds + " (" + lcFilesProcessed +
-                                  " files processed; " + lcFilesDisplayed + " files displayed out of " +
-                                  lcFilesProcessed + ")";
+      this.LblTimeRunning1.Text = lcText;
 
       if (!llThreadRunning)
       {

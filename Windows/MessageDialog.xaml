@@ -18,7 +18,7 @@
     <Image Name="imgMessage" Width="32" Height="32" Grid.Column="0" Grid.Row="0" Margin="20,0" VerticalAlignment="Top" />
     <Label Name="lblMessage" Grid.Row="0" Grid.Column="1">Question:</Label>
 
-    <Grid Name="pnlButtons" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="12">
+    <Grid Name="pnlButtons" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="12">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="Auto" />

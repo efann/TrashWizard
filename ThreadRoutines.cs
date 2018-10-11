@@ -20,6 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
+using LiveCharts.Dtos;
 using LiveCharts.Wpf;
 using TrashWizard.Win32;
 using TrashWizard.Windows;
@@ -45,6 +46,9 @@ namespace TrashWizard
     public FileInformation FileInformationForTemporary { get; }
 
     public int FilesDisplayedForTemporary => this.FileInformationForTemporary.XmlFileInformation.IndexTrack;
+
+    public int FoldersProcessedForFilesGraph;
+    public int FoldersTotalForFilesGraph;
 
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
@@ -89,7 +93,6 @@ namespace TrashWizard
     public void ResetFileVariablesForTemporary()
     {
       this.FileInformationForTemporary.XmlFileInformation.ResetVariables();
-      var loUserSettings = this.foMainWindow.UserSettings;
 
       this.foTemporaryFileList.Clear();
 
@@ -187,10 +190,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void RemoveFilesFromTemporaryList()
     {
-      DriveInfo[] laDrives = null;
-
       long lnCurrentFreeSpace = 0;
-      laDrives = DriveInfo.GetDrives();
+      DriveInfo[] laDrives = DriveInfo.GetDrives();
       foreach (var loDrive in laDrives)
       {
         if (loDrive.DriveType == DriveType.Fixed)
@@ -363,25 +364,44 @@ namespace TrashWizard
 
       var loDrive = new DriveInfo(tcCurrentFolder.Substring(0, 1));
       var llRoot = Util.IsDriveRoot(tcCurrentFolder);
+      var loStartFolder = new DirectoryInfo(tcCurrentFolder);
+
+      this.FoldersProcessedForFilesGraph = 0;
+      // Either Root + Files or just Files.
+      this.FoldersTotalForFilesGraph = (llRoot) ? 2 : 1;
+      this.FoldersTotalForFilesGraph += loStartFolder.GetDirectories().Length;
 
       if (llRoot)
       {
         var lnSpace = loDrive.TotalFreeSpace;
         this.foGraphSeriesList.Add(
           new GraphSlice {fcLabel = ThreadRoutines.FREE_SPACE_BYTES, fnSize = lnSpace, foColor = Colors.LightGray});
-      }
 
-      var loStartFolder = new DirectoryInfo(tcCurrentFolder);
+        ++this.FoldersProcessedForFilesGraph;
+      }
 
       // First get the size of the files in the current folder.
-      var lnFilesSize = loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).Sum(file => file.Length);
-      if (lnFilesSize != 0)
+      long lnIndividualFileSize = 0;
+      try
       {
-        this.foGraphSeriesList.Add(new GraphSlice
-          {fcLabel = ThreadRoutines.FILES_BYTES, fnSize = lnFilesSize, foColor = Colors.Yellow});
+        lnIndividualFileSize =
+          loStartFolder.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).Sum(file => file.Length);
+        if (lnIndividualFileSize != 0)
+        {
+          this.foGraphSeriesList.Add(new GraphSlice
+            {fcLabel = ThreadRoutines.FILES_BYTES, fnSize = lnIndividualFileSize, foColor = Colors.Yellow});
+        }
+
+        ++this.FoldersProcessedForFilesGraph;
+      }
+      catch (Exception loErr)
+      {
+        // And yes, I meant to not use $@ as there are \n statements in the string.
+        Util.ErrorMessage($"We are unable to read {tcCurrentFolder} for the following reason:\n\n{loErr.Message}");
+        return;
       }
 
-      long lnTotal = 0;
+      long lnTotal = lnIndividualFileSize;
       foreach (var loDirectory in loStartFolder.GetDirectories())
       {
         long lnFileSizeTotal = 0;
@@ -401,6 +421,8 @@ namespace TrashWizard
           this.foGraphSeriesList.Add(new GraphSlice
             {fcLabel = loDirectory.FullName, fnSize = lnFileSizeTotal, foColor = Colors.Transparent});
         }
+
+        ++this.FoldersProcessedForFilesGraph;
       }
 
       if (llRoot)
@@ -447,6 +469,7 @@ namespace TrashWizard
 
             loChart.Series.Add(loPieSeries);
           }
+
         }
       });
     }

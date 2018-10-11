@@ -11,7 +11,6 @@
 // Original Author: Eddie Fann
 
 using System;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -69,19 +68,6 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    [DllImport("user32.dll")]
-    private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    [DllImport("user32.dll")]
-    private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    [DllImport("user32.dll")]
-    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
-      int x, int y, int width, int height, uint flags);
-
-    // ---------------------------------------------------------------------------------------------------------------------
     private void SetupWindowButtons(object toSender, EventArgs teEventArgs)
     {
       this.fnWindowHandle = new WindowInteropHelper(this).Handle;
@@ -111,12 +97,12 @@ namespace TrashWizard.Windows
       this.Icon = null;
 
       // Change the extended window style to not show a window icon
-      var extendedStyle = BaseWindowDialog.GetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_EXSTYLE_ICON);
-      BaseWindowDialog.SetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_EXSTYLE_ICON,
+      var extendedStyle = NativeMethods.GetWindowLongVisible(this.fnWindowHandle, BaseWindowDialog.GWL_EXSTYLE_ICON);
+      NativeMethods.SetWindowLongVisible(this.fnWindowHandle, BaseWindowDialog.GWL_EXSTYLE_ICON,
         extendedStyle | BaseWindowDialog.WS_EX_DLGMODALFRAME);
 
       // Update the window's non-client area to reflect the changes
-      BaseWindowDialog.SetWindowPos(this.fnWindowHandle, IntPtr.Zero, 0, 0, 0, 0, BaseWindowDialog.SWP_NOMOVE |
+      NativeMethods.SetWindowPosVisible(this.fnWindowHandle, IntPtr.Zero, 0, 0, 0, 0, BaseWindowDialog.SWP_NOMOVE |
                                                                                   BaseWindowDialog.SWP_NOSIZE |
                                                                                   BaseWindowDialog.SWP_NOZORDER |
                                                                                   BaseWindowDialog.SWP_FRAMECHANGED);
@@ -130,8 +116,8 @@ namespace TrashWizard.Windows
         throw new InvalidOperationException("The window has not yet been completely initialized");
       }
 
-      BaseWindowDialog.SetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX,
-        BaseWindowDialog.GetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX) &
+      NativeMethods.SetWindowLongVisible(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX,
+        NativeMethods.GetWindowLongVisible(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX) &
         ~BaseWindowDialog.WS_MINIMIZEBOX);
     }
 
@@ -143,8 +129,8 @@ namespace TrashWizard.Windows
         throw new InvalidOperationException("The window has not yet been completely initialized");
       }
 
-      BaseWindowDialog.SetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX,
-        BaseWindowDialog.GetWindowLong(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX) &
+      NativeMethods.SetWindowLongVisible(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX,
+        NativeMethods.GetWindowLongVisible(this.fnWindowHandle, BaseWindowDialog.GWL_STYLE_MINMAX) &
         ~BaseWindowDialog.WS_MAXIMIZEBOX);
     }
 

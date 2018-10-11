@@ -163,9 +163,9 @@ namespace TrashWizard
 
       for (var i = 0; i < lnCount; ++i)
       {
-        if (loList.Item(i).Name == tcFindNodeName)
+        if (loList.Item(i)?.Name == tcFindNodeName)
         {
-          if (loList.Item(i).NodeType == XmlNodeType.Element)
+          if (loList.Item(i)?.NodeType == XmlNodeType.Element)
           {
             loFindNode = (XmlElement) loList.Item(i);
             break;

@@ -15,15 +15,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using TrashWizard.Win32;
 
-// ---------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
 // This class fixes the following type warning:
 // CA1060	Move P/Invokes to NativeMethods class	Because it is a P/Invoke method, 'Util.LockWindowUpdate(IntPtr)' 
 //        should be defined in a class named NativeMethods, SafeNativeMethods, or UnsafeNativeMethods.
 
 namespace TrashWizard
 {
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
   public class NativeMethods
   {
     [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -53,6 +53,16 @@ namespace TrashWizard
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref ShFileInfo psfi,
       uint cbSizeFileInfo, uint uFlags);
+
+    [DllImport("user32.dll")]
+    private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+    [DllImport("user32.dll")]
+    private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
+      int x, int y, int width, int height, uint flags);
 
 
     // http://stackoverflow.com/questions/3428631/net-framework-fxcop-rule-ca1401-pinvokesshouldnotbevisible-rule-why-does-this
@@ -108,9 +118,28 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-  }
-}
+    public static int GetWindowLongVisible(IntPtr hWnd, int nIndex)
+    {
+      return NativeMethods.GetWindowLong(hWnd, nIndex);
+    }
 
-// ---------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
+    public static int SetWindowLongVisible(IntPtr hWnd, int nIndex, int dwNewLong)
+    {
+      return NativeMethods.SetWindowLong(hWnd, nIndex, dwNewLong);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public static bool SetWindowPosVisible(IntPtr hWnd, IntPtr hWndInsertAfter,
+      int x, int y, int width, int height, uint flags)
+    {
+      return NativeMethods.SetWindowPos(hWnd, hWndInsertAfter, x, y, width, height, flags);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+}
