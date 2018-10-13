@@ -103,9 +103,10 @@ namespace TrashWizard.Windows
 
       // Update the window's non-client area to reflect the changes
       NativeMethods.SetWindowPosVisible(this.fnWindowHandle, IntPtr.Zero, 0, 0, 0, 0, BaseWindowDialog.SWP_NOMOVE |
-                                                                                  BaseWindowDialog.SWP_NOSIZE |
-                                                                                  BaseWindowDialog.SWP_NOZORDER |
-                                                                                  BaseWindowDialog.SWP_FRAMECHANGED);
+                                                                                      BaseWindowDialog.SWP_NOSIZE |
+                                                                                      BaseWindowDialog.SWP_NOZORDER |
+                                                                                      BaseWindowDialog
+                                                                                        .SWP_FRAMECHANGED);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

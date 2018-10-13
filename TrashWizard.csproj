@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{422C60A7-83AC-44CD-ABB1-6FB0FD1014F0}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>TrashWizard</RootNamespace>
     <AssemblyName>TrashWizard</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
@@ -148,6 +148,7 @@
     <Compile Include="FileInformation.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ReverseStringComparer.cs" />
+    <Compile Include="TreeViewTW.cs" />
     <Compile Include="UserSettings.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Win32\BaseRecycleBinShell.cs" />
@@ -159,6 +160,7 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\BaseWindowDialog.cs" />
+    <Compile Include="Windows\DriveInfoWindow.cs" />
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

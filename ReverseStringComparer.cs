@@ -27,7 +27,7 @@ namespace TrashWizard
     {
       // By switching the first and second variables, 
       // the comparison is reversed.
-      return String.Compare(tcSecond, tcFirst, StringComparison.OrdinalIgnoreCase);
+      return string.Compare(tcSecond, tcFirst, StringComparison.OrdinalIgnoreCase);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

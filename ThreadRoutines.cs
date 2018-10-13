@@ -20,7 +20,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
-using LiveCharts.Dtos;
 using LiveCharts.Wpf;
 using TrashWizard.Win32;
 using TrashWizard.Windows;
@@ -191,7 +190,7 @@ namespace TrashWizard
     public void RemoveFilesFromTemporaryList()
     {
       long lnCurrentFreeSpace = 0;
-      DriveInfo[] laDrives = DriveInfo.GetDrives();
+      var laDrives = DriveInfo.GetDrives();
       foreach (var loDrive in laDrives)
       {
         if (loDrive.DriveType == DriveType.Fixed)
@@ -401,7 +400,7 @@ namespace TrashWizard
         return;
       }
 
-      long lnTotal = lnIndividualFileSize;
+      var lnTotal = lnIndividualFileSize;
       foreach (var loDirectory in loStartFolder.GetDirectories())
       {
         long lnFileSizeTotal = 0;
@@ -469,7 +468,6 @@ namespace TrashWizard
 
             loChart.Series.Add(loPieSeries);
           }
-
         }
       });
     }
@@ -511,6 +509,30 @@ namespace TrashWizard
       }
 
       return (lnTotal);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void RemoveTemporaryFiles()
+    {
+      this.UpdateFormCursors(Cursors.Wait);
+      this.UpdateMenusAndControls(false);
+
+      this.RemoveFilesFromTemporaryList();
+
+      this.UpdateMenusAndControls(true);
+      this.UpdateFormCursors(Cursors.Arrow);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void GraphFolderSpace()
+    {
+      this.UpdateFormCursors(Cursors.Wait);
+      this.UpdateMenusAndControls(false);
+
+      this.GraphFolderSpaceForFiles(this.foMainWindow.fcCurrentSelectedFolder);
+
+      this.UpdateMenusAndControls(true);
+      this.UpdateFormCursors(Cursors.Arrow);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

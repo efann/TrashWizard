@@ -143,7 +143,7 @@ namespace TrashWizard
           return null;
         }
       }
-      while (String.Compare(loReader.Name, XmlFileInformation.XML_TAG_ELEMENT, StringComparison.Ordinal) != 0);
+      while (string.Compare(loReader.Name, XmlFileInformation.XML_TAG_ELEMENT, StringComparison.Ordinal) != 0);
 
       try
       {

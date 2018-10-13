@@ -17,7 +17,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Security;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -61,20 +60,18 @@ namespace TrashWizard.Windows
 
     public PieChart PChrtFolders => this.PChrtFolders1;
 
-    private const string HTML_LINE_BREAK = "<br />\n";
-
-    private enum ThreadTypes
+    public enum ThreadTypes
     {
       ThreadTemporaryLocate,
       ThreadTemporaryRemove,
       ThreadFilesViewGraph
     }
 
-    private string fcCurrentSelectedFolder = "";
+    public ThreadTypes fnThreadType;
 
-    private ThreadTypes fnThreadType;
+    public string fcCurrentSelectedFolder = "";
 
-    private readonly ThreadRoutines foDelegateRoutines;
+    private readonly ThreadRoutines foThreadRoutines;
 
     private DateTime foStartTime;
 
@@ -92,10 +89,10 @@ namespace TrashWizard.Windows
 
       this.Title += $@"-BETA ({Util.GetAppVersion()})";
 
-      this.foDelegateRoutines = new ThreadRoutines(this);
+      this.foThreadRoutines = new ThreadRoutines(this);
 
       this.ReadSettings();
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foThreadRoutines.UpdateMenusAndControls(true);
 
       this.DataContext = this;
 
@@ -104,7 +101,6 @@ namespace TrashWizard.Windows
       this.tmrRunning.Tick += this.TimerElapsedEvent;
       this.tmrRunning.Interval = TimeSpan.FromMilliseconds(250);
 
-      this.SetupTreeView();
       this.SetupPieChart();
     }
 
@@ -127,33 +123,6 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    // From https://www.codeproject.com/Articles/21248/A-Simple-WPF-Explorer-Tree
-    private void SetupTreeView()
-    {
-      var loTreeView = this.TrvwFolders;
-
-      foreach (var Drives in Environment.GetLogicalDrives())
-      {
-        // From https://stackoverflow.com/questions/623182/c-sharp-dropbox-of-drives
-        var loDriveInfo = new DriveInfo(Drives);
-        if (loDriveInfo.IsReady)
-        {
-          var lcString = loDriveInfo.Name;
-          var loItem = new TreeViewItem
-          {
-            Header = lcString,
-            Tag = lcString,
-            FontWeight = FontWeights.Normal
-          };
-          loItem.Items.Add(null);
-          loItem.Expanded += this.TreeViewFolderExpand;
-          loItem.Selected += this.TreeViewFolder_Selected;
-          loTreeView.Items.Add(loItem);
-        }
-      }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
     private void Label_Click(object toSender, MouseButtonEventArgs e)
     {
       if (toSender.Equals(this.LblCurrentFolder))
@@ -166,25 +135,6 @@ namespace TrashWizard.Windows
         }
 
         Util.OpenFileAssociation(loLabel.Content.ToString(), true);
-      }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void TreeViewFolder_Selected(object toSender, RoutedEventArgs teRoutedEventArgs)
-    {
-      if (this.TrvwFolders.SelectedItem is TreeViewItem loItem)
-      {
-        loItem.IsExpanded = true;
-
-        var lcPath = this.BuildPathName(loItem);
-
-        this.LblCurrentFolder.Content = lcPath;
-        this.fcCurrentSelectedFolder = lcPath;
-        this.StartThread(ThreadTypes.ThreadFilesViewGraph);
-      }
-      else
-      {
-        Util.ErrorMessage("loItem is not a TreeViewItem in TreeViewFolder_Selected.");
       }
     }
 
@@ -211,7 +161,7 @@ namespace TrashWizard.Windows
         {
           if (loItem.Items[i] is TreeViewItem loSubItem)
           {
-            if (lcPath.Equals(this.BuildPathName(loSubItem)))
+            if (lcPath.Equals(this.TrvwFolders.BuildPathName(loSubItem)))
             {
               loSubItem.IsSelected = true;
               break;
@@ -236,88 +186,7 @@ namespace TrashWizard.Windows
         return;
       }
 
-      if (this.TrvwFolders.SelectedItem is TreeViewItem loItem)
-      {
-        var lnCount = loItem.Items.Count;
-        for (var i = 0; i < lnCount; ++i)
-        {
-          if (loItem.Items[i] is TreeViewItem loSubItem)
-          {
-            loSubItem.FontWeight =
-              (lcPath.Equals(this.BuildPathName(loSubItem))) ? FontWeights.Bold : FontWeights.Normal;
-          }
-        }
-      }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private string BuildPathName(TreeViewItem toItem)
-    {
-      var loItem = toItem;
-
-      var lcPath = loItem.Header.ToString();
-
-      loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
-      while (loItem != null)
-      {
-        var lcHeader = loItem.Header.ToString();
-        var lcSeparator = Path.DirectorySeparatorChar.ToString();
-
-        lcPath = lcHeader + (lcHeader.EndsWith(lcSeparator) ? "" : lcSeparator) + lcPath;
-        loItem = this.GetSelectedTreeViewItemParent(loItem) as TreeViewItem;
-      }
-
-      return (lcPath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    // From https://stackoverflow.com/questions/29005119/get-the-parent-node-of-a-child-in-wpf-c-sharp-treeview
-    // Never would have guessed this.
-    public ItemsControl GetSelectedTreeViewItemParent(TreeViewItem toTreeViewItem)
-    {
-      var loParent = VisualTreeHelper.GetParent(toTreeViewItem);
-      while (!(loParent is TreeViewItem || loParent is TreeView))
-      {
-        if (loParent != null)
-        {
-          loParent = VisualTreeHelper.GetParent(loParent);
-        }
-        else
-        {
-          break;
-        }
-      }
-
-      return loParent as ItemsControl;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void TreeViewFolderExpand(object toSender, RoutedEventArgs teRoutedEventArgs)
-    {
-      var loItem = (TreeViewItem) toSender;
-      if ((loItem.Items.Count == 1) && (loItem.Items[0] == null))
-      {
-        loItem.Items.Clear();
-        try
-        {
-          foreach (var lcString in Directory.GetDirectories(loItem.Tag.ToString()))
-          {
-            var loSubItem = new TreeViewItem
-            {
-              Header = lcString.Substring(lcString.LastIndexOf("\\", StringComparison.Ordinal) + 1),
-              Tag = lcString,
-              FontWeight = FontWeights.Normal
-            };
-            loSubItem.Items.Add(null);
-            loSubItem.Expanded += this.TreeViewFolderExpand;
-            loItem.Items.Add(loSubItem);
-          }
-        }
-        catch (Exception)
-        {
-          // ignored
-        }
-      }
+      this.TrvwFolders.BoldHoveredPieSeries(lcPath);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -345,8 +214,8 @@ namespace TrashWizard.Windows
       {
         case ThreadTypes.ThreadTemporaryRemove:
         case ThreadTypes.ThreadTemporaryLocate:
-          var lnFilesProcessed = this.foDelegateRoutines.FileInformationForTemporary.FilesProcessed;
-          var lnFilesDisplayed = this.foDelegateRoutines.FilesDisplayedForTemporary;
+          var lnFilesProcessed = this.foThreadRoutines.FileInformationForTemporary.FilesProcessed;
+          var lnFilesDisplayed = this.foThreadRoutines.FilesDisplayedForTemporary;
 
           var lcFilesProcessed = lnFilesProcessed.ToString("#,#0.");
           var lcFilesDisplayed = lnFilesDisplayed.ToString("#,#0.");
@@ -356,8 +225,8 @@ namespace TrashWizard.Windows
           break;
 
         case ThreadTypes.ThreadFilesViewGraph:
-          var lcFoldersProcessed = this.foDelegateRoutines.FoldersProcessedForFilesGraph.ToString("#,#0.");
-          var lcFoldersTotal = this.foDelegateRoutines.FoldersTotalForFilesGraph.ToString("#,#0.");
+          var lcFoldersProcessed = this.foThreadRoutines.FoldersProcessedForFilesGraph.ToString("#,#0.");
+          var lcFoldersTotal = this.foThreadRoutines.FoldersTotalForFilesGraph.ToString("#,#0.");
 
           lcText =
             $"{lcHours}:{lcMinutes}:{lcSeconds} ({lcFoldersProcessed} folders processed out of {lcFoldersTotal})";
@@ -374,7 +243,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void StartThread(ThreadTypes tnThreadType)
+    public void StartThread(ThreadTypes tnThreadType)
     {
       switch (tnThreadType)
       {
@@ -383,11 +252,11 @@ namespace TrashWizard.Windows
           break;
 
         case ThreadTypes.ThreadTemporaryRemove:
-          this.foThread = new Thread(this.RemoveTemporaryFiles);
+          this.foThread = new Thread(this.foThreadRoutines.RemoveTemporaryFiles);
           break;
 
         case ThreadTypes.ThreadFilesViewGraph:
-          this.foThread = new Thread(this.GraphFolderSpace);
+          this.foThread = new Thread(this.foThreadRoutines.GraphFolderSpace);
           break;
       }
 
@@ -402,30 +271,6 @@ namespace TrashWizard.Windows
       // Go ahead and update the time running: the timer is set at 1 second intervals
       // and therefore lags behind when the thread first starts.
       this.UpdateTimeRunning();
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void RemoveTemporaryFiles()
-    {
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
-      this.foDelegateRoutines.UpdateMenusAndControls(false);
-
-      this.foDelegateRoutines.RemoveFilesFromTemporaryList();
-
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void GraphFolderSpace()
-    {
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Wait);
-      this.foDelegateRoutines.UpdateMenusAndControls(false);
-
-      this.foDelegateRoutines.GraphFolderSpaceForFiles(this.fcCurrentSelectedFolder);
-
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -453,8 +298,8 @@ namespace TrashWizard.Windows
         }
       }
 
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foThreadRoutines.UpdateFormCursors(Cursors.Arrow);
+      this.foThreadRoutines.UpdateMenusAndControls(true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -534,44 +379,10 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void AppDriveInfo(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var loHtml = new StringBuilder();
-
-      loHtml.Append(
-        "<html>\n<head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'></head>\n<body style='font-family: Microsoft Sans Serif; font-size: 12px; background-color: #C0D9D9; border: none; padding: 10px;'>"
-        + "\n<p style='text-align: center; font-weight: bold;'>This system has the following drives:</p>\n");
-
-
-      var loDrives = DriveInfo.GetDrives();
-
-      loHtml.Append("<p>\n");
-      foreach (var loDrive in loDrives)
-      {
-        loHtml.Append($@"<b>Drive {loDrive.Name}</b>{MainWindow.HTML_LINE_BREAK}");
-        loHtml.Append($@"&nbsp;&nbsp;<b>File type:</b> {loDrive.DriveType}{MainWindow.HTML_LINE_BREAK}");
-        if (loDrive.IsReady)
-        {
-          loHtml.Append($@"&nbsp;&nbsp;<b>Volume label:</b> {loDrive.VolumeLabel}{MainWindow.HTML_LINE_BREAK}");
-          loHtml.Append($@"&nbsp;&nbsp;<b>File system:</b> {loDrive.DriveFormat}{MainWindow.HTML_LINE_BREAK}");
-
-          loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Available space to current user:</b> {Util.FormatBytes_Actual(loDrive.AvailableFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
-          loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Total available space:</b> {Util.FormatBytes_Actual(loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
-          loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Total space used:</b> {Util.FormatBytes_Actual(loDrive.TotalSize - loDrive.TotalFreeSpace)}{MainWindow.HTML_LINE_BREAK}");
-          loHtml.Append(
-            $@"&nbsp;&nbsp;<b>Total size of drive:</b> {Util.FormatBytes_Actual(loDrive.TotalSize)}{MainWindow.HTML_LINE_BREAK}");
-        }
-
-        loHtml.Append(MainWindow.HTML_LINE_BREAK);
-      }
-
-      loHtml.Append("</p></body></html>");
-
       var lnHeight = (int) (SystemParameters.PrimaryScreenHeight * 0.4);
       var lnWidth = (int) (SystemParameters.PrimaryScreenWidth * 0.4);
 
-      var loDisplay = new WebDisplay(this, loHtml.ToString(), lnHeight, lnWidth);
+      var loDisplay = new DriveInfoWindow(this, lnHeight, lnWidth);
       loDisplay.ShowDialog();
     }
 
@@ -674,10 +485,10 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void PopulateControlForTemporaryFiles()
     {
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.AppStarting);
-      this.foDelegateRoutines.UpdateMenusAndControls(false);
+      this.foThreadRoutines.UpdateFormCursors(Cursors.AppStarting);
+      this.foThreadRoutines.UpdateMenusAndControls(false);
 
-      this.foDelegateRoutines.ResetFileVariablesForTemporary();
+      this.foThreadRoutines.ResetFileVariablesForTemporary();
 
       var loDirectoryInfo = new List<DirectoryInfo>();
 
@@ -741,16 +552,16 @@ namespace TrashWizard.Windows
       Exception loException = null;
       try
       {
-        this.foDelegateRoutines.UpdateListBox("Searching the following directories:");
+        this.foThreadRoutines.UpdateListBox("Searching the following directories:");
 
         loDirectoryInfo.ForEach(
-          delegate(DirectoryInfo loInfo) { this.foDelegateRoutines.UpdateListBox(loInfo.FullName); });
+          delegate(DirectoryInfo loInfo) { this.foThreadRoutines.UpdateListBox(loInfo.FullName); });
 
-        this.foDelegateRoutines.FileInformationForTemporary.GenerateFileInformation(loDirectoryInfo);
+        this.foThreadRoutines.FileInformationForTemporary.GenerateFileInformation(loDirectoryInfo);
 
-        this.foDelegateRoutines.UpdateControlForTemporary();
+        this.foThreadRoutines.UpdateControlForTemporary();
 
-        this.foDelegateRoutines.FileInformationForTemporary.XmlFileInformation.CleanUpFiles();
+        this.foThreadRoutines.FileInformationForTemporary.XmlFileInformation.CleanUpFiles();
       }
       catch (Exception loErr)
       {
@@ -766,8 +577,8 @@ namespace TrashWizard.Windows
         Util.ErrorMessage(lcErrorMessage);
       }
 
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
-      this.foDelegateRoutines.UpdateFormCursors(Cursors.Arrow);
+      this.foThreadRoutines.UpdateMenusAndControls(true);
+      this.foThreadRoutines.UpdateFormCursors(Cursors.Arrow);
     }
 
     //-----------------------------------------------------------------------------
@@ -779,7 +590,7 @@ namespace TrashWizard.Windows
         return;
       }
 
-      this.foDelegateRoutines.UpdateListBox("Writing log to " + lcLogFile);
+      this.foThreadRoutines.UpdateListBox("Writing log to " + lcLogFile);
 
       try
       {
@@ -798,7 +609,7 @@ namespace TrashWizard.Windows
       }
       catch (Exception loErr)
       {
-        this.foDelegateRoutines.UpdateListBox(loErr.Message);
+        this.foThreadRoutines.UpdateListBox(loErr.Message);
         Util.InfoMessage("Unable to save the log file of " + lcLogFile + " for the following reason:\n\n" +
                          loErr.Message);
       }
@@ -855,7 +666,7 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void TabControl_OnSelectionChanged(object toSender, SelectionChangedEventArgs teSelectionChangedEventArgs)
     {
-      this.foDelegateRoutines.UpdateMenusAndControls(true);
+      this.foThreadRoutines.UpdateMenusAndControls(true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

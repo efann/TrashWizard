@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:trashWizard="clr-namespace:TrashWizard"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Icon="../images/icon/TrashWizard.ico"
@@ -184,7 +185,7 @@
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TreeView Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
+            <trashWizard:TreeViewTW x:Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
             <Label Name="LblCurrentFolder" Cursor="Hand" Grid.Row="0" Grid.Column="1"
                    PreviewMouseLeftButtonUp="Label_Click" />
             <!--
@@ -193,7 +194,7 @@
             <wpf:PieChart Name="PChrtFolders1" LegendLocation="None" Grid.Row="1" Grid.Column="1"
                           DataClick="PieChart_OnDataClick" DataHover="PieChart_OnDataHover">
               <wpf:PieChart.ChartLegend>
-                <wpf:DefaultLegend BulletSize="20"></wpf:DefaultLegend>
+                <wpf:DefaultLegend BulletSize="20" />
               </wpf:PieChart.ChartLegend>
               <wpf:PieChart.DataTooltip>
                 <wpf:DefaultTooltip SelectionMode="OnlySender" />

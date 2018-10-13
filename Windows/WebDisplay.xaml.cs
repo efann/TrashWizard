@@ -14,7 +14,6 @@ using System;
 using System.Windows;
 using Microsoft.Toolkit.Win32.UI.Controls.Interop.WinRT;
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard.Windows
 {
@@ -23,7 +22,7 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class WebDisplay
   {
-    private readonly object foHtmlInitializer;
+    private object foHtmlInitializer;
 
     // ---------------------------------------------------------------------------------------------------------------------
     public WebDisplay(Window toParent, object toHtmlInitializer, int tnHeight, int tnWidth) : base(toParent, true,
@@ -40,6 +39,26 @@ namespace TrashWizard.Windows
 
       this.Height = tnHeight;
       this.Width = tnWidth;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public WebDisplay(Window toParent, int tnHeight, int tnWidth) : base(toParent, true, false)
+    {
+      if (toParent == null)
+      {
+        throw new ArgumentNullException(nameof(toParent));
+      }
+
+      this.InitializeComponent();
+
+      this.Height = tnHeight;
+      this.Width = tnWidth;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void SetHtmlInitializer(object toHtmlInitializer)
+    {
+      this.foHtmlInitializer = toHtmlInitializer;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -63,17 +82,16 @@ namespace TrashWizard.Windows
     // they recommend loading the WebView from the OnLoaded event handler to allow the control to initialize through the dispatcher queue.
     private void WebDisplay_OnLoaded(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var loUri = this.foHtmlInitializer as Uri;
-      if (loUri != null)
+      // Well this is an interesting use of the switch statement.
+      switch (this.foHtmlInitializer)
       {
-        this.foWebView.Navigate(loUri);
-        return;
-      }
+        case Uri loUri:
+          this.foWebView.Navigate(loUri);
+          return;
 
-      var lcString = this.foHtmlInitializer as string;
-      if (lcString != null)
-      {
-        this.foWebView.NavigateToString(lcString);
+        case string lcString:
+          this.foWebView.NavigateToString(lcString);
+          break;
       }
     }
 
