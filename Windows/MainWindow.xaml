@@ -191,15 +191,14 @@
             <!--
               I'm not using the legend: I can't change the labels and it takes up too much room.
             -->
-            <wpf:PieChart Name="PChrtFolders1" LegendLocation="None" Grid.Row="1" Grid.Column="1"
-                          DataClick="PieChart_OnDataClick" DataHover="PieChart_OnDataHover">
+            <trashWizard:PieChartTW x:Name="PChrtFolders1" LegendLocation="None" Grid.Row="1" Grid.Column="1">
               <wpf:PieChart.ChartLegend>
                 <wpf:DefaultLegend BulletSize="20" />
               </wpf:PieChart.ChartLegend>
               <wpf:PieChart.DataTooltip>
                 <wpf:DefaultTooltip SelectionMode="OnlySender" />
               </wpf:PieChart.DataTooltip>
-            </wpf:PieChart>
+            </trashWizard:PieChartTW>
           </Grid>
         </TabItem>
       </TabControl>

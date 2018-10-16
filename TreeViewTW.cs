@@ -75,9 +75,6 @@ namespace TrashWizard
       {
         if (!loItem.IsSelected)
         {
-          TreeViewTW.foPieSliceList.Clear();
-          TreeViewTW.GetVisualTreeElements(loWindow.TabControlMain);
-
           var loEnumerator = loPieChart.Series.GetEnumerator(); // Get enumerator
 
           for (var i = 0; loEnumerator.MoveNext(); ++i)
@@ -277,27 +274,6 @@ namespace TrashWizard
         }
 
         loItem.FontWeight = FontWeights.Normal;
-      }
-    }
-
-
-    private static void GetVisualTreeElements(DependencyObject toObject)
-    {
-      var loChildren = LogicalTreeHelper.GetChildren(toObject);
-      foreach (var loChild in loChildren)
-      {
-        if (loChild is DependencyObject loDepChild)
-        {
-          if (loDepChild is PieSlice loPieSlice)
-          {
-            if (loPieSlice.Percentage > 0.0)
-            {
-              TreeViewTW.foPieSliceList.Add(loPieSlice);
-            }
-          }
-
-          TreeViewTW.GetVisualTreeElements(loDepChild);
-        }
       }
     }
 

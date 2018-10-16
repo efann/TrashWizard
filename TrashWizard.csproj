@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{422C60A7-83AC-44CD-ABB1-6FB0FD1014F0}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>TrashWizard</RootNamespace>
     <AssemblyName>TrashWizard</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
@@ -142,6 +142,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PieChartTW.cs" />
     <Compile Include="ThreadRoutines.cs" />
     <Compile Include="FileCaches.cs" />
     <Compile Include="FileData.cs" />

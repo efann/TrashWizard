@@ -139,57 +139,6 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void PieChart_OnDataClick(object toSender, ChartPoint toChartPoint)
-    {
-      var lcPath = toChartPoint.SeriesView.Title;
-
-      var llInvalidPath = (lcPath.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
-                           lcPath.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
-                           lcPath.Equals(ThreadRoutines.FILES_BYTES) ||
-                           lcPath.Equals(ThreadRoutines.FILES_CURRENT_LABEL_START));
-
-      if (llInvalidPath)
-      {
-        Util.ErrorMessage($@"{lcPath} is an invalid folder name.");
-        return;
-      }
-
-      if (this.TrvwFolders.SelectedItem is TreeViewItem loItem)
-      {
-        var lnCount = loItem.Items.Count;
-        for (var i = 0; i < lnCount; ++i)
-        {
-          if (loItem.Items[i] is TreeViewItem loSubItem)
-          {
-            if (lcPath.Equals(this.TrvwFolders.BuildPathName(loSubItem)))
-            {
-              loSubItem.IsSelected = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void PieChart_OnDataHover(object toSender, ChartPoint toChartPoint)
-    {
-      var lcPath = toChartPoint.SeriesView.Title;
-
-      var llInvalidPath = (lcPath.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
-                           lcPath.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
-                           lcPath.Equals(ThreadRoutines.FILES_BYTES) ||
-                           lcPath.Equals(ThreadRoutines.FILES_CURRENT_LABEL_START));
-
-      if (llInvalidPath)
-      {
-        return;
-      }
-
-      this.TrvwFolders.BoldHoveredPieSeries(lcPath);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
     public bool IsThreadRunning()
     {
       return (this.foThread != null) && this.foThread.IsAlive;
@@ -677,7 +626,6 @@ namespace TrashWizard.Windows
 
       Util.OpenFileAssociation(lcPath, true);
     }
-
     // ---------------------------------------------------------------------------------------------------------------------
   }
 
