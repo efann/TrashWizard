@@ -23,12 +23,12 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
-  public class TreeViewTW : TreeView
+  public class TwTreeView : TreeView
   {
     private MainWindow foMainWindow;
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public TreeViewTW()
+    public TwTreeView()
     {
       this.SetupTreeView();
     }
@@ -37,6 +37,8 @@ namespace TrashWizard
     // From https://www.codeproject.com/Articles/21248/A-Simple-WPF-Explorer-Tree
     private void SetupTreeView()
     {
+      this.IsEnabledChanged += this.TreeViewFolder_OnIsEnabledChanged;
+
       foreach (var loDrive in Environment.GetLogicalDrives())
       {
         // From https://stackoverflow.com/questions/623182/c-sharp-dropbox-of-drives
@@ -47,9 +49,9 @@ namespace TrashWizard
           var loItem = new TreeViewItem
           {
             Header = lcString,
-            Tag = lcString,
-            FontWeight = FontWeights.Normal
+            Tag = lcString
           };
+          this.SetFontRegular(loItem);
           loItem.Items.Add(null);
 
           this.UpdateItemEvents(loItem);
@@ -57,6 +59,78 @@ namespace TrashWizard
           this.Items.Add(loItem);
         }
       }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void UpdateItemEvents(TreeViewItem toItem)
+    {
+      toItem.Expanded += this.TreeViewFolder_Expand;
+      toItem.Selected += this.TreeViewFolder_Selected;
+      toItem.MouseEnter += this.TreeViewItem_OnMouseEnter;
+      toItem.MouseLeave += this.TreeViewItem_OnMouseLeave;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // This cannot go in the constructor as the Window has not been set yet for the component.
+    private MainWindow GetMainWindow()
+    {
+      if (this.foMainWindow == null)
+      {
+        this.foMainWindow = Window.GetWindow(this) as MainWindow;
+      }
+
+      return (this.foMainWindow);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void SetFontRegular(TreeViewItem toItem)
+    {
+      toItem.FontWeight = FontWeights.Normal;
+      toItem.FontSize = 12.0;
+      toItem.FontStyle = FontStyles.Normal;
+      if (this.IsEnabled)
+      {
+        toItem.Opacity = 1.0;
+        if (toItem.IsSelected)
+        {
+          this.SetFontSelected(toItem);
+        }
+        else
+        {
+          toItem.Foreground = Brushes.Black;
+        }
+      }
+      else
+      {
+        toItem.Opacity = 0.75;
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void SetFontHovered(TreeViewItem toItem)
+    {
+      toItem.FontWeight = FontWeights.Bold;
+      toItem.FontSize = 12.0;
+      toItem.FontStyle = FontStyles.Normal;
+      toItem.Foreground = Brushes.Black;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void SetFontSelected(TreeViewItem toItem)
+    {
+      toItem.FontWeight = FontWeights.Bold;
+      toItem.FontSize = 14.0;
+      toItem.FontStyle = FontStyles.Italic;
+      toItem.Foreground = (SolidColorBrush) new BrushConverter().ConvertFromString("#002C54");
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void SetFontHoveredNotFound(TreeViewItem toItem)
+    {
+      toItem.FontWeight = FontWeights.Bold;
+      toItem.FontSize = 12.0;
+      toItem.FontStyle = FontStyles.Normal;
+      toItem.Foreground = Brushes.Red;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -71,6 +145,7 @@ namespace TrashWizard
         {
           var loEnumerator = loPieChart.Series.GetEnumerator(); // Get enumerator
 
+          var llFound = false;
           for (var i = 0; loEnumerator.MoveNext(); ++i)
           {
             var loPieSeries = loEnumerator.Current;
@@ -79,13 +154,21 @@ namespace TrashWizard
             if ((loPieSeries != null) && lcHeader.Equals(loPieSeries.Title))
             {
               loPieChart.SetActivePieSlice(i);
+              llFound = true;
               break;
             }
           }
 
           loEnumerator.Dispose();
 
-          loItem.FontWeight = FontWeights.Bold;
+          if (llFound)
+          {
+            this.SetFontHovered(loItem);
+          }
+          else
+          {
+            this.SetFontHoveredNotFound(loItem);
+          }
         }
       }
     }
@@ -102,42 +185,21 @@ namespace TrashWizard
         {
           loPieChart.ResetActivePieSlice();
 
-          loItem.FontWeight = FontWeights.Normal;
+          this.SetFontRegular(loItem);
         }
       }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void UpdateItemEvents(TreeViewItem toItem)
-    {
-      toItem.Expanded += this.TreeViewFolderExpand;
-      toItem.Selected += this.TreeViewFolder_Selected;
-      toItem.MouseEnter += this.TreeViewItem_OnMouseEnter;
-      toItem.MouseLeave += this.TreeViewItem_OnMouseLeave;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    // This cannot go in the constructor as the Window has not been set yet for the commponent.
-    private MainWindow GetMainWindow()
-    {
-      if (this.foMainWindow == null)
-      {
-        this.foMainWindow = Window.GetWindow(this) as MainWindow;
-      }
-
-      return (this.foMainWindow);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
     private void TreeViewFolder_Selected(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       var loWindow = this.GetMainWindow();
-      this.ResetTreeViewFontWeights(this.Items);
 
       if (this.SelectedItem is TreeViewItem loItem)
       {
         loItem.IsExpanded = true;
-        loItem.FontWeight = FontWeights.Bold;
+        this.SetFontSelected(loItem);
+        this.ResetTreeViewFontWeights(this.Items);
 
         var lcPath = this.BuildPathName(loItem);
 
@@ -152,7 +214,7 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void TreeViewFolderExpand(object toSender, RoutedEventArgs teRoutedEventArgs)
+    private void TreeViewFolder_Expand(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       var loItem = (TreeViewItem) toSender;
       if ((loItem.Items.Count == 1) && (loItem.Items[0] == null))
@@ -164,10 +226,10 @@ namespace TrashWizard
           {
             var loSubItem = new TreeViewItem
             {
-              Header = lcString.Substring(lcString.LastIndexOf("\\", StringComparison.Ordinal) + 1),
-              Tag = lcString,
-              FontWeight = FontWeights.Normal
+              Header = lcString.Substring(lcString.LastIndexOf(@"\", StringComparison.Ordinal) + 1),
+              Tag = lcString
             };
+            this.SetFontRegular(loSubItem);
             loSubItem.Items.Add(null);
 
             this.UpdateItemEvents(loSubItem);
@@ -180,6 +242,13 @@ namespace TrashWizard
           // ignored
         }
       }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void TreeViewFolder_OnIsEnabledChanged(object toSender,
+      DependencyPropertyChangedEventArgs teDependencyPropertyChangedEventArgs)
+    {
+      this.ResetTreeViewFontWeights(this.Items);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -224,7 +293,7 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public void BoldHoveredPieSeries(string tcPath)
+    public void MarkHoveredPieSeries(string tcPath)
     {
       if (this.SelectedItem is TreeViewItem loItem)
       {
@@ -233,8 +302,14 @@ namespace TrashWizard
         {
           if (loItem.Items[i] is TreeViewItem loSubItem)
           {
-            loSubItem.FontWeight =
-              (tcPath.Equals(this.BuildPathName(loSubItem))) ? FontWeights.Bold : FontWeights.Normal;
+            if (tcPath.Equals(this.BuildPathName(loSubItem)))
+            {
+              this.SetFontHovered(loSubItem);
+            }
+            else
+            {
+              this.SetFontRegular(loSubItem);
+            }
           }
         }
       }
@@ -256,7 +331,7 @@ namespace TrashWizard
           this.ResetTreeViewFontWeights(loItem.Items);
         }
 
-        loItem.FontWeight = FontWeights.Normal;
+        this.SetFontRegular(loItem);
       }
     }
 

@@ -167,7 +167,7 @@
               <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1" Click="CheckBox_OnClick">Office Suite caches?</CheckBox>
               <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2" Click="CheckBox_OnClick">Recycle Bin contents?</CheckBox>
             </Grid>
-            <ListBox x:Name="ListBox1" DockPanel.Dock="Bottom" MouseDoubleClick="ListBox_OnMouseDoubleClick" />
+            <trashWizard:TwListBox x:Name="ListBox1" DockPanel.Dock="Bottom" />
           </DockPanel>
         </TabItem>
         <TabItem>
@@ -185,20 +185,20 @@
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <trashWizard:TreeViewTW x:Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
+            <trashWizard:TwTreeView x:Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
             <Label Name="LblCurrentFolder" Cursor="Hand" Grid.Row="0" Grid.Column="1"
                    PreviewMouseLeftButtonUp="Label_Click" />
             <!--
               I'm not using the legend: I can't change the labels and it takes up too much room.
             -->
-            <trashWizard:PieChartTW x:Name="PChrtFolders1" LegendLocation="None" Grid.Row="1" Grid.Column="1">
+            <trashWizard:TwPieChart x:Name="PChrtFolders1" LegendLocation="None" Grid.Row="1" Grid.Column="1">
               <wpf:PieChart.ChartLegend>
                 <wpf:DefaultLegend BulletSize="20" />
               </wpf:PieChart.ChartLegend>
               <wpf:PieChart.DataTooltip>
                 <wpf:DefaultTooltip SelectionMode="OnlySender" />
               </wpf:PieChart.DataTooltip>
-            </trashWizard:PieChartTW>
+            </trashWizard:TwPieChart>
           </Grid>
         </TabItem>
       </TabControl>

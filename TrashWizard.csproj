@@ -30,12 +30,12 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>Trash Wizard 2018</ProductName>
     <PublisherName>Beowurks</PublisherName>
-    <MinimumRequiredVersion>2018.0.0.48</MinimumRequiredVersion>
+    <MinimumRequiredVersion>2018.0.0.49</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>48</ApplicationRevision>
-    <ApplicationVersion>2018.0.0.48</ApplicationVersion>
+    <ApplicationRevision>49</ApplicationRevision>
+    <ApplicationVersion>2018.0.0.49</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -142,14 +142,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="PieChartTW.cs" />
+    <Compile Include="TwListBox.cs" />
+    <Compile Include="TwPieChart.cs" />
     <Compile Include="ThreadRoutines.cs" />
     <Compile Include="FileCaches.cs" />
     <Compile Include="FileData.cs" />
     <Compile Include="FileInformation.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ReverseStringComparer.cs" />
-    <Compile Include="TreeViewTW.cs" />
+    <Compile Include="TwTreeView.cs" />
     <Compile Include="UserSettings.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Win32\BaseRecycleBinShell.cs" />

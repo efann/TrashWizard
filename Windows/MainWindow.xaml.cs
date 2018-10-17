@@ -37,7 +37,7 @@ namespace TrashWizard.Windows
   {
     public UserSettings UserSettings { get; } = new UserSettings();
 
-    public ListBox ListBox => this.ListBox1;
+    public TwListBox ListBox => this.ListBox1;
 
     // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
     public Button ButtonCancel => this.BtnCancel1;
@@ -58,7 +58,7 @@ namespace TrashWizard.Windows
 
     public MenuItem MenuItemRemove => this.MenuItemRemove1;
 
-    public PieChartTW PChrtFolders => this.PChrtFolders1;
+    public TwPieChart PChrtFolders => this.PChrtFolders1;
 
     public enum ThreadTypes
     {
@@ -194,6 +194,14 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     public void StartThread(ThreadTypes tnThreadType)
     {
+      // Turns out that the PieChart and the TreeView were requesting StartThreads at the same time due
+      // to coordinating the hover and select events of both. So now I just check if a thread is already
+      // running. It's okay as they were requesting the same thing.
+      if (this.IsThreadRunning())
+      {
+        return;
+      }
+
       switch (tnThreadType)
       {
         case ThreadTypes.ThreadTemporaryLocate:
@@ -616,15 +624,6 @@ namespace TrashWizard.Windows
     private void TabControl_OnSelectionChanged(object toSender, SelectionChangedEventArgs teSelectionChangedEventArgs)
     {
       this.foThreadRoutines.UpdateMenusAndControls(true);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void ListBox_OnMouseDoubleClick(object toSender, MouseButtonEventArgs teMouseButtonEventArgs)
-    {
-      var lnIndex = this.ListBox1.SelectedIndex;
-      var lcPath = this.ListBox1.Items[lnIndex].ToString();
-
-      Util.OpenFileAssociation(lcPath, true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

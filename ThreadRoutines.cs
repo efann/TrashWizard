@@ -355,7 +355,7 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public void GraphFolderSpaceForFiles(string tcCurrentFolder)
+    private void GraphFolderSpaceForFiles(string tcCurrentFolder)
     {
       this.foGraphSeriesList.Clear();
 
@@ -366,7 +366,17 @@ namespace TrashWizard
       this.FoldersProcessedForFilesGraph = 0;
       // Either Root + Files or just Files.
       this.FoldersTotalForFilesGraph = (llRoot) ? 2 : 1;
-      this.FoldersTotalForFilesGraph += loStartFolder.GetDirectories().Length;
+      try
+      {
+        this.FoldersTotalForFilesGraph += loStartFolder.GetDirectories().Length;
+      }
+      catch (System.UnauthorizedAccessException loErr)
+      {
+        Util.ErrorMessage($"There is an error trying to read {tcCurrentFolder}\n\n{loErr.Message}");
+        this.DrawPieChart(false);
+
+        return;
+      }
 
       if (llRoot)
       {
@@ -395,6 +405,8 @@ namespace TrashWizard
       {
         // And yes, I meant to not use $@ as there are \n statements in the string.
         Util.ErrorMessage($"We are unable to read {tcCurrentFolder} for the following reason:\n\n{loErr.Message}");
+        this.DrawPieChart(false);
+
         return;
       }
 
@@ -432,8 +444,12 @@ namespace TrashWizard
         }
       }
 
-      var loMainWindow = this.foMainWindow;
+      this.DrawPieChart(true);
+    }
 
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void DrawPieChart(bool tlOkay)
+    {
       Application.Current.Dispatcher.Invoke(delegate
       {
         {
@@ -442,27 +458,44 @@ namespace TrashWizard
             return $"{Util.FormatBytes_GB_MB_KB(chartPoint.Y)}";
           }
 
-          var loChart = loMainWindow.PChrtFolders;
+          var loChart = this.foMainWindow.PChrtFolders;
 
           loChart.Series = new SeriesCollection();
 
-          foreach (var loGraph in this.foGraphSeriesList)
+          if (tlOkay)
+          {
+            foreach (var loGraph in this.foGraphSeriesList)
+            {
+              var loPieSeries = new PieSeries
+              {
+                Title = loGraph.fcLabel,
+                Values = new ChartValues<long> {loGraph.fnSize},
+                LabelPoint = FncLabelPoint,
+                DataLabels = false
+              };
+
+              var llGradient = (loGraph.fcLabel.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
+                                loGraph.fcLabel.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
+                                loGraph.fcLabel.Equals(ThreadRoutines.FILES_BYTES));
+              if (llGradient)
+              {
+                loPieSeries.Fill = new LinearGradientBrush(loGraph.foColor, Colors.Black, 24.0);
+              }
+
+              loChart.Series.Add(loPieSeries);
+            }
+          }
+          else
           {
             var loPieSeries = new PieSeries
             {
-              Title = loGraph.fcLabel,
-              Values = new ChartValues<long> {loGraph.fnSize},
+              Title = ThreadRoutines.UNKNOWN_BYTES,
+              Values = new ChartValues<long> {100L},
               LabelPoint = FncLabelPoint,
               DataLabels = false
             };
 
-            var llGradient = (loGraph.fcLabel.Equals(ThreadRoutines.UNKNOWN_BYTES) ||
-                              loGraph.fcLabel.Equals(ThreadRoutines.FREE_SPACE_BYTES) ||
-                              loGraph.fcLabel.Equals(ThreadRoutines.FILES_BYTES));
-            if (llGradient)
-            {
-              loPieSeries.Fill = new LinearGradientBrush(loGraph.foColor, Colors.Black, 24.0);
-            }
+            loPieSeries.Fill = new LinearGradientBrush(Colors.Red, Colors.Black, 24.0);
 
             loChart.Series.Add(loPieSeries);
           }
@@ -551,7 +584,6 @@ namespace TrashWizard
     {
       var loMainWindow = this.foMainWindow;
       Application.Current.Dispatcher.Invoke(delegate
-
       {
         {
           loMainWindow.ButtonCancel.IsEnabled = !tlEnable;

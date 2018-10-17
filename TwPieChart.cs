@@ -25,7 +25,7 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------
-  public class PieChartTW : PieChart
+  public class TwPieChart : PieChart
   {
     private readonly List<PieSlice> foPieSliceList = new List<PieSlice>();
 
@@ -33,7 +33,7 @@ namespace TrashWizard
     private int fnCurrentPieSlice = int.MaxValue;
 
     // ---------------------------------------------------------------------------------------------------------------------
-    public PieChartTW()
+    public TwPieChart()
     {
       this.UpdateEvents();
     }
@@ -95,6 +95,11 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void GetVisualTreeElements(DependencyObject toObject)
     {
+      if (toObject == null)
+      {
+        return;
+      }
+
       var loChildren = LogicalTreeHelper.GetChildren(toObject);
       foreach (var loChild in loChildren)
       {
@@ -172,7 +177,7 @@ namespace TrashWizard
       }
 
       var loWindow = this.GetMainWindow();
-      loWindow.TrvwFolders.BoldHoveredPieSeries(lcPath);
+      loWindow.TrvwFolders.MarkHoveredPieSeries(lcPath);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -182,7 +187,8 @@ namespace TrashWizard
       this.foPieSliceList.Clear();
 
       var loWindow = this.GetMainWindow();
-      this.GetVisualTreeElements(loWindow.TabControlMain);
+
+      this.GetVisualTreeElements(loWindow?.TabControlMain);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

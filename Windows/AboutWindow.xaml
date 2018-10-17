@@ -29,7 +29,6 @@
       <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">
         Licensed under the<LineBreak />
         <Hyperlink NavigateUri="https://www.eclipse.org/legal/epl-2.0/" Click="Hyperlink_Click">Eclipse Public License - v 2.0</Hyperlink>
-        .
       </TextBlock>
     </Grid>
 
