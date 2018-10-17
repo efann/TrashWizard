@@ -196,10 +196,7 @@ namespace TrashWizard
     {
       if (tlDisposing)
       {
-        if (this.foXmlTextReader != null)
-        {
-          this.foXmlTextReader.Close();
-        }
+        this.foXmlTextReader?.Close();
       }
 
       // free native resources if there are any.

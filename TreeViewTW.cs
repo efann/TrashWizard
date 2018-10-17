@@ -11,13 +11,11 @@
 // Original Author: Eddie Fann
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using LiveCharts.Wpf.Points;
 using TrashWizard.Windows;
 
 namespace TrashWizard
@@ -28,9 +26,6 @@ namespace TrashWizard
   public class TreeViewTW : TreeView
   {
     private MainWindow foMainWindow;
-    private static readonly List<PieSlice> foPieSliceList = new List<PieSlice>();
-    private static int fnCurrentPieSlice = Int32.MaxValue;
-
 
     // ---------------------------------------------------------------------------------------------------------------------
     public TreeViewTW()
@@ -70,7 +65,6 @@ namespace TrashWizard
       var loWindow = this.GetMainWindow();
       var loPieChart = loWindow.PChrtFolders;
 
-
       if (toSender is TreeViewItem loItem)
       {
         if (!loItem.IsSelected)
@@ -84,13 +78,7 @@ namespace TrashWizard
             var lcHeader = this.BuildPathName(loItem);
             if ((loPieSeries != null) && lcHeader.Equals(loPieSeries.Title))
             {
-              TreeViewTW.fnCurrentPieSlice = i;
-              var loArgs = new MouseEventArgs(Mouse.PrimaryDevice, int.MaxValue / 2)
-              {
-                RoutedEvent = UIElement.MouseEnterEvent
-              };
-
-              TreeViewTW.foPieSliceList[TreeViewTW.fnCurrentPieSlice].RaiseEvent(loArgs);
+              loPieChart.SetActivePieSlice(i);
               break;
             }
           }
@@ -105,23 +93,27 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void TreeViewItem_OnMouseLeave(object toSender, MouseEventArgs teMouseEventArgs)
     {
+      var loWindow = this.GetMainWindow();
+      var loPieChart = loWindow.PChrtFolders;
+
       if (toSender is TreeViewItem loItem)
       {
         if (!loItem.IsSelected)
         {
-          if (TreeViewTW.fnCurrentPieSlice < TreeViewTW.foPieSliceList.Count)
-          {
-            var loArgs = new MouseEventArgs(Mouse.PrimaryDevice, int.MaxValue / 2)
-            {
-              RoutedEvent = UIElement.MouseLeaveEvent
-            };
-
-            TreeViewTW.foPieSliceList[TreeViewTW.fnCurrentPieSlice].RaiseEvent(loArgs);
-          }
+          loPieChart.ResetActivePieSlice();
 
           loItem.FontWeight = FontWeights.Normal;
         }
       }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void UpdateItemEvents(TreeViewItem toItem)
+    {
+      toItem.Expanded += this.TreeViewFolderExpand;
+      toItem.Selected += this.TreeViewFolder_Selected;
+      toItem.MouseEnter += this.TreeViewItem_OnMouseEnter;
+      toItem.MouseLeave += this.TreeViewItem_OnMouseLeave;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -188,15 +180,6 @@ namespace TrashWizard
           // ignored
         }
       }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void UpdateItemEvents(TreeViewItem toItem)
-    {
-      toItem.Expanded += this.TreeViewFolderExpand;
-      toItem.Selected += this.TreeViewFolder_Selected;
-      toItem.MouseEnter += this.TreeViewItem_OnMouseEnter;
-      toItem.MouseLeave += this.TreeViewItem_OnMouseLeave;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

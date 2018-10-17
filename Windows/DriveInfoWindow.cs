@@ -61,7 +61,7 @@ namespace TrashWizard.Windows
             $@"&nbsp;&nbsp;<b>Total size of drive:</b> {Util.FormatBytes_Actual(loDrive.TotalSize)}{DriveInfoWindow.HTML_LINE_BREAK}");
         }
 
-        loHtml.Append((string) DriveInfoWindow.HTML_LINE_BREAK);
+        loHtml.Append(DriveInfoWindow.HTML_LINE_BREAK);
       }
 
       loHtml.Append("</p></body></html>");

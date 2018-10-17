@@ -58,7 +58,7 @@ namespace TrashWizard.Windows
 
     public MenuItem MenuItemRemove => this.MenuItemRemove1;
 
-    public PieChart PChrtFolders => this.PChrtFolders1;
+    public PieChartTW PChrtFolders => this.PChrtFolders1;
 
     public enum ThreadTypes
     {
@@ -626,6 +626,7 @@ namespace TrashWizard.Windows
 
       Util.OpenFileAssociation(lcPath, true);
     }
+
     // ---------------------------------------------------------------------------------------------------------------------
   }
 

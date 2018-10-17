@@ -57,7 +57,7 @@ namespace TrashWizard.Windows
 
       var loHyperlink = new Hyperlink(new Run("Beowurks"))
       {
-        NavigateUri = new Uri("https://www.beowurks.com/")
+        NavigateUri = new Uri(AboutWindow.BEOWURKS_URL)
       };
 
       loHyperlink.Click += this.Hyperlink_Click;

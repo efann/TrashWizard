@@ -32,20 +32,7 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public class Util
   {
-    public const int CLICK_OPENFOLDER = 0;
-
-
-    public const int FILESIZE_GBMBKB = 0;
-    public const int FILESIZE_KBONLY = 1;
-    public const int FILESIZE_ACTUAL = 2;
-
-    public const int FILEDATE_SHORT = 0;
-    public const int FILEDATE_LONG = 1;
-
     public const string APP_GUID = "<<Trash Wizard X0a76b5a-12ab-45C5-b9d9-d693faa6e7B9 Trash Wizard>>";
-
-    public const string LABEL_MARK_BEGIN = "[";
-    public const string LABEL_MARK_END = "]";
 
     private const long BYTES_KILO = 1024;
     private const long BYTES_MEGA = 1024 * 1024;
@@ -60,8 +47,6 @@ namespace TrashWizard
 
     public static readonly string XML_TEMP_FILE_LISTING =
       Util.DATA_FOLDER + Environment.UserName + ".TempFileListing.xml";
-
-    public static readonly string XML_FILE_LISTING = Util.DATA_FOLDER + Environment.UserName + ".FileListing.xml";
 
     public static string HOME_PAGE_FOR_APPLICATION = @"http://trashwizard.sourceforge.net/";
     public static string HOME_PAGE_FOR_HELP = @"http://www.beowurks.com/book/help-trash-wizard";

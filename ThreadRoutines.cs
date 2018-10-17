@@ -33,8 +33,6 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   internal class ThreadRoutines : IDisposable
   {
-    public delegate void ResetFileVariablesDelegate();
-
     public const string FILES_CURRENT_LABEL_START =
       "No current folder selected. Select a folder shown on the left side of this window.";
 

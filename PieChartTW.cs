@@ -13,6 +13,8 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Wpf.Points;
@@ -26,7 +28,9 @@ namespace TrashWizard
   public class PieChartTW : PieChart
   {
     private readonly List<PieSlice> foPieSliceList = new List<PieSlice>();
+
     private MainWindow foMainWindow;
+    private int fnCurrentPieSlice = int.MaxValue;
 
     // ---------------------------------------------------------------------------------------------------------------------
     public PieChartTW()
@@ -35,7 +39,7 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    // This cannot go in the constructor as the Window has not been set yet for the commponent.
+    // This cannot go in the constructor as the Window has not been set yet for the component.
     private MainWindow GetMainWindow()
     {
       if (this.foMainWindow == null)
@@ -55,6 +59,40 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    public void SetActivePieSlice(int tnActiveIndex)
+    {
+      this.fnCurrentPieSlice = tnActiveIndex;
+
+      if ((this.fnCurrentPieSlice < 0) || (this.fnCurrentPieSlice >= this.foPieSliceList.Count))
+      {
+        return;
+      }
+
+      var loArgs = new MouseEventArgs(Mouse.PrimaryDevice, int.MaxValue / 2)
+      {
+        RoutedEvent = UIElement.MouseEnterEvent
+      };
+
+      this.foPieSliceList[this.fnCurrentPieSlice].RaiseEvent(loArgs);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void ResetActivePieSlice()
+    {
+      if ((this.fnCurrentPieSlice < 0) || (this.fnCurrentPieSlice >= this.foPieSliceList.Count))
+      {
+        return;
+      }
+
+      var loArgs = new MouseEventArgs(Mouse.PrimaryDevice, int.MaxValue / 2)
+      {
+        RoutedEvent = UIElement.MouseLeaveEvent
+      };
+
+      this.foPieSliceList[this.fnCurrentPieSlice].RaiseEvent(loArgs);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
     private void GetVisualTreeElements(DependencyObject toObject)
     {
       var loChildren = LogicalTreeHelper.GetChildren(toObject);
@@ -64,9 +102,18 @@ namespace TrashWizard
         {
           if (loDepChild is PieSlice loPieSlice)
           {
-//            if (loPieSlice.Percentage > 0.0)
+            if (loPieSlice.Fill is SolidColorBrush loBrush)
             {
-              this.foPieSliceList.Add(loPieSlice);
+              // Transparency is controlled by the alpha channel ( AA in #AARRGGBB ).
+              //   Maximal value (255 dec, FF hex) means fully opaque.
+              //   Minimum value (0 dec, 00 hex) means fully transparent. 
+              // And currently the HoverShape Fill = new SolidColorBrush(Windows.UI.Colors.Transparent) inside PieSeries.cs
+              var llHoverShape = (loBrush.Color.ToString().Substring(0, 3) == "#00");
+
+              if (llHoverShape)
+              {
+                this.foPieSliceList.Add(loPieSlice);
+              }
             }
           }
 
@@ -91,7 +138,7 @@ namespace TrashWizard
         return;
       }
 
-      MainWindow loWindow = this.GetMainWindow();
+      var loWindow = this.GetMainWindow();
       if (loWindow.TrvwFolders.SelectedItem is TreeViewItem loItem)
       {
         var lnCount = loItem.Items.Count;
@@ -124,7 +171,7 @@ namespace TrashWizard
         return;
       }
 
-      MainWindow loWindow = this.GetMainWindow();
+      var loWindow = this.GetMainWindow();
       loWindow.TrvwFolders.BoldHoveredPieSeries(lcPath);
     }
 
@@ -134,7 +181,7 @@ namespace TrashWizard
     {
       this.foPieSliceList.Clear();
 
-      MainWindow loWindow = this.GetMainWindow();
+      var loWindow = this.GetMainWindow();
       this.GetVisualTreeElements(loWindow.TabControlMain);
     }
 
