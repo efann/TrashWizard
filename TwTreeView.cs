@@ -134,6 +134,17 @@ namespace TrashWizard
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+    // Okay, when you hover over a TreeViewItem, all of its parent nodes Mouse Enter events are called.
+    // And I used all of the below to try and differentiate:
+    //    Console.WriteLine(teMouseEventArgs.Source as TreeViewItem);
+    //    Console.WriteLine((teMouseEventArgs.OriginalSource as TreeViewItem).Header);
+    //    Console.WriteLine((teMouseEventArgs.Source as TreeViewItem).Header);
+    //    Console.WriteLine(loItem.IsMouseDirectlyOver);
+    //    Console.WriteLine(loItem.IsMouseOver);
+    //    Console.WriteLine(loItem.Header);
+    // teMouseEventArgs.Handled = true; doesn't work either.
+    // Nothing worked. Then I realized that the end user should only see a successful
+    // matching between the TreeViewItem and PieSlice for direct children of the selected item.
     private void TreeViewItem_OnMouseEnter(object toSender, MouseEventArgs teMouseEventArgs)
     {
       var loWindow = this.GetMainWindow();
@@ -141,7 +152,8 @@ namespace TrashWizard
 
       if (toSender is TreeViewItem loItem)
       {
-        if (!loItem.IsSelected)
+        // Only analyze direct children cause those are the ones displayed in the PieChart.
+        if ((loItem.Parent is TreeViewItem loParent) && (loParent.IsSelected))
         {
           var loEnumerator = loPieChart.Series.GetEnumerator(); // Get enumerator
 
@@ -154,21 +166,18 @@ namespace TrashWizard
             if ((loPieSeries != null) && lcHeader.Equals(loPieSeries.Title))
             {
               loPieChart.SetActivePieSlice(i);
+              this.SetFontHovered(loItem);
               llFound = true;
               break;
             }
           }
 
-          loEnumerator.Dispose();
-
-          if (llFound)
-          {
-            this.SetFontHovered(loItem);
-          }
-          else
+          if (!llFound)
           {
             this.SetFontHoveredNotFound(loItem);
           }
+
+          loEnumerator.Dispose();
         }
       }
     }

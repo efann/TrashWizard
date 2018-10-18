@@ -26,6 +26,13 @@ namespace TrashWizard.Windows
   // ---------------------------------------------------------------------------------------------------------------------
   public partial class AboutWindow
   {
+    //Defines the Grid object
+    public class SystemEnvironment
+    {
+      public string Label { get; set; }
+      public string Value { get; set; }
+    }
+
     private const string TRASH_WIZARD_URL = "https://www.beowurks.com/applications/single/Trash-Wizard";
     private const string BEOWURKS_URL = "https://www.beowurks.com/";
 
@@ -177,14 +184,6 @@ namespace TrashWizard.Windows
     private void ButtonImage_OnClick(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       Util.LaunchBrowser(AboutWindow.TRASH_WIZARD_URL);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    //Defines the Grid object
-    public class SystemEnvironment
-    {
-      public string Label { get; set; }
-      public string Value { get; set; }
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
