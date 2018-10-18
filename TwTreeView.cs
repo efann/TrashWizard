@@ -147,26 +147,28 @@ namespace TrashWizard
     // matching between the TreeViewItem and PieSlice for direct children of the selected item.
     private void TreeViewItem_OnMouseEnter(object toSender, MouseEventArgs teMouseEventArgs)
     {
-      var loWindow = this.GetMainWindow();
-      var loPieChart = loWindow.PChrtFolders;
-
       if (toSender is TreeViewItem loItem)
       {
         // Only analyze direct children cause those are the ones displayed in the PieChart.
         if ((loItem.Parent is TreeViewItem loParent) && (loParent.IsSelected))
         {
+          var loWindow = this.GetMainWindow();
+          var loPieChart = loWindow.PChrtFolders;
+          var loStatusBar = loWindow.LblStatusBar1;
+
           var loEnumerator = loPieChart.Series.GetEnumerator(); // Get enumerator
 
           var llFound = false;
+          var lcHeader = this.BuildPathName(loItem);
           for (var i = 0; loEnumerator.MoveNext(); ++i)
           {
             var loPieSeries = loEnumerator.Current;
 
-            var lcHeader = this.BuildPathName(loItem);
             if ((loPieSeries != null) && lcHeader.Equals(loPieSeries.Title))
             {
               loPieChart.SetActivePieSlice(i);
               this.SetFontHovered(loItem);
+              loStatusBar.Text = $"'{lcHeader}' slice found on PieChart";
               llFound = true;
               break;
             }
@@ -174,6 +176,7 @@ namespace TrashWizard
 
           if (!llFound)
           {
+            loStatusBar.Text = $"Unable to find slice for '{lcHeader}'";
             this.SetFontHoveredNotFound(loItem);
           }
 
@@ -185,14 +188,11 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void TreeViewItem_OnMouseLeave(object toSender, MouseEventArgs teMouseEventArgs)
     {
-      var loWindow = this.GetMainWindow();
-      var loPieChart = loWindow.PChrtFolders;
-
       if (toSender is TreeViewItem loItem)
       {
         if (!loItem.IsSelected)
         {
-          loPieChart.ResetActivePieSlice();
+          this.GetMainWindow().PChrtFolders.ResetActivePieSlice();
 
           this.SetFontRegular(loItem);
         }
@@ -202,8 +202,6 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void TreeViewFolder_Selected(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
-      var loWindow = this.GetMainWindow();
-
       if (this.SelectedItem is TreeViewItem loItem)
       {
         loItem.IsExpanded = true;
@@ -211,6 +209,8 @@ namespace TrashWizard
         this.ResetTreeViewFontWeights(this.Items);
 
         var lcPath = this.BuildPathName(loItem);
+
+        var loWindow = this.GetMainWindow();
 
         loWindow.LblCurrentFolder.Content = lcPath;
         loWindow.fcCurrentSelectedFolder = lcPath;

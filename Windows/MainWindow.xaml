@@ -206,7 +206,7 @@
     <StackPanel Grid.Row="3">
       <StatusBar>
         <StatusBarItem>
-          <TextBlock Name="LblTimeRunning1" />
+          <TextBlock Name="LblStatusBar1" />
         </StatusBarItem>
       </StatusBar>
     </StackPanel>

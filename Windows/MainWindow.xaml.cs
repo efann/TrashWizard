@@ -182,11 +182,11 @@ namespace TrashWizard.Windows
           break;
       }
 
-      this.LblTimeRunning1.Text = lcText;
+      this.LblStatusBar1.Text = lcText;
 
       if (!llThreadRunning)
       {
-        this.LblTimeRunning1.Text += " - operation complete!";
+        this.LblStatusBar1.Text += " - operation complete!";
         this.tmrRunning.Stop();
       }
     }
