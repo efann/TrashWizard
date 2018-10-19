@@ -87,7 +87,7 @@ namespace TrashWizard.Windows
     {
       this.InitializeComponent();
 
-      this.Title += $@"-BETA ({Util.GetAppVersion()})";
+      this.Title += $@"- ({Util.GetAppVersion()})";
 
       this.foThreadRoutines = new ThreadRoutines(this);
 
