@@ -492,10 +492,10 @@ namespace TrashWizard
               Title = ThreadRoutines.UNKNOWN_BYTES,
               Values = new ChartValues<long> {100L},
               LabelPoint = FncLabelPoint,
-              DataLabels = false
+              DataLabels = false,
+              Fill = new LinearGradientBrush(Colors.Red, Colors.Black, 24.0)
             };
 
-            loPieSeries.Fill = new LinearGradientBrush(Colors.Red, Colors.Black, 24.0);
 
             loChart.Series.Add(loPieSeries);
           }

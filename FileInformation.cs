@@ -22,8 +22,6 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public class FileInformation : IDisposable
   {
-    public bool FileProcessComplete => (this.foFileListData.Count == 0) && (this.fnFilesProcessed > 0);
-
     public List<DirectoryInfo> FolderRoots { get; private set; }
 
     public XmlFileInformation XmlFileInformation { get; }
