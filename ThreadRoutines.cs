@@ -47,6 +47,8 @@ namespace TrashWizard
     public int FoldersProcessedForFilesGraph;
     public int FoldersTotalForFilesGraph;
 
+    private const double TOLERANCE = 0.0000000001;
+
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
 
@@ -101,6 +103,8 @@ namespace TrashWizard
     public void UpdateControlForTemporary()
     {
       var loMainWindow = this.foMainWindow;
+
+      this.UpdateProgressBar(0.0, 0.0);
 
       this.UpdateListBox("");
       this.UpdateListBox("The following files were located:");
@@ -187,6 +191,8 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void RemoveFilesFromTemporaryList()
     {
+      this.UpdateProgressBar(0.0, 0.0);
+
       long lnCurrentFreeSpace = 0;
       var laDrives = DriveInfo.GetDrives();
       foreach (var loDrive in laDrives)
@@ -363,6 +369,8 @@ namespace TrashWizard
       var llRoot = Util.IsDriveRoot(tcCurrentFolder);
       var loStartFolder = new DirectoryInfo(tcCurrentFolder);
 
+      this.UpdateProgressBar(0.0, 0.0);
+
       this.FoldersProcessedForFilesGraph = 0;
       // Either Root + Files or just Files.
       this.FoldersTotalForFilesGraph = (llRoot) ? 2 : 1;
@@ -385,6 +393,8 @@ namespace TrashWizard
           new GraphSlice {fcLabel = ThreadRoutines.FREE_SPACE_BYTES, fnSize = lnSpace, foColor = Colors.LightGray});
 
         ++this.FoldersProcessedForFilesGraph;
+
+        this.UpdateProgressBar(this.FoldersProcessedForFilesGraph, this.FoldersTotalForFilesGraph);
       }
 
       // First get the size of the files in the current folder.
@@ -400,6 +410,8 @@ namespace TrashWizard
         }
 
         ++this.FoldersProcessedForFilesGraph;
+
+        this.UpdateProgressBar(this.FoldersProcessedForFilesGraph, this.FoldersTotalForFilesGraph);
       }
       catch (Exception loErr)
       {
@@ -432,6 +444,8 @@ namespace TrashWizard
         }
 
         ++this.FoldersProcessedForFilesGraph;
+
+        this.UpdateProgressBar(this.FoldersProcessedForFilesGraph, this.FoldersTotalForFilesGraph);
       }
 
       if (llRoot)
@@ -445,6 +459,24 @@ namespace TrashWizard
       }
 
       this.DrawPieChart(true);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void UpdateProgressBar(double tnCurrent, double tnTotal)
+    {
+      Application.Current.Dispatcher.Invoke(delegate
+      {
+        var loProgressBar = this.foMainWindow.PrgrStatusBar;
+
+        if (Math.Abs(tnTotal) < ThreadRoutines.TOLERANCE)
+        {
+          loProgressBar.Value = 0.0;
+        }
+        else
+        {
+          loProgressBar.Value = (tnCurrent / tnTotal) * loProgressBar.Maximum;
+        }
+      });
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

@@ -154,7 +154,7 @@ namespace TrashWizard
         {
           var loWindow = this.GetMainWindow();
           var loPieChart = loWindow.PChrtFolders;
-          var loStatusBar = loWindow.LblStatusBar1;
+          var loStatusBar = loWindow.LblStatusBar;
 
           var loEnumerator = loPieChart.Series.GetEnumerator(); // Get enumerator
 

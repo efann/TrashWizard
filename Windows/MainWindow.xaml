@@ -176,39 +176,68 @@
           </TabItem.Header>
           <Grid>
             <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
               <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <!--
+              From https://stopbyte.com/t/wpf-gridsplitter-minwidth-on-grid-columndefinition-is-not-working/195/2
+            -->
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="3*" MinWidth="100" />
+              <ColumnDefinition Width="5" />
+              <ColumnDefinition Width="15*" MinWidth="200" />
             </Grid.ColumnDefinitions>
 
-            <trashWizard:TwTreeView x:Name="TrvwFolders" Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2" />
-            <Label Name="LblCurrentFolder" Cursor="Hand" Grid.Row="0" Grid.Column="1"
-                   PreviewMouseLeftButtonUp="Label_Click" />
-            <!--
+            <trashWizard:TwTreeView x:Name="TrvwFolders" Grid.Row="0" Grid.Column="0" />
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <Grid Grid.Row="0" Grid.Column="2">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <!--
               I'm not using the legend: I can't change the labels and it takes up too much room.
             -->
-            <trashWizard:TwPieChart x:Name="PChrtFolders1" LegendLocation="None" Grid.Row="1" Grid.Column="1">
-              <wpf:PieChart.ChartLegend>
-                <wpf:DefaultLegend BulletSize="20" />
-              </wpf:PieChart.ChartLegend>
-              <wpf:PieChart.DataTooltip>
-                <wpf:DefaultTooltip SelectionMode="OnlySender" />
-              </wpf:PieChart.DataTooltip>
-            </trashWizard:TwPieChart>
+              <Label Name="LblCurrentFolder" Cursor="Hand" PreviewMouseLeftButtonUp="Label_Click" Grid.Row="0" />
+              <trashWizard:TwPieChart x:Name="PChrtFolders1" LegendLocation="None" Grid.Row="1">
+                <wpf:PieChart.ChartLegend>
+                  <wpf:DefaultLegend BulletSize="20" />
+                </wpf:PieChart.ChartLegend>
+                <wpf:PieChart.DataTooltip>
+                  <wpf:DefaultTooltip SelectionMode="OnlySender" />
+                </wpf:PieChart.DataTooltip>
+              </trashWizard:TwPieChart>
+            </Grid>
           </Grid>
         </TabItem>
       </TabControl>
     </Grid>
-    <StackPanel Grid.Row="3">
-      <StatusBar>
-        <StatusBarItem>
-          <TextBlock Name="LblStatusBar1" />
-        </StatusBarItem>
-      </StatusBar>
-    </StackPanel>
+    <StatusBar Grid.Row="3">
+      <StatusBar.ItemsPanel>
+        <ItemsPanelTemplate>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+          </Grid>
+        </ItemsPanelTemplate>
+      </StatusBar.ItemsPanel>
+      <StatusBarItem Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <TextBlock Name="LblStatusBar" />
+      </StatusBarItem>
+      <Separator Grid.Column="1" />
+      <!--
+        From https://www.wpf-tutorial.com/misc-controls/the-progressbar-control/
+      -->
+      <StatusBarItem Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <Grid>
+          <ProgressBar Name="PrgrStatusBar" Minimum="0" Maximum="100" Height="30" />
+          <TextBlock Text="{Binding ElementName=PrgrStatusBar, Path=Value, StringFormat={}{0:0}%}"
+                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Grid>
+      </StatusBarItem>
+    </StatusBar>
   </Grid>
 </Window>

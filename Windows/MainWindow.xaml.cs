@@ -60,16 +60,16 @@ namespace TrashWizard.Windows
 
     public TwPieChart PChrtFolders => this.PChrtFolders1;
 
+    public ThreadTypes fnThreadType;
+
+    public string fcCurrentSelectedFolder = "";
+
     public enum ThreadTypes
     {
       ThreadTemporaryLocate,
       ThreadTemporaryRemove,
       ThreadFilesViewGraph
     }
-
-    public ThreadTypes fnThreadType;
-
-    public string fcCurrentSelectedFolder = "";
 
     private readonly ThreadRoutines foThreadRoutines;
 
@@ -87,7 +87,7 @@ namespace TrashWizard.Windows
     {
       this.InitializeComponent();
 
-      this.Title += $@"- ({Util.GetAppVersion()})";
+      this.Title += $@" ({Util.GetAppVersion()})";
 
       this.foThreadRoutines = new ThreadRoutines(this);
 
@@ -182,11 +182,11 @@ namespace TrashWizard.Windows
           break;
       }
 
-      this.LblStatusBar1.Text = lcText;
+      this.LblStatusBar.Text = lcText;
 
       if (!llThreadRunning)
       {
-        this.LblStatusBar1.Text += " - operation complete!";
+        this.LblStatusBar.Text += " - operation complete!";
         this.tmrRunning.Stop();
       }
     }
@@ -314,6 +314,8 @@ namespace TrashWizard.Windows
     private void AppExit(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       this.WriteSettings();
+
+      this.AppCancelThread();
 
       Application.Current.Shutdown();
     }
