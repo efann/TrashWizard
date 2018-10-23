@@ -37,29 +37,6 @@ namespace TrashWizard.Windows
   {
     public UserSettings UserSettings { get; } = new UserSettings();
 
-    public TwListBox ListBox => this.ListBox1;
-
-    // Can't use CancelButton. Otherwise hides System.Windows.Forms.Form.CancelButton.
-    public Button ButtonCancel => this.BtnCancel1;
-
-    public Button ButtonSave => this.BtnSave1;
-
-    public Button ButtonRun => this.BtnRun1;
-
-    public Button ButtonRemove => this.BtnRemove1;
-
-    public TabControl TabControl => this.TabControlMain;
-
-    public MenuItem MenuItemCancel => this.MenuItemCancel1;
-
-    public MenuItem MenuItemSave => this.MenuItemSave1;
-
-    public MenuItem MenuItemRun => this.MenuItemRun1;
-
-    public MenuItem MenuItemRemove => this.MenuItemRemove1;
-
-    public TwPieChart PChrtFolders => this.PChrtFolders1;
-
     public ThreadTypes fnThreadType;
 
     public string fcCurrentSelectedFolder = "";
@@ -557,10 +534,10 @@ namespace TrashWizard.Windows
         // The using statement also closes the StreamWriter.
         using (var loStream = new StreamWriter(lcLogFile))
         {
-          var lnCount = this.ListBox1.Items.Count;
+          var lnCount = this.ListBox.Items.Count;
           for (var i = 0; i < lnCount; ++i)
           {
-            loStream.WriteLine(this.ListBox1.Items[i]);
+            loStream.WriteLine(this.ListBox.Items[i]);
           }
 
           Util.InfoMessage("The log file of " + lcLogFile + " has been saved.");

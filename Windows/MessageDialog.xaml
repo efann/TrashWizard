@@ -26,10 +26,10 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <Button Content="Yes" Name="btnYes" Grid.Column="0" TabIndex="1600" Click="btnAffirmative_Click"
+      <Button Content="Yes" Name="btnYes" Grid.Column="0" TabIndex="1600" Click="BtnAffirmative_Click"
               Visibility="Collapsed" />
       <Button Content="No" Name="btnNo" Grid.Column="1" TabIndex="1601" IsCancel="True" Visibility="Collapsed" />
-      <Button Content="OK" Name="btnOK" Grid.Column="2" TabIndex="1602" Click="btnAffirmative_Click"
+      <Button Content="OK" Name="btnOK" Grid.Column="2" TabIndex="1602" Click="BtnAffirmative_Click"
               Visibility="Collapsed" />
       <Button Content="Cancel" Name="btnCancel" Grid.Column="3" TabIndex="1603" IsCancel="True" Visibility="Collapsed" />
 

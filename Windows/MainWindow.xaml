@@ -18,49 +18,49 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="25" />
     </Grid.RowDefinitions>
-    <Menu x:Name="MenuMain1" Width="Auto" Height="20" Grid.Row="0">
-      <MenuItem x:Name="MenuItemFile1" Header="_File">
-        <MenuItem x:Name="MenuItemSave1" Header="Save..." HorizontalAlignment="Left" Click="AppSaveLogText">
+    <Menu x:Name="MenuMain" Width="Auto" Height="20" Grid.Row="0">
+      <MenuItem x:Name="MenuItemFile" Header="_File">
+        <MenuItem x:Name="MenuItemSave" Header="Save..." HorizontalAlignment="Left" Click="AppSaveLogText">
           <MenuItem.Icon>
             <Image Source="../images/save.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemExit1" Header="E_xit" HorizontalAlignment="Left" Click="AppExit">
+        <MenuItem x:Name="MenuItemExit" Header="E_xit" HorizontalAlignment="Left" Click="AppExit">
           <MenuItem.Icon>
             <Image Source="../images/exit.png" />
           </MenuItem.Icon>
         </MenuItem>
       </MenuItem>
 
-      <MenuItem x:Name="MenuItemAction1" Header="_Action">
-        <MenuItem x:Name="MenuItemRun1" Header="Run" HorizontalAlignment="Left" Click="AppRun">
+      <MenuItem x:Name="MenuItemAction" Header="_Action">
+        <MenuItem x:Name="MenuItemRun" Header="Run" HorizontalAlignment="Left" Click="AppRun">
           <MenuItem.Icon>
             <Image Source="../images/run.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemRemove1" Header="Remove" HorizontalAlignment="Left" Click="AppRemove">
+        <MenuItem x:Name="MenuItemRemove" Header="Remove" HorizontalAlignment="Left" Click="AppRemove">
           <MenuItem.Icon>
             <Image Source="../images/remove.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemCancel1" Header="Cancel" HorizontalAlignment="Left" Click="Cancel_OnClick">
+        <MenuItem x:Name="MenuItemCancel" Header="Cancel" HorizontalAlignment="Left" Click="Cancel_OnClick">
           <MenuItem.Icon>
             <Image Source="../images/cancel.png" />
           </MenuItem.Icon>
         </MenuItem>
       </MenuItem>
 
-      <MenuItem x:Name="MenuItemTools1" Header="_Tools">
-        <MenuItem x:Name="MenuItemDriveInfo1" Header="Drive Info" HorizontalAlignment="Left" Click="AppDriveInfo">
+      <MenuItem x:Name="MenuItemTools" Header="_Tools">
+        <MenuItem x:Name="MenuItemDriveInfo" Header="Drive Info" HorizontalAlignment="Left" Click="AppDriveInfo">
           <MenuItem.Icon>
             <Image Source="../images/driveinfo.png" />
           </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem x:Name="MenuItemDiskCleanup1" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left"
+        <MenuItem x:Name="MenuItemDiskCleanup" Header="Microsoft Disk Cleanup" HorizontalAlignment="Left"
                   Click="AppDiskCleanup">
           <MenuItem.Icon>
             <Image Source="../images/player_play.png" />
@@ -69,14 +69,14 @@
 
       </MenuItem>
 
-      <MenuItem x:Name="MenuItemHelp1" Header="_Help">
-        <MenuItem x:Name="MenuItemHomePage1" Header="Home Page" HorizontalAlignment="Left" Click="AppLaunchHomePage">
+      <MenuItem x:Name="MenuItemHelp" Header="_Help">
+        <MenuItem x:Name="MenuItemHomePage" Header="Home Page" HorizontalAlignment="Left" Click="AppLaunchHomePage">
           <MenuItem.Icon>
             <Image Source="../images/home.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="MenuItemHelpDocumentation1" Header="Help Documentation" HorizontalAlignment="Left"
+        <MenuItem x:Name="MenuItemHelpDocumentation" Header="Help Documentation" HorizontalAlignment="Left"
                   Click="AppLaunchHelpDocumentation">
           <MenuItem.Icon>
             <Image Source="../images/bookcase.png" />
@@ -84,7 +84,7 @@
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="MenuItemCheckForUpdates1" Header="Check for Updates..." HorizontalAlignment="Left"
+        <MenuItem x:Name="MenuItemCheckForUpdates" Header="Check for Updates..." HorizontalAlignment="Left"
                   Click="AppCheckForUpdates">
           <MenuItem.Icon>
             <Image Source="../images/updates.png" />
@@ -92,13 +92,13 @@
         </MenuItem>
         <Separator />
 
-        <MenuItem x:Name="MenuItemCredits1" Header="Credits" HorizontalAlignment="Left" Click="AppShowCredits">
+        <MenuItem x:Name="MenuItemCredits" Header="Credits" HorizontalAlignment="Left" Click="AppShowCredits">
           <MenuItem.Icon>
             <Image Source="../images/credits.png" />
           </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem x:Name="MenuItemAbout1" Header="About" HorizontalAlignment="Left" Click="AppShowAbout">
+        <MenuItem x:Name="MenuItemAbout" Header="About" HorizontalAlignment="Left" Click="AppShowAbout">
           <MenuItem.Icon>
             <Image Source="../images/about.png" />
           </MenuItem.Icon>
@@ -108,21 +108,21 @@
     </Menu>
     <ToolBarTray Grid.Row="1">
       <ToolBar>
-        <Button x:Name="BtnRun1" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}"
+        <Button x:Name="BtnRun" ToolTip="Run the search for files." Style="{StaticResource ToolbarButton}"
                 Click="AppRun">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/run.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Run" />
           </StackPanel>
         </Button>
-        <Button x:Name="BtnSave1" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}"
+        <Button x:Name="BtnSave" ToolTip="Save the log files." Style="{StaticResource ToolbarButton}"
                 Click="AppSaveLogText">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/save.png" Style="{StaticResource ToolbarImage}" />
             <TextBlock Text="Save" />
           </StackPanel>
         </Button>
-        <Button x:Name="BtnRemove1" ToolTip="Remove the displayed files." Style="{StaticResource ToolbarButton}"
+        <Button x:Name="BtnRemove" ToolTip="Remove the displayed files." Style="{StaticResource ToolbarButton}"
                 Click="AppRemove">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/remove.png" Style="{StaticResource ToolbarImage}" />
@@ -130,7 +130,7 @@
           </StackPanel>
         </Button>
         <Separator Style="{StaticResource ToolbarSeparator}" />
-        <Button x:Name="BtnCancel1" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}"
+        <Button x:Name="BtnCancel" ToolTip="Cancel the current operations." Style="{StaticResource ToolbarButton}"
                 Click="Cancel_OnClick">
           <StackPanel Orientation="Vertical">
             <Image Source="../images/cancel.png" Style="{StaticResource ToolbarImage}" />
@@ -167,7 +167,7 @@
               <CheckBox x:Name="ChkIncludeOfficeSuitesCaches" Grid.Row="1" Grid.Column="1" Click="CheckBox_OnClick">Office Suite caches?</CheckBox>
               <CheckBox x:Name="ChkIncludeRecycle" Grid.Row="0" Grid.Column="2" Click="CheckBox_OnClick">Recycle Bin contents?</CheckBox>
             </Grid>
-            <trashWizard:TwListBox x:Name="ListBox1" DockPanel.Dock="Bottom" />
+            <trashWizard:TwListBox x:Name="ListBox" DockPanel.Dock="Bottom" />
           </DockPanel>
         </TabItem>
         <TabItem>
@@ -199,7 +199,7 @@
               I'm not using the legend: I can't change the labels and it takes up too much room.
             -->
               <Label Name="LblCurrentFolder" Cursor="Hand" PreviewMouseLeftButtonUp="Label_Click" Grid.Row="0" />
-              <trashWizard:TwPieChart x:Name="PChrtFolders1" LegendLocation="None" Grid.Row="1">
+              <trashWizard:TwPieChart x:Name="PChrtFolders" LegendLocation="None" Grid.Row="1">
                 <wpf:PieChart.ChartLegend>
                   <wpf:DefaultLegend BulletSize="20" />
                 </wpf:PieChart.ChartLegend>

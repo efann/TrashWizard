@@ -74,7 +74,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void btnAffirmative_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
+    private void BtnAffirmative_Click(object toSender, RoutedEventArgs teRoutedEventArgs)
     {
       this.DialogResult = true;
     }

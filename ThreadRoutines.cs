@@ -186,6 +186,9 @@ namespace TrashWizard
       this.UpdateListBox("");
 
       this.UpdateListBox("Press the Remove button to delete the above listed files.", true);
+
+      // Guarantee 100% for progress bar.
+      this.UpdateProgressBar(100.0, 100.0);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -317,6 +320,9 @@ namespace TrashWizard
                          Util.FormatBytes_Actual(lnNewFreeSpace - lnCurrentFreeSpace) + ")");
       this.UpdateListBox("");
       this.UpdateListBox("The operation has successfully completed.", true);
+
+      // Guarantee 100% for progress bar.
+      this.UpdateProgressBar(100.0, 100.0);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -468,6 +474,7 @@ namespace TrashWizard
       {
         var loProgressBar = this.foMainWindow.PrgrStatusBar;
 
+        // I'm passing 0.0, but you know those real numbers.
         if (Math.Abs(tnTotal) < ThreadRoutines.TOLERANCE)
         {
           loProgressBar.Value = 0.0;
@@ -618,18 +625,18 @@ namespace TrashWizard
       Application.Current.Dispatcher.Invoke(delegate
       {
         {
-          loMainWindow.ButtonCancel.IsEnabled = !tlEnable;
+          loMainWindow.BtnCancel.IsEnabled = !tlEnable;
 
-          var llTabSpecific = tlEnable && (loMainWindow.TabControl.SelectedIndex == 0);
-          loMainWindow.ButtonRun.IsEnabled = llTabSpecific;
-          loMainWindow.ButtonSave.IsEnabled = llTabSpecific;
-          loMainWindow.ButtonRemove.IsEnabled = llTabSpecific;
+          var llTabSpecific = tlEnable && (loMainWindow.TabControlMain.SelectedIndex == 0);
+          loMainWindow.BtnRun.IsEnabled = llTabSpecific;
+          loMainWindow.BtnSave.IsEnabled = llTabSpecific;
+          loMainWindow.BtnRemove.IsEnabled = llTabSpecific;
 
-          loMainWindow.MenuItemCancel.IsEnabled = loMainWindow.ButtonCancel.IsEnabled;
+          loMainWindow.MenuItemCancel.IsEnabled = loMainWindow.BtnCancel.IsEnabled;
 
-          loMainWindow.MenuItemRun.IsEnabled = loMainWindow.ButtonRun.IsEnabled;
-          loMainWindow.MenuItemSave.IsEnabled = loMainWindow.ButtonSave.IsEnabled;
-          loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.ButtonRemove.IsEnabled;
+          loMainWindow.MenuItemRun.IsEnabled = loMainWindow.BtnRun.IsEnabled;
+          loMainWindow.MenuItemSave.IsEnabled = loMainWindow.BtnSave.IsEnabled;
+          loMainWindow.MenuItemRemove.IsEnabled = loMainWindow.BtnRemove.IsEnabled;
 
           loMainWindow.TrvwFolders.IsEnabled = tlEnable;
           loMainWindow.PChrtFolders.IsEnabled = tlEnable;
