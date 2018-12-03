@@ -12,7 +12,6 @@
 
 using System;
 using System.Windows;
-using Microsoft.Toolkit.Win32.UI.Controls.Interop.WinRT;
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace TrashWizard.Windows
@@ -68,15 +67,6 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void WebView_OnNewWindowRequested(object toSender,
-      WebViewControlNewWindowRequestedEventArgs teWebViewControlNewWindowRequestedEventArgs)
-    {
-      teWebViewControlNewWindowRequestedEventArgs.Handled = true;
-
-      Util.LaunchBrowser(teWebViewControlNewWindowRequestedEventArgs.Uri.ToString());
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
     // When calling WebView.NavigateToString, the routine hangs at while (!_initializationComplete.WaitOne(InitializationBlockingTime));
     // From https://github.com/windows-toolkit/WindowsCommunityToolkit/issues/2374,
     // they recommend loading the WebView from the OnLoaded event handler to allow the control to initialize through the dispatcher queue.
@@ -86,11 +76,11 @@ namespace TrashWizard.Windows
       switch (this.foHtmlInitializer)
       {
         case Uri loUri:
-          this.foWebView.Navigate(loUri);
+          this.WebBrowser.Navigate(loUri);
           return;
 
         case string lcString:
-          this.foWebView.NavigateToString(lcString);
+          this.WebBrowser.NavigateToString(lcString);
           break;
       }
     }

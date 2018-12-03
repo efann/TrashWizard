@@ -30,12 +30,12 @@
     <TargetCulture>en-US</TargetCulture>
     <ProductName>Trash Wizard 2018</ProductName>
     <PublisherName>Beowurks</PublisherName>
-    <MinimumRequiredVersion>2018.0.3.52</MinimumRequiredVersion>
+    <MinimumRequiredVersion>2018.0.4.53</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>52</ApplicationRevision>
-    <ApplicationVersion>2018.0.3.52</ApplicationVersion>
+    <ApplicationRevision>53</ApplicationRevision>
+    <ApplicationVersion>2018.0.4.53</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>

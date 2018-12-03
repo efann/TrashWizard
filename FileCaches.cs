@@ -23,7 +23,7 @@ namespace TrashWizard
   // ---------------------------------------------------------------------------------------------------------------------
   public class FileCaches
   {
-    // References for below folders came mainly from http://sourceforge.net/p/bleachbit/code/HEAD/tree/trunk/cleaners/
+    // References for below folders came mainly from https://github.com/bleachbit/bleachbit/tree/master/cleaners
     // Also starting to use winapp2.ini: http://www.winapp2.com/Winapp2.ini
 
     private const string APPLICATION_DATA = "{ApplicationData}";
