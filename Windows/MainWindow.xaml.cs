@@ -75,7 +75,7 @@ namespace TrashWizard.Windows
 
       this.LblCurrentFolder.Content = ThreadRoutines.FILES_CURRENT_LABEL_START;
 
-      this.tmrRunning.Tick += this.TimerElapsedEvent;
+      this.tmrRunning.Tick += this.UpdateTimeRunningEvent;
       this.tmrRunning.Interval = TimeSpan.FromMilliseconds(250);
 
       this.SetupPieChart();
@@ -122,7 +122,7 @@ namespace TrashWizard.Windows
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
-    private void UpdateTimeRunning()
+    private void UpdateTimeRunningEvent(object toSender, EventArgs teEventArgs)
     {
       var llThreadRunning = this.IsThreadRunning();
 
@@ -204,7 +204,7 @@ namespace TrashWizard.Windows
       this.tmrRunning.Start();
       // Go ahead and update the time running: the timer is set at 1 second intervals
       // and therefore lags behind when the thread first starts.
-      this.UpdateTimeRunning();
+      this.UpdateTimeRunningEvent(null,null);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -234,6 +234,7 @@ namespace TrashWizard.Windows
 
       this.foThreadRoutines.UpdateFormCursors(Cursors.Arrow);
       this.foThreadRoutines.UpdateMenusAndControls(true);
+      this.foThreadRoutines.StartResetProgressBar(true);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -573,12 +574,6 @@ namespace TrashWizard.Windows
       loSettings.SetSavePath(Directory.GetParent(lcFileName).FullName);
 
       return lcFileName;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    private void TimerElapsedEvent(object toSender, EventArgs teEventArgs)
-    {
-      this.UpdateTimeRunning();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

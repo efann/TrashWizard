@@ -48,8 +48,8 @@ namespace TrashWizard
     public static readonly string XML_TEMP_FILE_LISTING =
       Util.DATA_FOLDER + Environment.UserName + ".TempFileListing.xml";
 
-    public static string HOME_PAGE_FOR_APPLICATION = @"http://trashwizard.sourceforge.net/";
-    public static string HOME_PAGE_FOR_HELP = @"http://www.beowurks.com/book/help-trash-wizard";
+    public static string HOME_PAGE_FOR_APPLICATION = @"https://www.beowurks.com/applications/single/Trash-Wizard";
+    public static string HOME_PAGE_FOR_HELP = @"https://1drv.ms/b/s!Ak4RMu0v512WgchwwEVTV90fwO6Gkg";
 
     private static int WINDOW_REGISTER_ID;
 

@@ -1,11 +1,11 @@
 ﻿// =============================================================================
 // Trash Wizard : a Windows utility program for maintaining your temporary files.
 //  =============================================================================
-//  
+// 
 // (C) Copyright 2007-2019, by Beowurks.
-//  
-// This application is an open-source project; you can redistribute it and/or modify it under 
-// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/). 
+// 
+// This application is an open-source project; you can redistribute it and/or modify it under
+// the terms of the Eclipse Public License 2.0 (https://www.eclipse.org/legal/epl-2.0/).
 // This EPL license applies retroactively to all previous versions of Trash Wizard.
 // 
 // Original Author: Eddie Fann
@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using LiveCharts;
 using LiveCharts.Wpf;
 using TrashWizard.Win32;
@@ -47,7 +48,9 @@ namespace TrashWizard
     public int FoldersProcessedForFilesGraph;
     public int FoldersTotalForFilesGraph;
 
+    // For the progress bar routines
     private const double TOLERANCE = 0.0000000001;
+    private const double RESETTING_VALUE = 3.0;
 
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
@@ -71,12 +74,18 @@ namespace TrashWizard
 
     private readonly List<GraphSlice> foGraphSeriesList = new List<GraphSlice>();
 
+    private readonly DispatcherTimer tmrResetProgressBar =
+      new DispatcherTimer(DispatcherPriority.Normal);
+
     // ---------------------------------------------------------------------------------------------------------------------
     public ThreadRoutines(MainWindow toMainWindow)
     {
       this.foMainWindow = toMainWindow;
 
       this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING);
+
+      this.tmrResetProgressBar.Tick += this.ResetProgressBarEvent;
+      this.tmrResetProgressBar.Interval = TimeSpan.FromMilliseconds(10);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -189,6 +198,8 @@ namespace TrashWizard
 
       // Guarantee 100% for progress bar.
       this.UpdateProgressBar(100.0, 100.0);
+
+      this.StartResetProgressBar();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -323,6 +334,8 @@ namespace TrashWizard
 
       // Guarantee 100% for progress bar.
       this.UpdateProgressBar(100.0, 100.0);
+
+      this.StartResetProgressBar();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -389,6 +402,8 @@ namespace TrashWizard
         Util.ErrorMessage($"There is an error trying to read {tcCurrentFolder}\n\n{loErr.Message}");
         this.DrawPieChart(false);
 
+        this.StartResetProgressBar();
+
         return;
       }
 
@@ -424,6 +439,8 @@ namespace TrashWizard
         // And yes, I meant to not use $@ as there are \n statements in the string.
         Util.ErrorMessage($"We are unable to read {tcCurrentFolder} for the following reason:\n\n{loErr.Message}");
         this.DrawPieChart(false);
+
+        this.StartResetProgressBar();
 
         return;
       }
@@ -465,6 +482,36 @@ namespace TrashWizard
       }
 
       this.DrawPieChart(true);
+
+      this.StartResetProgressBar();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    public void StartResetProgressBar(bool tlStartImmediately = false)
+    {
+      // Wait 3 seconds till resetting the Progress bar.
+      if (!tlStartImmediately)
+      {
+        System.Threading.Thread.Sleep(3000);
+      }
+
+      this.tmrResetProgressBar.Start();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    private void ResetProgressBarEvent(object toSender, EventArgs teEventArgs)
+    {
+      var loProgressBar = this.foMainWindow.PrgrStatusBar;
+      // I'm looking for 0.0, but you know those real numbers.
+      if (Math.Abs(loProgressBar.Value) < ThreadRoutines.RESETTING_VALUE)
+      {
+        loProgressBar.Value = 0.0;
+        this.tmrResetProgressBar.Stop();
+
+        return;
+      }
+
+      loProgressBar.Value -= ThreadRoutines.RESETTING_VALUE;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -618,7 +665,7 @@ namespace TrashWizard
       });
     }
 
-// ---------------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
     public void UpdateMenusAndControls(bool tlEnable)
     {
       var loMainWindow = this.foMainWindow;
@@ -644,12 +691,12 @@ namespace TrashWizard
       });
     }
 
-// ---------------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
   }
 
-// ---------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------------
 }
 
 //-----------------------------------------------------------------------------

@@ -34,8 +34,8 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>53</ApplicationRevision>
-    <ApplicationVersion>2018.0.4.53</ApplicationVersion>
+    <ApplicationRevision>54</ApplicationRevision>
+    <ApplicationVersion>2019.0.0.54</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -65,7 +65,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>22281AEC6982667C4AFD9BB67D47092F8518A045</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>693D608AC61EB4CCDCFFAA3DC8CE3CDBC7037F57</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -89,7 +89,7 @@
     <StartupObject>TrashWizard.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>TrashWizard_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>CodeSigning.p12</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df">
@@ -207,6 +207,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="CodeSigning.p12" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="TrashWizard_TemporaryKey.pfx" />
