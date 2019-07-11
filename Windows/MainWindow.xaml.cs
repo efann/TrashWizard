@@ -124,8 +124,6 @@ namespace TrashWizard.Windows
     // ---------------------------------------------------------------------------------------------------------------------
     private void UpdateTimeRunningEvent(object toSender, EventArgs teEventArgs)
     {
-      var llThreadRunning = this.IsThreadRunning();
-
       var loDiff = DateTime.Now - this.foStartTime;
       var lnSeconds = loDiff.Seconds;
       var lnMinutes = loDiff.Minutes;
@@ -161,7 +159,7 @@ namespace TrashWizard.Windows
 
       this.LblStatusBar.Text = lcText;
 
-      if (!llThreadRunning)
+      if (!this.IsThreadRunning())
       {
         this.LblStatusBar.Text += " - operation complete!";
         this.tmrRunning.Stop();

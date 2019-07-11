@@ -50,7 +50,10 @@ namespace TrashWizard
 
     // For the progress bar routines
     private const double TOLERANCE = 0.0000000001;
-    private const double RESETTING_VALUE = 3.0;
+    private const double RESETTING_DECREMENT = 3.0;
+
+    private const double TIMER_DELAY = 3000;
+    private const double TIMER_IMMEDIATE = 10;
 
     private static readonly string INDENT = "  ";
     private static readonly int LINE_COUNT_SKIP = 500;
@@ -85,7 +88,6 @@ namespace TrashWizard
       this.FileInformationForTemporary = new FileInformation(Util.XML_TEMP_FILE_LISTING);
 
       this.tmrResetProgressBar.Tick += this.ResetProgressBarEvent;
-      this.tmrResetProgressBar.Interval = TimeSpan.FromMilliseconds(10);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -489,11 +491,9 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     public void StartResetProgressBar(bool tlStartImmediately = false)
     {
-      // Wait 3 seconds till resetting the Progress bar.
-      if (!tlStartImmediately)
-      {
-        System.Threading.Thread.Sleep(3000);
-      }
+      // Rather than use Thread.Sleep, which will hang the thread, just adjust the timer Interval after the first call to ResetProgressBarEvent.
+      this.tmrResetProgressBar.Interval =
+        TimeSpan.FromMilliseconds((tlStartImmediately) ? ThreadRoutines.TIMER_IMMEDIATE : ThreadRoutines.TIMER_DELAY);
 
       this.tmrResetProgressBar.Start();
     }
@@ -501,9 +501,15 @@ namespace TrashWizard
     // ---------------------------------------------------------------------------------------------------------------------
     private void ResetProgressBarEvent(object toSender, EventArgs teEventArgs)
     {
+      if (this.tmrResetProgressBar.Interval > TimeSpan.FromMilliseconds(ThreadRoutines.TIMER_IMMEDIATE))
+      {
+        this.tmrResetProgressBar.Interval = TimeSpan.FromMilliseconds(ThreadRoutines.TIMER_IMMEDIATE);
+      }
+
       var loProgressBar = this.foMainWindow.PrgrStatusBar;
+
       // I'm looking for 0.0, but you know those real numbers.
-      if (Math.Abs(loProgressBar.Value) < ThreadRoutines.RESETTING_VALUE)
+      if (Math.Abs(loProgressBar.Value) < ThreadRoutines.RESETTING_DECREMENT)
       {
         loProgressBar.Value = 0.0;
         this.tmrResetProgressBar.Stop();
@@ -511,7 +517,7 @@ namespace TrashWizard
         return;
       }
 
-      loProgressBar.Value -= ThreadRoutines.RESETTING_VALUE;
+      loProgressBar.Value -= ThreadRoutines.RESETTING_DECREMENT;
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
