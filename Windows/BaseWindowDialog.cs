@@ -30,6 +30,7 @@ namespace TrashWizard.Windows
 
     private const int WS_MAXIMIZEBOX = 0x10000; //maximize button
     private const int WS_MINIMIZEBOX = 0x20000; //minimize button
+    private const int WS_SYSMENU = 0x80000;     // System menu
 
     // From https://www.wpftutorial.net/RemoveIcon.html
     private const int GWL_EXSTYLE_ICON = -20;
