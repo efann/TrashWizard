@@ -34,8 +34,8 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>58</ApplicationRevision>
-    <ApplicationVersion>2019.0.0.58</ApplicationVersion>
+    <ApplicationRevision>59</ApplicationRevision>
+    <ApplicationVersion>2020.0.0.59</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -207,10 +207,8 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="CodeSigning.p12" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="TrashWizard_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\about.png" />
